@@ -1,0 +1,18 @@
+PODS:
+  - FMDB (2.7.3):
+    - FMDB/standard (= 2.7.3)
+  - FMDB/standard (2.7.3)
+
+DEPENDENCIES:
+  - FMDB (= 2.7.3)
+
+SPEC REPOS:
+  https://code.9ji.com/9ji_APP_iOS/CHCocoaSpec.git:
+    - FMDB
+
+SPEC CHECKSUMS:
+  FMDB: a6f9d29915ddd7b4514c607dd3d16599aa53566d
+
+PODFILE CHECKSUM: 618f523bfde91f64c738e00a5c7abfe162aabea8
+
+COCOAPODS: 1.10.1
