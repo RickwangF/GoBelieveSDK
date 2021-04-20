@@ -31,7 +31,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'Sources/**/*.{h,m,c}'
-  s.public_header_files = "Sources/**/*.{h,c}"
+  s.public_header_files = "Sources/**/*.h"
   
   s.static_framework = true
 
