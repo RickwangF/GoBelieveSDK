@@ -30,8 +30,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (SQLPeerMessageIterator *)initWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = ? AND timestamp < ? ORDER BY timestamp DESC", allColumns];
-        self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
+        // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = %@ AND timestamp < %@ ORDER BY timestamp ASC", allColumns, @(peer), @(timeStamp)];
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        self.rs = [db executeQuery:sql];
     }
     return self;
 }
@@ -1337,6 +1341,15 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //    return [[SQLPeerMessageIterator alloc] initWithDB:self.db peer:uid last:messageID secret:self.secret];
 //}
 
+#pragma mark - Testing
+
+- (void)checkDuplicateMessageForPeer:(int64_t)peer {
+    NSString *sql = [NSString stringWithFormat:@"SELECT sender, timestamp, readuuid FROM peer_message WHERE peer = %@", @(peer)];
+#if DEBUG
+    NSLog(@">>> query sql %@", sql);
+#endif
+//    self. = [db executeQuery:sql];
+}
 
 @end
 
