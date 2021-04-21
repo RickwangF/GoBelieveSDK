@@ -31,7 +31,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     self = [super init];
     if (self) {
         // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = %@ AND timestamp < %@ ORDER BY timestamp ASC", allColumns, @(peer), @(timeStamp)];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = %@ AND timestamp < %@ ORDER BY timestamp DESC LIMIT 0,20", allColumns, @(peer), @(timeStamp)];
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
@@ -43,7 +43,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = ? AND timestamp > ? ORDER BY timestamp ASC", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = ? AND timestamp > ? ORDER BY timestamp ASC LIMIT 0,20", allColumns];
         self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
     }
     return self;
@@ -198,27 +198,36 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMDatabase *db = self.db;
     [db beginTransaction];
     
-//    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
-    NSString *readuuid = [msg.readUUID hasContent] ? msg.readUUID : @"";
-    NSString *content = [msg.rawContent hasContent] ? msg.rawContent : @"";
-    BOOL result = [db executeUpdate:@"INSERT INTO peer_message (peer, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
-    
-    if (!result) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        [db rollback];
-        return NO;
+    BOOL haveMessage = NO;
+    FMResultSet *selectResult = [db executeQuery:@"SELECT readuuid FROM peer_message WHERE peer = ? AND readuuid = ?", @(uid), msg.readUUID];
+    if (selectResult.next) {
+        haveMessage = YES;        
     }
     
-    int64_t rowID = [self.db lastInsertRowId];
-    msg.msgId = rowID;
-    
-    if (msg.textContent) {
-        NSString *text = [msg.textContent.text tokenizer];
-        [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
+    if (haveMessage == NO) {
+        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
+        NSString *readuuid = [msg.readUUID hasContent] ? msg.readUUID : @"";
+        NSString *content = [msg.rawContent hasContent] ? msg.rawContent : @"";
+        BOOL result = [db executeUpdate:@"INSERT INTO peer_message (peer, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
+        
+        if (!result) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+            [db rollback];
+            return NO;
+        }
+        
+        int64_t rowID = [self.db lastInsertRowId];
+        msg.msgId = rowID;
+        
+        if (msg.textContent) {
+            NSString *text = [msg.textContent.text tokenizer];
+            [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
+        }
+        
+        result = [db commit];
+        return result;
     }
-    
-    result = [db commit];
-    return result;
+    return NO;
 }
 
 /// 标记消息失败

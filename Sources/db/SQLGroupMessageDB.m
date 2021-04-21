@@ -190,27 +190,36 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     FMDatabase *db = self.db;
     [db beginTransaction];
     
-//    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
-    NSString *readuuid = [msg.readUUID hasContent] ? msg.readUUID : @"";
-    NSString *content = [msg.rawContent hasContent] ? msg.rawContent : @"";
-    BOOL result = [db executeUpdate:@"INSERT INTO group_message (group_id, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
-    
-    if (!result) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        [db rollback];
-        return NO;
+    BOOL haveMessage = NO;
+    FMResultSet *selectResult = [db executeQuery:@"SELECT readuuid FROM group_message WHERE group_id = ? AND readuuid = ?", @(uid), msg.readUUID];
+    if (selectResult.next) {
+        haveMessage = YES;
     }
     
-    int64_t rowID = [self.db lastInsertRowId];
-    msg.msgId = rowID;
-    
-    if (msg.textContent) {
-        NSString *text = [msg.textContent.text tokenizer];
-        [db executeUpdate:@"INSERT INTO group_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
+    if (haveMessage == NO) {
+        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
+        NSString *readuuid = [msg.readUUID hasContent] ? msg.readUUID : @"";
+        NSString *content = [msg.rawContent hasContent] ? msg.rawContent : @"";
+        BOOL result = [db executeUpdate:@"INSERT INTO group_message (group_id, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
+        
+        if (!result) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+            [db rollback];
+            return NO;
+        }
+        
+        int64_t rowID = [self.db lastInsertRowId];
+        msg.msgId = rowID;
+        
+        if (msg.textContent) {
+            NSString *text = [msg.textContent.text tokenizer];
+            [db executeUpdate:@"INSERT INTO group_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
+        }
+        
+        result = [db commit];
+        return result;
     }
-    
-    result = [db commit];
-    return result;
+    return NO;
 }
 
 /// 标记消息失败
