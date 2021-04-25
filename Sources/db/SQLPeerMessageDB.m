@@ -164,7 +164,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 获取单条消息
 /// @param uuid 消息唯一标识
 - (IMessage *)getMessage:(NSString *)uuid {
-    FMResultSet *rs = [self.db executeQuery:@"SELECT ? FROM peer_message WHERE readuuid= ?", allColumns, uuid];
+    NSString *sqlStr = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE readuuid= %@", allColumns, uuid];
+    FMResultSet *rs = [self.db executeQuery:sqlStr];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
