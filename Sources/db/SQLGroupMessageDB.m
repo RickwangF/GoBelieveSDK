@@ -35,20 +35,20 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     [self.rs close];
 }
 
-- (SQLGroupMessageIterator *)initWithDB:(FMDatabase*)db gid:(int64_t)peer timeStamp:(NSInteger)timeStamp {
+- (SQLGroupMessageIterator *)initWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
         NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp < ? ORDER BY timestamp DESC", allColumns];
-        self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
+        self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;
 }
 
-- (SQLGroupMessageIterator *)initBackwardWithDB:(FMDatabase*)db gid:(int64_t)peer timeStamp:(NSInteger)timeStamp {
+- (SQLGroupMessageIterator *)initBackwardWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
         NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp > ? ORDER BY timestamp ASC", allColumns];
-        self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
+        self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;
 }
