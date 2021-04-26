@@ -21,10 +21,16 @@
 @property(nonatomic, copy) NSString *name;
 @property(nonatomic, copy) NSString *avatarURL;
 @property(nonatomic) IMessage *message;
+@property(nonatomic, copy) NSString *content;
+@property(nonatomic, copy) NSString *msguuid;
 @property(nonatomic, assign) int64_t uid;
 @property (nonatomic, copy) NSString *userName;
 @property(nonatomic, assign) BOOL isTop;
+@property(nonatomic, assign) BOOL isCallback;
 @property(nonatomic, assign) BOOL isDelete;
+@property(nonatomic, assign) BOOL isGroup;
+@property(nonatomic, copy) NSString *memberLevel;
+@property(nonatomic, assign) BOOL isMember;
 
 @property(nonatomic) int newMsgCount;
 @property(nonatomic, copy) NSString *detail;
