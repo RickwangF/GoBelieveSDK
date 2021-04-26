@@ -16,25 +16,51 @@
 #define CONVERSATION_CUSTOMER_SERVICE 4
 
 @interface Conversation : NSObject
-@property(nonatomic) int type;
-@property(nonatomic, assign) int64_t cid;
+//@property(nonatomic) int type;
+//@property(nonatomic, assign) int64_t cid;
+//@property(nonatomic) IMessage *message;
+//@property(nonatomic, copy) NSString *detail;
+/// 会话昵称
 @property(nonatomic, copy) NSString *name;
+/// 会话头像
 @property(nonatomic, copy) NSString *avatarURL;
-@property(nonatomic) IMessage *message;
+/// 会话最后一条显示描述内容
 @property(nonatomic, copy) NSString *content;
+/// 会话最后一条消息uuid
 @property(nonatomic, copy) NSString *msguuid;
+/// 会话对象targetUid
 @property(nonatomic, assign) int64_t uid;
-@property (nonatomic, copy) NSString *userName;
+/// 会话对象targetId
+@property (nonatomic, copy) NSString *targetId;
+/// 会话是否置顶
 @property(nonatomic, assign) BOOL isTop;
+/// 会话最后一条消息是否撤回
 @property(nonatomic, assign) BOOL isCallback;
+/// 会话最后一条消息是否删除
 @property(nonatomic, assign) BOOL isDelete;
+/// 会话是否是群聊
 @property(nonatomic, assign) BOOL isGroup;
+/// 订制
+/// 会话用户会员等级
 @property(nonatomic, copy) NSString *memberLevel;
-@property(nonatomic, assign) BOOL isMember;
-
+/// 用户类型
+@property(nonatomic, assign) NSInteger memberType;
+/// 会话会员背景图
+@property(nonatomic, copy) NSString *memberImg;
+/// 会话是否有草稿
+@property(nonatomic, copy) NSString *draft;
+/// 会话发送失败消息的uuid集合字符串，','分隔
+@property(nonatomic, copy) NSString *failedMessages;
+/// 会话新消息条数
 @property(nonatomic) int newMsgCount;
-@property(nonatomic, copy) NSString *detail;
+/// 会话时间
 @property(nonatomic) NSInteger timestamp;
+/// 最后一条消息是否自己发送
+@property(nonatomic, assign) BOOL is_self;
+/// 会员地区
+@property(nonatomic, copy) NSString *area;
+/// 备注名
+@property(nonatomic, copy) NSString *remarkName;
 @end
 
 @interface IGroup : NSObject
