@@ -52,6 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uid 清空会话的id
 - (void)clearConversationMsgCountWithUid:(int64_t)uid;
 
+/// 保存草稿消息
+/// @param uid 保存草稿会话的id
+/// @param draft 保存草稿会话的文字
+- (void)saveDraftToConversationWithUid:(int64_t)uid
+                                 draft:(NSString *)draft;
+
 /// 修改会话置顶状态
 /// @param isTop 是否置顶
 /// @param uid 操作会话的uid

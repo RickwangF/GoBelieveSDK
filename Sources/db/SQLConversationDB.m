@@ -262,6 +262,22 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     }];
 }
 
+/// 保存草稿消息
+/// @param uid 保存草稿会话的id
+/// @param draft 保存草稿会话的文字
+- (void)saveDraftToConversationWithUid:(int64_t)uid
+                                 draft:(NSString *)draft {
+    FMDatabaseQueue *queue = self.dbQueue;
+    
+    NSString *draftStr = [draft hasContent] ? [NSString stringWithFormat:@"'%@'", draft] : @"''";
+    
+    NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET draft= %@ WHERE conversationid= %@", draftStr,@(uid)];
+    
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        [db executeUpdate:sqlStr];
+    }];
+}
+
 /// 根据uid修改会话targetId、昵称、头像
 /// @param targetId 需要记录的targetId
 /// @param nickname 需要记录的昵称
