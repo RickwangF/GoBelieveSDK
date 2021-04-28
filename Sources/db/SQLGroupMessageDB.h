@@ -54,7 +54,9 @@
 
 /// 修改消息失败状态
 /// @param uuid 消息唯一标识
-- (BOOL)eraseMessageFailure:(NSString *)uuid;
+/// @param timestamp 时间
+- (BOOL)eraseMessageFailure:(NSString *)uuid
+                  timestamp:(int64_t)timestamp;
 
 /// 修改消息读取状态
 /// @param uuid 消息唯一标识

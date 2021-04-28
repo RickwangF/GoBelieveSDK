@@ -245,7 +245,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 
 /// 修改消息失败状态
 /// @param uuid 消息唯一标识
-- (BOOL)eraseMessageFailure:(NSString *)uuid {
+/// @param timestamp 时间
+- (BOOL)eraseMessageFailure:(NSString *)uuid
+                  timestamp:(int64_t)timestamp {
     if ([uuid hasContent] == NO) {
         return NO;
     }
@@ -260,7 +262,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         int f = MESSAGE_FLAG_FAILURE;
         flags &= ~f;
 
-        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE readuuid= ?", @(flags), uuid];
+        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ?, timestamp= ? WHERE readuuid= ?", @(flags), @(timestamp), uuid];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             return NO;
