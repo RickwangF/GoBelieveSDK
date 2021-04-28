@@ -8,7 +8,7 @@
 #import "SQLConversationDB.h"
 #import "NSString+JSMessagesView.h"
 
-static const NSString *converAllColumns = @"conversationid, avatar, nickname, timestamp, content, msguuid, is_callback, is_group, is_delete, is_top, unreadcount, member_type, member_level, member_img, draft, failed_messages, target_id, is_self, area, remark_name";
+static const NSString *converAllColumns = @"conversationid, avatar, nickname, timestamp, content, msguuid, is_callback, is_group, is_delete, is_top, unreadcount, member_type, member_level, member_img, draft, unsend_tag, target_id, is_self, area, remark_name";
 
 @interface SQLGBConversdationIterator : NSObject<GBConversdationIterator>
 @property(nonatomic, strong) __block FMResultSet *rs;
@@ -107,7 +107,7 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     [conver setMemberLevel:[self.rs stringForColumn:@"member_level"]];
     [conver setMemberImg:[self.rs stringForColumn:@"member_img"]];
     [conver setDraft:[self.rs stringForColumn:@"draft"]];
-    [conver setFailedMessages:[self.rs stringForColumn:@"failed_messages"]];
+    [conver setUnsendTag:[self.rs boolForColumn:@"unsend_tag"]];
     [conver setTargetId:[self.rs stringForColumn:@"target_id"]];
     [conver setIs_self:[self.rs boolForColumn:@"is_self"]];
     [conver setArea:[self.rs stringForColumn:@"area"]];
@@ -165,7 +165,6 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     NSString *memberLevel = [conversation.memberLevel hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.memberLevel] : @"''";
     NSString *memberImg = [conversation.memberImg hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.memberImg] : @"''";
     NSString *draft = [conversation.draft hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.draft] : @"''";
-    NSString *failedMessages = [conversation.failedMessages hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.failedMessages] : @"''";
     NSString *targetId = [conversation.targetId hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.targetId] : @"''";
     NSString *areaStr = [conversation.area hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.area] : @"''";
     NSString *remarkNameStr = [conversation.remarkName hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.remarkName] : @"''";
@@ -178,11 +177,11 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
             haveRecord = YES;
         }
         if (haveRecord == YES) {
-            NSString *replaceSqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET avatar= %@, nickname= %@, timestamp= %@, content= %@, msguuid= %@, is_callback= %@, is_group= %@, is_delete= %@, is_top= %@, unreadcount= %@, member_type= %@, member_level=%@, member_img= %@, draft= %@, failed_messages= %@, target_id= %@, is_self= %@, area= %@, remark_name= %@ WHERE conversationid = %@", avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, failedMessages, targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
+            NSString *replaceSqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET avatar= %@, nickname= %@, timestamp= %@, content= %@, msguuid= %@, is_callback= %@, is_group= %@, is_delete= %@, is_top= %@, unreadcount= %@, member_type= %@, member_level=%@, member_img= %@, draft= %@, unsend_tag= %@, target_id= %@, is_self= %@, area= %@, remark_name= %@ WHERE conversationid = %@", avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
             [db executeUpdate:replaceSqlStr];
             return;
         }
-        NSString *sqlStr = [NSString stringWithFormat:@"INSERT INTO gb_conversation (%@) VALUES (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@)", converAllColumns, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, failedMessages, targetId, @(conversation.is_self), areaStr, remarkNameStr];
+        NSString *sqlStr = [NSString stringWithFormat:@"INSERT INTO gb_conversation (%@) VALUES (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@)", converAllColumns, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr];
         [db executeUpdate:sqlStr];
     }];
 }
@@ -199,13 +198,12 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     NSString *memberLevel = [conversation.memberLevel hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.memberLevel] : @"''";
     NSString *memberImg = [conversation.memberImg hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.memberImg] : @"''";
     NSString *draft = [conversation.draft hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.draft] : @"''";
-    NSString *failedMessages = [conversation.failedMessages hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.failedMessages] : @"''";
     NSString *targetId = [conversation.targetId hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.targetId] : @"''";
     NSString *areaStr = [conversation.area hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.area] : @"''";
     NSString *remarkNameStr = [conversation.remarkName hasContent] ? [NSString stringWithFormat:@"'%@'", conversation.remarkName] : @"''";
     
     [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET avatar= %@, nickname= %@, timestamp= %@, content= %@, msguuid= %@, is_callback= %@, is_group= %@, is_delete= %@, is_top= %@, unreadcount= %@, member_type= %@, member_level=%@, member_img= %@, draft= %@, failed_messages= %@， target_id= %@, is_self= %@, area= %@, remark_name= %@ WHERE conversationid = %@", avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, failedMessages, targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
+        NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET avatar= %@, nickname= %@, timestamp= %@, content= %@, msguuid= %@, is_callback= %@, is_group= %@, is_delete= %@, is_top= %@, unreadcount= %@, member_type= %@, member_level=%@, member_img= %@, draft= %@, unsend_tag= %@， target_id= %@, is_self= %@, area= %@, remark_name= %@ WHERE conversationid = %@", avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft, @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
         [db executeUpdate:sqlStr];
     }];
 }
@@ -394,7 +392,7 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
             [conver setMemberLevel:[rs stringForColumn:@"member_level"]];
             [conver setMemberImg:[rs stringForColumn:@"member_img"]];
             [conver setDraft:[rs stringForColumn:@"draft"]];
-            [conver setFailedMessages:[rs stringForColumn:@"failed_messages"]];
+            [conver setUnsendTag:[rs boolForColumn:@"unsend_tag"]];
             [conver setTargetId:[rs stringForColumn:@"target_id"]];
             [conver setIs_self:[rs boolForColumn:@"is_self"]];
             [conver setArea:[rs stringForColumn:@"area"]];
@@ -409,6 +407,19 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     
     dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
     return reConver;
+}
+
+/// 修改会话失败状态
+/// @param haveFailed 是否有失败消息
+/// @param targetUid 目标会话uid
+- (void)updateConversationSendFailedStatus:(BOOL)haveFailed
+                                 targetUid:(int64_t)targetUid {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET unsend_tag= %@ WHERE conversationid= %@", @(haveFailed), @(targetUid)];
+        [db executeUpdate:sqlStr];
+    }];
 }
 
 ///// 修改会话数据

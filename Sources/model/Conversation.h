@@ -49,8 +49,8 @@
 @property(nonatomic, copy) NSString *memberImg;
 /// 会话是否有草稿
 @property(nonatomic, copy) NSString *draft;
-/// 会话发送失败消息的uuid集合字符串，','分隔
-@property(nonatomic, copy) NSString *failedMessages;
+/// 会话是否有发送失败的消息
+@property(nonatomic, assign) BOOL unsendTag;
 /// 会话新消息条数
 @property(nonatomic) int newMsgCount;
 /// 会话时间
