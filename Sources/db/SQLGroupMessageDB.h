@@ -107,6 +107,10 @@
 /// @param targetUid 目标uid
 - (BOOL)clearMessagesWithTargetUid:(int64_t)targetUid;
 
+/// 通过uid获取当前会话最新的没有做删除的消息
+/// @param targetUid 目标uid
+- (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
+
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString*)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;

@@ -340,7 +340,7 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     NSString *uuidStr = [msgUUID hasContent] ? [NSString stringWithFormat:@"'%@'", msgUUID] : @"''";
     
     [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET content= %@, msguuid= %@, timestamp= %@, unreadcount= %@ WHERE conversationid= %@", contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
+        NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET content= %@, msguuid= %@, timestamp= %@, unreadcount= %@, is_callback= 0 WHERE conversationid= %@", contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
         [db executeUpdate:sqlStr];
     }];
 }
@@ -418,6 +418,28 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
 
     [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
         NSString *sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET unsend_tag= %@ WHERE conversationid= %@", @(haveFailed), @(targetUid)];
+        [db executeUpdate:sqlStr];
+    }];
+}
+
+/// 修改会话撤回状态数据
+/// @param uuids 消息uuid数组
+- (void)updateConversationCallBackStatusWithMsgUUIDs:(NSArray<NSString *> *)uuids {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        NSString *sqlStr = @"";
+        if (uuids.count > 0) {
+            NSMutableString *str = [[NSMutableString alloc] init];
+            [str appendString:@"("];
+            for (NSString *subStr in uuids) {
+                [str appendString:[NSString stringWithFormat:@"'%@', ", subStr]];
+            }
+            [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
+            [str appendString:@")"];
+            sqlStr = [NSString stringWithFormat:@"UPDATE gb_conversation SET is_self= 0, is_callback= 1 WHERE msguuid IN %@", str];
+        }
+        
         [db executeUpdate:sqlStr];
     }];
 }

@@ -547,6 +547,35 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return YES;
 }
 
+/// 通过uid获取当前会话最新的没有做删除的消息
+/// @param targetUid 目标uid
+- (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
+    FMDatabase *db = self.db;
+//    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = 1586920918308426275 AND deletetag = 0
+    NSString *sqlStr = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = %@ AND deletetag = 0", allColumns, @(targetUid)];
+    FMResultSet *rs = [db executeQuery:sqlStr];
+    
+    if ([rs next]) {
+        IMessage *msg = [[IMessage alloc] init];
+        [msg setSender:[rs longLongIntForColumn:@"sender"]];
+        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
+        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
+        [msg setFlags:[rs intForColumn:@"flags"]];
+        [msg setRawContent:[rs stringForColumn:@"content"]];
+        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
+        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
+        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
+        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
+        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
+        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
+        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        [rs close];
+        return msg;
+    }
+    [rs close];
+    return nil;
+}
+
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString*)uuid {
     FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM group_message WHERE uuid= ?", uuid];
