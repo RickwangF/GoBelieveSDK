@@ -108,6 +108,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param targetUid 目标会话uid
 - (Conversation *)getConversationWithTargetUid:(int64_t)targetUid;
 
+/// 修改会话失败状态
+/// @param haveFailed 是否有失败消息
+/// @param targetUid 目标会话uid
+- (void)updateConversationSendFailedStatus:(BOOL)haveFailed
+                                 targetUid:(int64_t)targetUid;
+
 ///// 修改会话数据
 ///// @param conversation 添加的会话
 //- (BOOL)amendConversation:(Conversation *)conversation;

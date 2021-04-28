@@ -15,8 +15,8 @@
 		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
 		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
 		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
-		5283F9872636B3AD0012C98F /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 5283F9862636B3AD0012C98F /* gobelieveConversation.db */; };
 		52B7AC90263517EF00E71A8C /* GBConversdationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversdationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 52BD5F8526392E9700560059 /* gobelieveConversation.db */; };
 		52EA091626299508003652B7 /* gobelieveSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA090C26299508003652B7 /* gobelieveSDK.framework */; };
 		52EA091B26299508003652B7 /* gobelieveSDKTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA091A26299508003652B7 /* gobelieveSDKTests.m */; };
 		52EA091D26299508003652B7 /* gobelieveSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA090F26299508003652B7 /* gobelieveSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -140,8 +140,8 @@
 		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
 		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
 		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
-		5283F9862636B3AD0012C98F /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
 		52B7AC8F263517BA00E71A8C /* GBConversdationIterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBConversdationIterator.h; sourceTree = "<group>"; };
+		52BD5F8526392E9700560059 /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
 		52E16E83EF7A47898428B326 /* Pods_gobelieveSDK_gobelieveSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_gobelieveSDK_gobelieveSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA090C26299508003652B7 /* gobelieveSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = gobelieveSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA090F26299508003652B7 /* gobelieveSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gobelieveSDK.h; sourceTree = "<group>"; };
@@ -458,7 +458,7 @@
 		52EA098B2629953C003652B7 /* imKitRes */ = {
 			isa = PBXGroup;
 			children = (
-				5283F9862636B3AD0012C98F /* gobelieveConversation.db */,
+				52BD5F8526392E9700560059 /* gobelieveConversation.db */,
 				52EA098C2629953C003652B7 /* gobelieve.db */,
 			);
 			path = imKitRes;
@@ -649,7 +649,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52EA09F72629953C003652B7 /* gobelieve.db in Resources */,
-				5283F9872636B3AD0012C98F /* gobelieveConversation.db in Resources */,
+				52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
