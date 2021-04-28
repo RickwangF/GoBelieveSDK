@@ -114,6 +114,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateConversationSendFailedStatus:(BOOL)haveFailed
                                  targetUid:(int64_t)targetUid;
 
+/// 修改会话撤回状态数据
+/// @param uuids 消息uuid数组
+- (void)updateConversationCallBackStatusWithMsgUUIDs:(NSArray<NSString *> *)uuids;
+
 ///// 修改会话数据
 ///// @param conversation 添加的会话
 //- (BOOL)amendConversation:(Conversation *)conversation;
