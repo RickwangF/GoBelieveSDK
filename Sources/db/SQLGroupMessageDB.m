@@ -38,7 +38,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (SQLGroupMessageIterator *)initWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp < ? ORDER BY timestamp DESC", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp < ? AND deletetag = 0 ORDER BY timestamp DESC", allColumns];
         self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;
@@ -47,7 +47,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (SQLGroupMessageIterator *)initBackwardWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp > ? ORDER BY timestamp ASC", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp > ? AND deletetag = 0 ORDER BY timestamp ASC", allColumns];
         self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;

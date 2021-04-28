@@ -31,7 +31,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     self = [super init];
     if (self) {
         // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = %@ AND timestamp < %@ ORDER BY timestamp DESC LIMIT 0,20", allColumns, @(peer), @(timeStamp)];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = %@ AND timestamp < %@ AND deletetag = 0 ORDER BY timestamp DESC LIMIT 0,20", allColumns, @(peer), @(timeStamp)];
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
@@ -43,7 +43,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = ? AND timestamp > ? ORDER BY timestamp ASC LIMIT 0,20", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE peer = ? AND timestamp > ? AND deletetag = 0 ORDER BY timestamp ASC LIMIT 0,20", allColumns];
         self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
     }
     return self;
