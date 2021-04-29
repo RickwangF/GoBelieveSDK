@@ -38,7 +38,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (SQLGroupMessageIterator *)initWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp < ? AND deletetag = 0 ORDER BY timestamp DESC", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND timestamp < %@ AND deletetag = 0 ORDER BY timestamp DESC", @(gid), @(timeStamp)];
         self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;
@@ -47,7 +47,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (SQLGroupMessageIterator *)initBackwardWithDB:(FMDatabase*)db gid:(int64_t)gid timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE group_id = ? AND timestamp > ? AND deletetag = 0 ORDER BY timestamp ASC", allColumns];
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND timestamp > %@ AND deletetag = 0 ORDER BY timestamp ASC", @(gid), @(timeStamp)];
         self.rs = [db executeQuery:sql, @(gid), @(timeStamp)];
     }
     return self;
@@ -178,7 +178,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 
 /// 存储消息
 /// @param msg 消息体
-- (BOOL)saveMessage:(IMessage*)msg {
+- (BOOL)saveMessage:(IMessage *)msg {
     return [self insertMessage:msg uid:msg.receiver];
 }
 
@@ -189,12 +189,17 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                   uid:(int64_t)uid {
     FMDatabase *db = self.db;
     [db beginTransaction];
-    
+    NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
+    if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] hasContent]) {
+        [msg setReadUUID:[NSString stringWithFormat:@"%@", dic[@"msg_uuid"]]];
+    }
     BOOL haveMessage = NO;
     FMResultSet *selectResult = [db executeQuery:@"SELECT readuuid FROM group_message WHERE group_id = ? AND readuuid = ?", @(uid), msg.readUUID];
     if (selectResult.next) {
         haveMessage = YES;
     }
+    [selectResult close];
     
     if (haveMessage == NO) {
         //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
@@ -219,6 +224,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         result = [db commit];
         return result;
     }
+    [db commit];
     return NO;
 }
 
@@ -245,6 +251,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     FMDatabase *db = self.db;
     FMResultSet *rs = [db executeQuery:@"SELECT flags FROM group_message WHERE readuuid=?", uuid];
     if (!rs) {
+        [rs close];
         return NO;
     }
     if ([rs next]) {
@@ -273,12 +280,13 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     FMDatabase *db = self.db;
     FMResultSet *rs = [db executeQuery:@"SELECT haveread FROM group_message WHERE readuuid=?", uuid];
     if (!rs) {
+        [rs close];
         return NO;
     }
     if ([rs next]) {
         int flags = [rs intForColumn:@"haveread"];
         flags |= 1;
-
+        
         BOOL r = [db executeUpdate:@"UPDATE group_message SET haveread= ? WHERE readuuid= ?", @(flags), uuid];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
@@ -295,7 +303,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)gid {
     FMDatabase *db = self.db;
     NSMutableArray *failedArr = [[NSMutableArray alloc] init];
-    FMResultSet *rs = [db executeQuery:@"SELECT ? FROM group_message WHERE flags=? AND group_id=?", allColumns, @(MESSAGE_FLAG_FAILURE), @(gid)];
+    FMResultSet *rs = [db executeQuery:@"SELECT * FROM group_message WHERE flags=? AND group_id=?", @(MESSAGE_FLAG_FAILURE), @(gid)];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
@@ -312,6 +320,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
         [failedArr addObject:msg];
     }
+    [rs close];
     return failedArr;
 }
 
@@ -320,7 +329,6 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (BOOL)updateCallbackUUIDS:(NSArray *)uuids {
     if (uuids.count > 0) {
         FMDatabase *db = self.db;
-        [db beginTransaction];
         NSString *sqlStr;
         if (uuids.count > 0) {
             NSMutableString *str = [[NSMutableString alloc] init];
@@ -349,7 +357,6 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (BOOL)updateDeleteUUIDS:(NSArray *)uuids {
     if (uuids.count > 0) {
         FMDatabase *db = self.db;
-        [db beginTransaction];
         NSString *sqlStr;
         NSMutableString *str = [[NSMutableString alloc] init];
         [str appendString:@"("];
@@ -378,7 +385,6 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                         sender:(int64_t)sender {
     if (uuids.count > 0) {
         FMDatabase *db = self.db;
-        [db beginTransaction];
         NSString *sqlStr;
         
         NSMutableString *str = [[NSMutableString alloc] init];
@@ -388,7 +394,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         }
         [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
         [str appendString:@")"];
-        sqlStr = [NSString stringWithFormat:@"UPDATE group_message SET haveread= %d WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %lld", 1, str, sender];
+        sqlStr = [NSString stringWithFormat:@"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %@", @(1), str, @(sender)];
         
         BOOL r = [db executeUpdate:sqlStr];
         if (!r) {
@@ -425,7 +431,36 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 /// @param keyword 关键字
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword {
     FMDatabase *db = self.db;
-    NSString *selectStr = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE content LIKE '%%%@%%'", allColumns, keyword];
+    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE content LIKE '%%%@%%'", keyword];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [[IMessage alloc] init];
+        [msg setSender:[rs longLongIntForColumn:@"sender"]];
+        [msg setReceiver:[rs longLongIntForColumn:@"group_id"]];
+        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
+        [msg setFlags:[rs intForColumn:@"flags"]];
+        [msg setRawContent:[rs stringForColumn:@"content"]];
+        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
+        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
+        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
+        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
+        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
+        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
+        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+/// 获取目标下包含关键字的消息
+/// @param keyword 关键字
+/// @param targetUid targetUid
+- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword
+                                            targetUid:(int64_t)targetUid {
+    FMDatabase *db = self.db;
+    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE content LIKE '%%%@%%' AND group_id = %@", keyword, @(targetUid)];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -533,6 +568,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         BOOL addDH = [db executeUpdate:@"ALTER TABLE group_message ADD deletetag"];
         NSLog(@"插入deletetag列%@", addDH == YES ? @"成功" : @"失败");
     }
+    [result close];
 }
 
 /// 清除消息数据
@@ -552,13 +588,13 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
 //    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = 1586920918308426275 AND deletetag = 0
-    NSString *sqlStr = [NSString stringWithFormat:@"SELECT %@ FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = %@ AND deletetag = 0", allColumns, @(targetUid)];
+    NSString *sqlStr = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE timestamp= (SELECT MAX(timestamp) FROM group_message WHERE deletetag = 0 AND group_id = %@)", @(targetUid)];
     FMResultSet *rs = [db executeQuery:sqlStr];
     
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
+        [msg setReceiver:[rs longLongIntForColumn:@"group_id"]];
         [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
         [msg setFlags:[rs intForColumn:@"flags"]];
         [msg setRawContent:[rs stringForColumn:@"content"]];
