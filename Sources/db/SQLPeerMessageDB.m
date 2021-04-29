@@ -235,6 +235,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         result = [db commit];
         return result;
     }
+    [db commit];
     return NO;
 }
 
@@ -314,7 +315,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param uid targetUid
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)uid {
     FMDatabase *db = self.db;
-    [db beginTransaction];
     NSMutableArray *failedArr = [[NSMutableArray alloc] init];
     FMResultSet *rs = [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?", @(MESSAGE_FLAG_FAILURE), @(uid)];
     if ([rs next]) {
@@ -333,7 +333,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
         [failedArr addObject:msg];
     }
-    [db commit];
     [rs close];
     return failedArr;
 }
@@ -604,7 +603,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
-    [db beginTransaction];
 //    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = 1586920918308426275 AND deletetag = 0
     NSString *sqlStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message WHERE deletetag = 0 AND peer = %@)", @(targetUid)];
     FMResultSet *rs = [db executeQuery:sqlStr];
