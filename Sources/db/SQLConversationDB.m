@@ -426,7 +426,7 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
 /// @param uuids 消息uuid数组
 - (void)updateConversationCallBackStatusWithMsgUUIDs:(NSArray<NSString *> *)uuids {
     FMDatabaseQueue *queue = self.dbQueue;
-
+    
     [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
         NSString *sqlStr = @"";
         if (uuids.count > 0) {
