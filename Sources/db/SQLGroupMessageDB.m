@@ -686,35 +686,6 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return [self gobelieveAddFlag:msg flag:MESSAGE_FLAG_FAILURE];
 }
 
-/// 获取目标下包含关键字的消息
-/// @param keyword 关键字
-/// @param targetUid targetUid
-- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid {
-    FMDatabase *db = self.db;
-    NSString *selectStr = [NSString stringWithFormat:@"SELECT %@ FROM group_message WHERE content LIKE '%%%@%%' AND group_id = %lld", allColumns, keyword, targetUid];
-    FMResultSet *rs = [db executeQuery:selectStr];
-    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
-    while ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"group_id"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
-        [messageArr addObject:msg];
-    }
-    [rs close];
-    return messageArr;
-}
-
-
 -(BOOL)gobelieveAddFlag:(NSInteger)msgLocalID flag:(int)f {
     FMDatabase *db = self.db;
     FMResultSet *rs = [db executeQuery:@"SELECT flags FROM group_message WHERE id=?", @(msgLocalID)];
