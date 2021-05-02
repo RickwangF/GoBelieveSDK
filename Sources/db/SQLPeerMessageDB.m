@@ -731,29 +731,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return YES;
 }
 
-/// 获取指定消息的前两条开始往后面的17条数据和前面2条数据，总的20 条数据
+/// 获取指定消息的前两条开始往后面的20条数据
 /// @param conversationID 聊天会话id
 /// @param uuid 消息唯一标识符
 - (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid {
     FMDatabase *db = self.db;
     // 前两条数据和后18条数据合并，最后按时间升序排序
-//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM peer_message\
-//                           WHERE peer = ?\
-//                           AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = ? AND readuuid = ?)\
-//                           AND deletetag = 0\
-//                           ORDER BY timestamp\
-//                           DESC\
-//                           LIMIT 0,2)\
-//                           UNION\
-//                           SELECT * FROM (SELECT * FROM peer_message\
-//                           WHERE peer = ?\
-//                           AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = ? AND readuuid = ?)\
-//                           AND deletetag = 0\
-//                           ORDER BY timestamp\
-//                           ASC\
-//                           LIMIT 0,18)\
-//                           ORDER BY timestamp\
-//                           ASC"];
     NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM peer_message\
                            WHERE peer = %@\
                            AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
@@ -761,17 +744,14 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
                            ORDER BY timestamp\
                            DESC\
                            LIMIT 0,2)\
-                           \
                            union\
-                           \
                            SELECT * FROM (SELECT * FROM peer_message \
                            WHERE peer = %@\
                            AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
                            AND deletetag = 0\
                            ORDER BY timestamp\
                            ASC\
-                           LIMIT 0,20)\
-                           \
+                           LIMIT 0,18)\
                            ORDER BY timestamp\
                            ASC", @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
 
