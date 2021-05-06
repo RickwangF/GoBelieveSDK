@@ -1,6 +1,0 @@
-framework module Pods_gobelieveSDK_gobelieveSDKTests {
-  umbrella header "Pods-gobelieveSDK-gobelieveSDKTests-umbrella.h"
-
-  export *
-  module * { export * }
-}
