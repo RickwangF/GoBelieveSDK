@@ -16,7 +16,7 @@
 		52EA0A2A262996EF003652B7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA0A29262996EF003652B7 /* main.m */; };
 		52EA0A34262996EF003652B7 /* ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA0A33262996EF003652B7 /* ExampleTests.m */; };
 		52EA0A3F262996EF003652B7 /* ExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA0A3E262996EF003652B7 /* ExampleUITests.m */; };
-		52EA0A5526299759003652B7 /* gobelieveSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA0A5426299759003652B7 /* gobelieveSDK.framework */; };
+		52EA0A5526299759003652B7 /* Gobelieve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA0A5426299759003652B7 /* Gobelieve.framework */; };
 		CDD0002AF3EDCF240CA37F03 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8351669D8EB76EFD67B404B7 /* Pods_Example.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,7 +57,7 @@
 		52EA0A3A262996EF003652B7 /* ExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA0A3E262996EF003652B7 /* ExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleUITests.m; sourceTree = "<group>"; };
 		52EA0A40262996EF003652B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52EA0A5426299759003652B7 /* gobelieveSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = gobelieveSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		52EA0A5426299759003652B7 /* Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8351669D8EB76EFD67B404B7 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BCAD0DFDAFD9CADAE56DC3D /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -67,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				52EA0A5526299759003652B7 /* gobelieveSDK.framework in Frameworks */,
+				52EA0A5526299759003652B7 /* Gobelieve.framework in Frameworks */,
 				CDD0002AF3EDCF240CA37F03 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,7 +160,7 @@
 		52EA0A5326299759003652B7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				52EA0A5426299759003652B7 /* gobelieveSDK.framework */,
+				52EA0A5426299759003652B7 /* Gobelieve.framework */,
 				8351669D8EB76EFD67B404B7 /* Pods_Example.framework */,
 			);
 			name = Frameworks;

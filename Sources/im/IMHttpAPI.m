@@ -180,7 +180,7 @@ static NSString * AFCreateMultipartFormBoundary() {
     return request;
 }
 
-+(NSOperation*)bindDeviceToken:(NSString*)deviceToken success:(void (^)())success fail:(void (^)())fail {
++(NSOperation*)bindDeviceToken:(NSString*)deviceToken success:(void (^)(void))success fail:(void (^)(void))fail {
     IMHttpOperation *request = [IMHttpOperation httpOperationWithTimeoutInterval:60];
     request.targetURL = [[IMHttpAPI instance].apiURL stringByAppendingString:@"/device/bind"];
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -211,7 +211,7 @@ static NSString * AFCreateMultipartFormBoundary() {
 }
 
 
-+(NSOperation*)unbindDeviceToken:(NSString*)deviceToken pushKitToken:(NSString*)pushKitToken success:(void (^)())success fail:(void (^)())fail {
++(NSOperation*)unbindDeviceToken:(NSString*)deviceToken pushKitToken:(NSString*)pushKitToken success:(void (^)(void))success fail:(void (^)(void))fail {
     IMHttpOperation *request = [IMHttpOperation httpOperationWithTimeoutInterval:60];
     request.targetURL = [[IMHttpAPI instance].apiURL stringByAppendingString:@"/device/unbind"];
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -246,7 +246,7 @@ static NSString * AFCreateMultipartFormBoundary() {
     return request;
 }
 
-+(NSOperation*)openGroupNotification:(int64_t)group_id success:(void (^)())success fail:(void (^)())fail {
++(NSOperation*)openGroupNotification:(int64_t)group_id success:(void (^)(void))success fail:(void (^)(void))fail {
     IMHttpOperation *request = [IMHttpOperation httpOperationWithTimeoutInterval:60];
     
     request.targetURL = [NSString stringWithFormat:@"%@/notification/groups/%lld", [IMHttpAPI instance].apiURL, group_id];
@@ -275,7 +275,7 @@ static NSString * AFCreateMultipartFormBoundary() {
     return request;
 }
 
-+(NSOperation*)closeGroupNotification:(int64_t)group_id success:(void (^)())success fail:(void (^)())fail {
++(NSOperation*)closeGroupNotification:(int64_t)group_id success:(void (^)(void))success fail:(void (^)(void))fail {
     IMHttpOperation *request = [IMHttpOperation httpOperationWithTimeoutInterval:60];
     
     request.targetURL = [NSString stringWithFormat:@"%@/notification/groups/%lld", [IMHttpAPI instance].apiURL, group_id];
@@ -306,7 +306,7 @@ static NSString * AFCreateMultipartFormBoundary() {
     return request;
 }
 
-+(NSOperation*)createGroup:(NSString*)groupName master:(int64_t)master members:(NSArray*)members success:(void (^)(int64_t))success fail:(void (^)())fail {
++(NSOperation*)createGroup:(NSString*)groupName master:(int64_t)master members:(NSArray*)members success:(void (^)(int64_t))success fail:(void (^)(void))fail {
     IMHttpOperation *request = [IMHttpOperation httpOperationWithTimeoutInterval:60];
     request.targetURL = [[IMHttpAPI instance].apiURL stringByAppendingString:@"/groups"];
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];

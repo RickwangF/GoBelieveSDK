@@ -7,7 +7,7 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = 'gobelieveSDK'
+  s.name             = 'Gobelieve'
   s.version          = '1.0.0'
   s.summary          = 'gobelieve'
 

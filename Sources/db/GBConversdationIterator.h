@@ -1,6 +1,6 @@
 //
 //  GBConversdationIterator.h
-//  gobelieveSDK
+//  Gobelieve
 //
 //  Created by ch999 on 2021/4/25.
 //

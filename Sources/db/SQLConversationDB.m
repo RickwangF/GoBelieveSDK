@@ -1,6 +1,6 @@
 //
 //  SQLConversationDB.m
-//  gobelieveSDK
+//  Gobelieve
 //
 //  Created by ch999 on 2021/4/19.
 //
@@ -122,9 +122,7 @@ static const NSString *converAllColumns = @"conversationid, avatar, nickname, ti
     static SQLConversationDB *m;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if (!m) {
-            m = [[SQLConversationDB alloc] init];
-        }
+        m = [[SQLConversationDB alloc] init];
     });
     return m;
 }

@@ -2,13 +2,13 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:gobelieveSDK.podspec">
+      location = "group:Gobelieve.podspec">
    </FileRef>
    <FileRef
       location = "group:Example/Example.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:gobelieveSDK.xcodeproj">
+      location = "group:Gobelieve.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
