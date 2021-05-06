@@ -731,6 +731,52 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return YES;
 }
 
+/// 获取指定消息的前两条开始往后面的20条数据
+/// @param conversationID 聊天会话id
+/// @param uuid 消息唯一标识符
+- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid {
+    FMDatabase *db = self.db;
+    // 前两条数据和后18条数据合并，最后按时间升序排序
+    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM peer_message\
+                           WHERE peer = %@\
+                           AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
+                           AND deletetag = 0\
+                           ORDER BY timestamp\
+                           DESC\
+                           LIMIT 0,2)\
+                           union\
+                           SELECT * FROM (SELECT * FROM peer_message \
+                           WHERE peer = %@\
+                           AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
+                           AND deletetag = 0\
+                           ORDER BY timestamp\
+                           ASC\
+                           LIMIT 0,18)\
+                           ORDER BY timestamp\
+                           ASC", @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
+
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [[IMessage alloc] init];
+        [msg setSender:[rs longLongIntForColumn:@"sender"]];
+        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
+        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
+        [msg setFlags:[rs intForColumn:@"flags"]];
+        [msg setRawContent:[rs stringForColumn:@"content"]];
+        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
+        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
+        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
+        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
+        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
+        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
+        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
 //- (BOOL)checkHaveFailedMessageUid:(int64_t)uid {
 //    FMDatabase *db = self.db;
 //    BOOL haveFailed = NO;
@@ -1182,6 +1228,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //
 //    return backMessages;
 //}
+
 //
 //-(BOOL)eraseMessageFailure:(NSInteger)msgLocalID {
 //    FMDatabase *db = self.db;

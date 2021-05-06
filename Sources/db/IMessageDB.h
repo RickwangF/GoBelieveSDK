@@ -21,6 +21,11 @@
 /// @param timeStamp unix时间
 - (id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
 
+/// 获取指定消息的前两条开始往后面的17条数据和前面2条数据，总的20 条数据
+/// @param conversationID 聊天会话id
+/// @param uuid 消息唯一标识符
+- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid;
+
 /// 获取单条消息
 /// @param uuid 消息唯一标识
 - (IMessage *)getMessage:(NSString *)uuid;
