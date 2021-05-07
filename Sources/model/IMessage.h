@@ -65,11 +65,11 @@ typedef NS_ENUM(NSUInteger, GBChatSendStatus) {
 @property(nonatomic, readonly) MessageImageContent *imageContent;
 @property(nonatomic, readonly) MessageLocationContent *locationContent;
 @property(nonatomic, readonly) MessageLinkContent *linkContent;
-@property(nonatomic, readonly) MessageVOIPContent *voipContent;
-@property(nonatomic, readonly) MessageGroupVOIPContent *groupVOIPContent;
-@property(nonatomic, readonly) MessageTimeBaseContent *timeBaseContent;
-@property(nonatomic, readonly) MessageNotificationContent *notificationContent;
-@property(nonatomic, readonly) MessageGroupNotificationContent *groupNotificationContent;
+@property(nonatomic, readonly) MessageVOIP *voipContent;
+@property(nonatomic, readonly) MessageGroupVOIP *groupVOIPContent;
+@property(nonatomic, readonly) MessageTimeBase *timeBaseContent;
+@property(nonatomic, readonly) MessageNotification *notificationContent;
+@property(nonatomic, readonly) MessageGroupNotification *groupNotificationContent;
 @property(nonatomic, readonly) MessageP2PSession *p2pSessionContent;
 @property(nonatomic, readonly) MessageSecret *secretContent;
 @property(nonatomic, readonly) MessageVideo *videoContent;

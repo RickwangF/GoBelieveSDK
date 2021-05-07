@@ -8,11 +8,9 @@
 #import <Foundation/Foundation.h>
 #import "MessageNotification.h"
 
-@interface MessageTimeBase : MessageNotificationContent
+@interface MessageTimeBase : MessageNotification
 @property(nonatomic, readonly) NSInteger timestamp;
 
 -(id)initWithTimestamp:(NSInteger)ts;
 
 @end
-
-typedef MessageTimeBase MessageTimeBaseContent;

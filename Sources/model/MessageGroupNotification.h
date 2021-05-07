@@ -16,7 +16,7 @@
 #define NOTIFICATION_GROUP_NAME_UPDATED 5
 #define NOTIFICATION_GROUP_NOTICE_UPDATED 6
 
-@interface MessageGroupNotification : MessageNotificationContent
+@interface MessageGroupNotification : MessageNotification
 
 @property(nonatomic) int notificationType;
 
@@ -40,7 +40,3 @@
 -(id)initWithNotification:(NSString*)raw;
 
 @end
-
-typedef MessageGroupNotification MessageGroupNotificationContent;
-
-

@@ -11,9 +11,12 @@
 
 @interface NSString (JSMessagesView)
 
+@property (nonatomic, assign, readonly) BOOL isEmpty;
+@property (nonatomic, assign, readonly) BOOL isNotEmpty;
+
 - (NSString *)trimWhitespace;
 - (NSUInteger)numberOfLines;
 //在所有中文字符后面添加一个空格
 - (NSString*)tokenizer;
-- (BOOL)hasContent;
+
 @end

@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2014-2015, GoBelieve
  All rights reserved.
- 
+
  This source code is licensed under the BSD-style license found in the
  LICENSE file in the root directory of this source tree. An additional grant
  of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Foundation/Foundation.h>
 #import "IMessage.h"
 #import "IMessageIterator.h"
 
+#import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
 @interface SQLPeerMessageDB : NSObject
@@ -34,13 +34,12 @@
 
 /// 存储消息
 /// @param msg 消息体
-- (BOOL)saveMessage:(IMessage*)msg;
+- (BOOL)saveMessage:(IMessage *)msg;
 
 /// 保存消息至数据库
 /// @param msg 消息体
 /// @param uid 消息保存uid
-- (BOOL)insertMessage:(IMessage*)msg
-                  uid:(int64_t)uid;
+- (BOOL)insertMessage:(IMessage *)msg uid:(int64_t)uid;
 
 /// 标记消息失败
 /// @param uuid 消息唯一标识
@@ -53,8 +52,7 @@
 /// 修改消息失败状态
 /// @param uuid 消息唯一标识
 /// @param timestamp 时间
-- (BOOL)eraseMessageFailure:(NSString *)uuid
-                  timestamp:(int64_t)timestamp;
+- (BOOL)eraseMessageFailure:(NSString *)uuid timestamp:(int64_t)timestamp;
 
 /// 修改消息读取状态
 /// @param uuid 消息唯一标识
@@ -75,18 +73,14 @@
 /// 批量更新发送者的消息已读状态
 /// @param uuids 未读消息uuid数组
 /// @param sender 发送者
-- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids
-                        sender:(int64_t)sender;
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender;
 
 /// 更新消息宽高以及行高
 /// @param width 消息宽度
 /// @param height 消息高度
 /// @param lineHeight 消息行高
 /// @param uuid 消息唯一标识
-- (BOOL)updateMessageWidth:(float)width
-                    height:(float)height
-                lineHeight:(float)lineHeight
-                   msgUUID:(NSString *)uuid;
+- (BOOL)updateMessageWidth:(float)width height:(float)height lineHeight:(float)lineHeight msgUUID:(NSString *)uuid;
 
 /// 获取包含关键字的消息
 /// @param keyword 关键字
@@ -95,8 +89,7 @@
 /// 获取目标下包含关键字的消息
 /// @param keyword 关键字
 /// @param targetUid targetUid
-- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword
-                                            targetUid:(int64_t)targetUid;
+- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid;
 
 /// 手动检查是否有自定义添加字段
 - (void)checkHaveManualColumn;
@@ -110,7 +103,7 @@
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
 #pragma mark - gobelieve handler method
-- (int)gobelieveGetMessageId:(NSString*)uuid;
+- (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags;
 - (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(NSString *)content;

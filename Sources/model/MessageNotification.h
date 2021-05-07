@@ -11,6 +11,3 @@
 @interface MessageNotification : MessageContent
 @property(nonatomic, copy) NSString *notificationDesc;
 @end
-
-
-typedef MessageNotification MessageNotificationContent;

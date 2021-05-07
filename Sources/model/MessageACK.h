@@ -9,7 +9,7 @@
 #import "MessageNotification.h"
 
 
-@interface MessageACK : MessageNotificationContent
+@interface MessageACK : MessageNotification
 -(id)initWithError:(int)err;
 
 @property(nonatomic, readonly) int error;

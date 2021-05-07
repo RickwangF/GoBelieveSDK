@@ -1,37 +1,37 @@
 #import "SQLPeerMessageDB.h"
+
 #import "NSString+JSMessagesView.h"
 
-static const NSString *allColumns = @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content";
+static const NSString *allColumns = @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
+                                    @"lineheight, callback, deletetag, content";
 
-@interface SQLPeerMessageIterator : NSObject<IMessageIterator>
+@interface SQLPeerMessageIterator : NSObject <IMessageIterator>
 
 //-(SQLPeerMessageIterator*)initWithDB:(FMDatabase*)db peer:(int64_t)peer secret:(BOOL)secret;
 //
 //-(SQLPeerMessageIterator*)initWithDB:(FMDatabase*)db peer:(int64_t)peer position:(int)msgID secret:(BOOL)secret;
 
-- (SQLPeerMessageIterator *)initWithDB:(FMDatabase*)db
-                                  peer:(int64_t)peer
-                             timeStamp:(NSInteger)timeStamp;
+- (SQLPeerMessageIterator *)initWithDB:(FMDatabase *)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp;
 
-- (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase*)db
-                                          peer:(int64_t)peer
-                                     timeStamp:(NSInteger)timeStamp;
+- (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase *)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp;
 
 @property(nonatomic, strong) FMResultSet *rs;
 @end
 
 @implementation SQLPeerMessageIterator
 
-//thread safe problem
--(void)dealloc {
+// thread safe problem
+- (void)dealloc {
     [self.rs close];
 }
 
-- (SQLPeerMessageIterator *)initWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
+- (SQLPeerMessageIterator *)initWithDB:(FMDatabase *)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
         // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND timestamp < %@ AND deletetag = 0 ORDER BY timestamp DESC LIMIT 0,20", @(peer), @(timeStamp)];
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND timestamp < %@ AND "
+                                                   @"deletetag = 0 ORDER BY timestamp DESC LIMIT 0,20",
+                                                   @(peer), @(timeStamp)];
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
@@ -40,10 +40,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return self;
 }
 
-- (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
+- (SQLPeerMessageIterator *)initBackwardWithDB:(FMDatabase *)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
     self = [super init];
     if (self) {
-        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND timestamp > %@ AND deletetag = 0 ORDER BY timestamp ASC LIMIT 0,20", @(peer), @(timeStamp)];
+        NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND timestamp > %@ AND "
+                                                   @"deletetag = 0 ORDER BY timestamp ASC LIMIT 0,20",
+                                                   @(peer), @(timeStamp)];
         self.rs = [db executeQuery:sql];
     }
     return self;
@@ -53,8 +55,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //    self = [super init];
 //    if (self) {
 //        int s = secret ? 1 : 0;
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? ORDER BY id DESC";
-//        self.rs = [db executeQuery:sql, @(peer), @(s)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? ORDER BY
+//        id DESC"; self.rs = [db executeQuery:sql, @(peer), @(s)];
 //    }
 //    return self;
 //}
@@ -63,8 +66,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //-(SQLPeerMessageIterator*)initForwardWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
 //    self = [super init];
 //    if (self) {
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND timestamp < ? ORDER BY timestamp DESC";
-//        self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND timestamp < ? ORDER
+//        BY timestamp DESC"; self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
 //    }
 //    return self;
 //}
@@ -73,8 +77,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //    self = [super init];
 //    if (self) {
 //        int s = secret ? 1 : 0;
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id < ? ORDER BY id DESC";
-//        self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id <
+//        ? ORDER BY id DESC"; self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID)];
 //    }
 //    return self;
 //}
@@ -83,8 +88,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //    self = [super init];
 //    if (self) {
 //        int s = secret ? 1 : 0;
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id > ? AND id < ? ORDER BY id DESC";
-//        self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID-10), @(msgID+10)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id >
+//        ? AND id < ? ORDER BY id DESC"; self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID-10), @(msgID+10)];
 //    }
 //    return self;
 //}
@@ -92,8 +98,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //-(SQLPeerMessageIterator*)initBackwardWithDB:(FMDatabase*)db peer:(int64_t)peer timeStamp:(NSInteger)timeStamp {
 //    self = [super init];
 //    if (self) {
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND timestamp > ? ORDER BY timestamp ASC";
-//        self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND timestamp > ? ORDER
+//        BY timestamp ASC"; self.rs = [db executeQuery:sql, @(peer), @(timeStamp)];
 //    }
 //    return self;
 //}
@@ -103,8 +110,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //    self = [super init];
 //    if (self) {
 //        int s = secret ? 1 : 0;
-//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id>? ORDER BY id";
-//        self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID)];
+//        NSString *sql = @"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight,
+//        cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? AND id>?
+//        ORDER BY id"; self.rs = [db executeQuery:sql, @(peer), @(s), @(msgID)];
 //    }
 //    return self;
 //}
@@ -158,8 +166,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 
 @end
 
-
-
 @implementation SQLPeerMessageDB
 /// 获取单条消息
 /// @param uuid 消息唯一标识
@@ -196,42 +202,48 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 保存消息至数据库
 /// @param msg 消息体
 /// @param uid 消息保存uid
-- (BOOL)insertMessage:(IMessage *)msg
-                  uid:(int64_t)uid {
+- (BOOL)insertMessage:(IMessage *)msg uid:(int64_t)uid {
     FMDatabase *db = self.db;
     [db beginTransaction];
     NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
-    if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] hasContent]) {
+    if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] isNotEmpty]) {
         [msg setReadUUID:[NSString stringWithFormat:@"%@", dic[@"msg_uuid"]]];
     }
     BOOL haveMessage = NO;
-    FMResultSet *selectResult = [db executeQuery:@"SELECT readuuid FROM peer_message WHERE peer = ? AND readuuid = ?", @(uid), msg.readUUID];
+    FMResultSet *selectResult =
+        [db executeQuery:@"SELECT readuuid FROM peer_message WHERE peer = ? AND readuuid = ?", @(uid), msg.readUUID];
     if (selectResult.next) {
-        haveMessage = YES;        
+        haveMessage = YES;
     }
     [selectResult close];
-    
+
     if (haveMessage == NO) {
-        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content"
-        NSString *readuuid = [msg.readUUID hasContent] ? msg.readUUID : @"";
-        NSString *content = [msg.rawContent hasContent] ? msg.rawContent : @"";
-        BOOL result = [db executeUpdate:@"INSERT INTO peer_message (peer, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
-        
+        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback,
+        //    deletetag, content"
+        NSString *readuuid = [msg.readUUID isNotEmpty] ? msg.readUUID : @"";
+        NSString *content = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
+        BOOL result = [db
+            executeUpdate:
+                @"INSERT INTO peer_message (peer, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, "
+                @"cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid,
+                @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
+
         if (!result) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             [db rollback];
             return NO;
         }
-        
+
         int64_t rowID = [self.db lastInsertRowId];
         msg.msgId = rowID;
-        
+
         if (msg.textContent) {
             NSString *text = [msg.textContent.text tokenizer];
             [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
         }
-        
+
         result = [db commit];
         return result;
     }
@@ -254,9 +266,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 修改消息失败状态
 /// @param uuid 消息唯一标识
 /// @param timestamp 时间
-- (BOOL)eraseMessageFailure:(NSString *)uuid
-                  timestamp:(int64_t)timestamp {
-    if ([uuid hasContent] == NO) {
+- (BOOL)eraseMessageFailure:(NSString *)uuid timestamp:(int64_t)timestamp {
+    if ([uuid isNotEmpty] == NO) {
         return NO;
     }
     FMDatabase *db = self.db;
@@ -271,7 +282,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         int f = MESSAGE_FLAG_FAILURE;
         flags &= ~f;
 
-        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ?, timestamp= ? WHERE readuuid= ?", @(flags), @(timestamp), uuid];
+        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ?, timestamp= ? WHERE readuuid= ?", @(flags),
+                                   @(timestamp), uuid];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             [rs close];
@@ -286,7 +298,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 修改消息读取状态
 /// @param uuid 消息唯一标识
 - (BOOL)markMesageHaveRead:(NSString *)uuid {
-    if ([uuid hasContent] == NO) {
+    if ([uuid isNotEmpty] == NO) {
         return NO;
     }
     FMDatabase *db = self.db;
@@ -316,7 +328,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)uid {
     FMDatabase *db = self.db;
     NSMutableArray *failedArr = [[NSMutableArray alloc] init];
-    FMResultSet *rs = [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?", @(MESSAGE_FLAG_FAILURE), @(uid)];
+    FMResultSet *rs =
+        [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?", @(MESSAGE_FLAG_FAILURE), @(uid)];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
@@ -351,7 +364,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
             }
             [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
             [str appendString:@")"];
-            sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET callback= %@ WHERE readuuid IN %@", @(1), str];
+            sqlStr =
+                [NSString stringWithFormat:@"UPDATE peer_message SET callback= %@ WHERE readuuid IN %@", @(1), str];
         }
 
         BOOL r = [db executeUpdate:sqlStr];
@@ -359,7 +373,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
             NSLog(@"error = %@", [db lastErrorMessage]);
             return NO;
         }
-    }else{
+    } else {
         return NO;
     }
     return YES;
@@ -385,7 +399,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
             NSLog(@"error = %@", [db lastErrorMessage]);
             return NO;
         }
-    }else{
+    } else {
         return NO;
     }
     return YES;
@@ -394,12 +408,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 批量更新发送者的消息已读状态
 /// @param uuids 未读消息uuid数组
 /// @param sender 发送者
-- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids
-                        sender:(int64_t)sender {
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender {
     if (uuids.count > 0) {
         FMDatabase *db = self.db;
         NSString *sqlStr;
-        
+
         NSMutableString *str = [[NSMutableString alloc] init];
         [str appendString:@"("];
         for (NSString *subStr in uuids) {
@@ -407,15 +420,18 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         }
         [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
         [str appendString:@")"];
-        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %@", @(1), str, @(sender)];
-        
+        sqlStr = [NSString
+            stringWithFormat:
+                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %@", @(1),
+                str, @(sender)];
+
         BOOL r = [db executeUpdate:sqlStr];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             return NO;
         }
         return YES;
-    }else{
+    } else {
         return NO;
     }
 }
@@ -425,13 +441,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param height 消息高度
 /// @param lineHeight 消息行高
 /// @param uuid 消息唯一标识
-- (BOOL)updateMessageWidth:(float)width
-                    height:(float)height
-                lineHeight:(float)lineHeight
-                   msgUUID:(NSString *)uuid {
+- (BOOL)updateMessageWidth:(float)width height:(float)height lineHeight:(float)lineHeight msgUUID:(NSString *)uuid {
     FMDatabase *db = self.db;
 
-    BOOL r = [db executeUpdate:@"UPDATE peer_message SET cacheheight= ?, cachewidth= ?, lineheight= ? WHERE readuuid= ?", @(height), @(width), @(lineHeight), uuid];
+    BOOL r =
+        [db executeUpdate:@"UPDATE peer_message SET cacheheight= ?, cachewidth= ?, lineheight= ? WHERE readuuid= ?",
+                          @(height), @(width), @(lineHeight), uuid];
     if (!r) {
         NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;
@@ -444,7 +459,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param keyword 关键字
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword {
     FMDatabase *db = self.db;
-    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%'", keyword];
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%'", keyword];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -470,10 +486,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 获取目标下包含关键字的消息
 /// @param keyword 关键字
 /// @param targetUid targetUid
-- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword
-                                            targetUid:(int64_t)targetUid {
+- (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
-    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%' AND peer = %@", keyword, @(targetUid)];
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%' AND peer = %@", keyword,
+                                   @(targetUid)];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -497,7 +514,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 }
 
 - (BOOL)addFlag:(NSString *)uuid flag:(int)f {
-    if ([uuid hasContent] == NO) {
+    if ([uuid isNotEmpty] == NO) {
         return NO;
     }
     FMDatabase *db = self.db;
@@ -510,7 +527,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         int flags = [rs intForColumn:@"flags"];
         flags |= f;
 
-
         BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE readuuid= ?", @(flags), uuid];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
@@ -522,7 +538,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     [rs close];
     return YES;
 }
-
 
 /// 根据最新时间进行消息降序查询
 /// @param conversationID targetUid
@@ -547,21 +562,22 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     BOOL haveCallBack = NO;
     BOOL haveDeleteMessage = NO;
     FMResultSet *result = [db executeQuery:@"SELECT * FROM group_message"];
-    for (int i = 0; i<[result columnCount]; i++) {
-        NSString * columnName = [result columnNameForIndex:i];
+    for (int i = 0; i < [result columnCount]; i++) {
+        NSString *columnName = [result columnNameForIndex:i];
         if ([columnName containsString:@"cacheheight"]) {
             haveCacheHeight = YES;
-        }else if ([columnName containsString:@"cachewidth"]) {
+        } else if ([columnName containsString:@"cachewidth"]) {
             haveCacheWidth = YES;
-        }else if ([columnName containsString:@"lineheight"]) {
+        } else if ([columnName containsString:@"lineheight"]) {
             haveLineHeight = YES;
-        }else if ([columnName containsString:@"callback"]) {
+        } else if ([columnName containsString:@"callback"]) {
             haveCallBack = YES;
-        }else if ([columnName containsString:@"deletetag"]) {
+        } else if ([columnName containsString:@"deletetag"]) {
             haveDeleteMessage = YES;
         }
     }
-    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES && haveDeleteMessage == YES) {
+    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES &&
+        haveDeleteMessage == YES) {
         return;
     }
     if (haveCacheHeight == NO) {
@@ -603,10 +619,13 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
-//    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer = 1586920918308426275 AND deletetag = 0
-    NSString *sqlStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message WHERE deletetag = 0 AND peer = %@)", @(targetUid)];
+    //    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer =
+    //    1586920918308426275 AND deletetag = 0
+    NSString *sqlStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) "
+                                                  @"FROM peer_message WHERE deletetag = 0 AND peer = %@)",
+                                                  @(targetUid)];
     FMResultSet *rs = [db executeQuery:sqlStr];
-    
+
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
@@ -631,7 +650,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 }
 
 #pragma mark - gobelieve handler method
-- (int)gobelieveGetMessageId:(NSString*)uuid {
+- (int)gobelieveGetMessageId:(NSString *)uuid {
     FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM peer_message WHERE uuid=?", uuid];
     if ([rs next]) {
         int msgId = (int)[rs longLongIntForColumn:@"id"];
@@ -643,7 +662,10 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 }
 
 - (IMessage *)gobelieveGetMessage:(int)msgID {
-    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?", @(msgID)];
+    FMResultSet *rs = [self.db
+        executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, "
+                     @"cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?",
+                     @(msgID)];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
@@ -665,7 +687,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return nil;
 }
 
--(BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags {
+- (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags {
     FMDatabase *db = self.db;
 
     BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
@@ -718,7 +740,6 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         int flags = [rs intForColumn:@"flags"];
         flags |= f;
 
-
         BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
@@ -734,26 +755,37 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 获取指定消息的前两条开始往后面的20条数据
 /// @param conversationID 聊天会话id
 /// @param uuid 消息唯一标识符
-- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid {
+- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString *_Nonnull)uuid {
     FMDatabase *db = self.db;
     // 前两条数据和后18条数据合并，最后按时间升序排序
-    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM (SELECT * FROM peer_message\
+    NSString *selectStr = [NSString
+        stringWithFormat:
+            @"SELECT * FROM (SELECT * FROM peer_message\
                            WHERE peer = %@\
-                           AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
-                           AND deletetag = 0\
+                  "
+            @"         AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
+   "
+            @"                        AND deletetag = 0\
                            ORDER BY timestamp\
-                           DESC\
+               "
+            @"            DESC\
                            LIMIT 0,2)\
                            union\
-                           SELECT * FROM (SELECT * FROM peer_message \
+              "
+            @"             SELECT * FROM (SELECT * FROM peer_message \
                            WHERE peer = %@\
-                           AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
+    "
+            @"                       AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND "
+            @"readuuid = '%@')\
                            AND deletetag = 0\
-                           ORDER BY timestamp\
+                           ORDER BY "
+            @"timestamp\
                            ASC\
                            LIMIT 0,18)\
-                           ORDER BY timestamp\
-                           ASC", @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
+                      "
+            @"     ORDER BY timestamp\
+                           ASC",
+            @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
 
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
@@ -780,8 +812,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //- (BOOL)checkHaveFailedMessageUid:(int64_t)uid {
 //    FMDatabase *db = self.db;
 //    BOOL haveFailed = NO;
-//    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?", @(MESSAGE_FLAG_FAILURE), @(uid)];
-//    while ([result next]) {
+//    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?",
+//    @(MESSAGE_FLAG_FAILURE), @(uid)]; while ([result next]) {
 //        haveFailed = YES;
 //        break;
 //    }
@@ -810,7 +842,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //            haveDeleteMessage = YES;
 //        }
 //    }
-//    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES && haveDeleteMessage == YES) {
+//    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES &&
+//    haveDeleteMessage == YES) {
 //        return;
 //    }
 //    if (haveCacheHeight == NO) {
@@ -837,10 +870,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //
 //-(BOOL)insertMessage:(IMessage*)msg uid:(int64_t)uid{
 ////    BOOL haveMessage = NO;
-////    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND readuuid = ?", @(uid), msg.readUUID];
-////    if (rs.next) {
-////        haveMessage = YES;
-////    }
+////    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread,
+/// readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND
+/// readuuid = ?", @(uid), msg.readUUID]; /    if (rs.next) { /        haveMessage = YES; /    }
 ////
 ////    if (haveMessage == NO) {
 ////        FMDatabase *db = self.db;
@@ -849,8 +881,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////        int secret = self.secret ? 1 : 0;
 ////        NSString *uuid = msg.uuid ? msg.uuid : @"";
 ////        CHGBMessageModel *model = [[CHGBMessageTool sharedTool] getMessageModelWith:msg];
-////        BOOL r = [db executeUpdate:@"INSERT INTO peer_message (peer, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, uuid, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-////                  @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(secret), @(msg.flags), @(msg.haveRead), model.msg_uuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), uuid, msg.rawContent];
+////        BOOL r = [db executeUpdate:@"INSERT INTO peer_message (peer, sender, receiver, timestamp, secret, flags,
+/// haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, uuid, content) VALUES (?, ?, ?, ?, ?,
+///?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", /                  @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp),
+///@(secret), @(msg.flags), @(msg.haveRead), model.msg_uuid, @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight),
+///@(msg.callBack), @(msg.deleteTag), uuid, msg.rawContent];
 ////
 ////        if (!r) {
 ////            NSLog(@"error = %@", [db lastErrorMessage]);
@@ -937,7 +972,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //
 //    key = [key stringByReplacingOccurrencesOfString:@"'" withString:@"\'"];
 //    key = [key tokenizer];
-//    NSString *sql = [NSString stringWithFormat:@"SELECT rowid FROM peer_message_fts WHERE peer_message_fts MATCH '%@'", key];
+//    NSString *sql = [NSString stringWithFormat:@"SELECT rowid FROM peer_message_fts WHERE peer_message_fts MATCH
+//    '%@'", key];
 //
 //    FMResultSet *rs = [db executeQuery:sql];
 //    NSMutableArray *array = [NSMutableArray array];
@@ -955,8 +991,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //
 //-(IMessage*)getLastMessage:(int64_t)uid {
 //    int s = self.secret ? 1 : 0;
-//    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND secret = ? ORDER BY id DESC", @(uid), @(s)];
-//    if ([rs next]) {
+//    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread,
+//    readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE peer = ? AND
+//    secret = ? ORDER BY id DESC", @(uid), @(s)]; if ([rs next]) {
 //        IMessage *msg = [[IMessage alloc] init];
 //        msg.sender = [rs longLongIntForColumn:@"sender"];
 //        msg.receiver = [rs longLongIntForColumn:@"receiver"];
@@ -991,8 +1028,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //}
 //
 //-(IMessage*)getMessage:(int64_t)msgID {
-//    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?", @(msgID)];
-//    if ([rs next]) {
+//    FMResultSet *rs = [self.db executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread,
+//    readuuid, cacheheight, cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?",
+//    @(msgID)]; if ([rs next]) {
 //        IMessage *msg = [[IMessage alloc] init];
 //        msg.sender = [rs longLongIntForColumn:@"sender"];
 //        msg.receiver = [rs longLongIntForColumn:@"receiver"];
@@ -1016,10 +1054,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //
 //- (NSArray *)getUnreadMsgs {
 ////    NSString *selfUid = [CHGBSignatureModel localSignatureModel].uid;
-////    FMResultSet *rs = [self.db executeQuery:[NSString stringWithFormat:@"SELECT readuuid FROM peer_message WHERE haveread= 0 AND sender=%@", selfUid]];
+////    FMResultSet *rs = [self.db executeQuery:[NSString stringWithFormat:@"SELECT readuuid FROM peer_message WHERE
+/// haveread= 0 AND sender=%@", selfUid]];
 //    NSMutableArray *unreadArr = [[NSMutableArray alloc] init];
 ////    while ([rs next]) {
-////        if ([[rs stringForColumn:@"readuuid"] hasContent]) {
+////        if ([[rs stringForColumn:@"readuuid"] isNotEmpty]) {
 ////            [unreadArr addObject:[rs stringForColumn:@"readuuid"]];
 ////        }
 ////    }
@@ -1027,10 +1066,10 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //}
 //
 //- (NSArray *)getRecalledMsgs {
-//    FMResultSet *rs = [self.db executeQuery:[NSString stringWithFormat:@"SELECT readuuid FROM peer_message WHERE callback= 1"]];
-//    NSMutableArray *unreadArr = [[NSMutableArray alloc] init];
+//    FMResultSet *rs = [self.db executeQuery:[NSString stringWithFormat:@"SELECT readuuid FROM peer_message WHERE
+//    callback= 1"]]; NSMutableArray *unreadArr = [[NSMutableArray alloc] init];
 ////    while ([rs next]) {
-////        if ([[rs stringForColumn:@"readuuid"] hasContent]) {
+////        if ([[rs stringForColumn:@"readuuid"] isNotEmpty]) {
 ////            [unreadArr addObject:[rs stringForColumn:@"readuuid"]];
 ////        }
 ////    }
@@ -1100,10 +1139,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////获取存在关键字的消息
 //- (NSArray<IMessage *> *)getTargetMessageAndLocationWithKeyWord:(NSString *)keyWord {
 //    FMDatabase *db = self.db;
-//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%'", keyWord];
-//    FMResultSet *rs = [db executeQuery:selectStr];
-//    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
-//    while ([rs next]) {
+//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%'",
+//    keyWord]; FMResultSet *rs = [db executeQuery:selectStr]; NSMutableArray<IMessage *> *messageArr = [[NSMutableArray
+//    alloc] init]; while ([rs next]) {
 //        IMessage *msg = [[IMessage alloc] init];
 //        msg.sender = [rs longLongIntForColumn:@"sender"];
 //        msg.receiver = [rs longLongIntForColumn:@"receiver"];
@@ -1136,8 +1174,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////获取目标会话下存在关键字的消息
 //- (NSArray<IMessage *> *)getTargetMessageAndLocationWithKeyWord:(NSString *)keyWord target:(int64_t)targetUid {
 //    FMDatabase *db = self.db;
-//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%' AND peer = %lld ORDER BY timestamp ASC", keyWord, targetUid];
-//    FMResultSet *rs = [db executeQuery:selectStr];
+//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE content LIKE '%%%@%%' AND peer
+//    = %lld ORDER BY timestamp ASC", keyWord, targetUid]; FMResultSet *rs = [db executeQuery:selectStr];
 //    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
 //    while ([rs next]) {
 //        IMessage *msg = [[IMessage alloc] init];
@@ -1173,9 +1211,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////获取传入message的早于该消息的前面两条
 //- (NSArray<IMessage *> *)getTargetMessageWith:(IMessage *)message uid:(int64_t)targetUid {
 //    FMDatabase *db = self.db;
-//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %lld ORDER BY timestamp ASC", targetUid];
-//    FMResultSet *rs = [db executeQuery:selectStr];
-//    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+//    NSString *selectStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %lld ORDER BY timestamp
+//    ASC", targetUid]; FMResultSet *rs = [db executeQuery:selectStr]; NSMutableArray<IMessage *> *messageArr =
+//    [[NSMutableArray alloc] init];
 //
 //    while ([rs next]) {
 //        IMessage *msg = [[IMessage alloc] init];
@@ -1371,10 +1409,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////        }
 ////        [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
 ////        [str appendString:@")"];
-////        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %@", @(haveRead), str, selfUid];
-////    }else{
-////        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= 1 WHERE haveread= 0 AND sender= %@", selfUid];
-////    }
+////        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND
+/// haveread= 0 AND sender= %@", @(haveRead), str, selfUid]; /    }else{ /        sqlStr = [NSString
+/// stringWithFormat:@"UPDATE peer_message SET haveread= 1 WHERE haveread= 0 AND sender= %@", selfUid]; /    }
 ////
 ////    BOOL r = [db executeUpdate:sqlStr];
 ////    if (!r) {
@@ -1387,8 +1424,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //- (BOOL)updateMessageWidth:(float)width height:(float)height lineHeight:(float)lineHeight msgId:(NSInteger)msg {
 //    FMDatabase *db = self.db;
 //
-//    BOOL r = [db executeUpdate:@"UPDATE peer_message SET cacheheight= ?, cachewidth= ?, lineheight= ? WHERE id= ?", @(height), @(width), @(lineHeight), @(msg)];
-//    if (!r) {
+//    BOOL r = [db executeUpdate:@"UPDATE peer_message SET cacheheight= ?, cachewidth= ?, lineheight= ? WHERE id= ?",
+//    @(height), @(width), @(lineHeight), @(msg)]; if (!r) {
 //        NSLog(@"error = %@", [db lastErrorMessage]);
 //        return NO;
 //    }
@@ -1408,9 +1445,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //        }
 //        [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
 //        [str appendString:@")"];
-//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= 0 WHERE readuuid IN %@ AND sender= %@", str, [NSString stringWithFormat:@"%lld", targetUid]];
+//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= 0 WHERE readuuid IN %@ AND sender=
+//        %@", str, [NSString stringWithFormat:@"%lld", targetUid]];
 //    }else{
-//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET flags= %@, haveread= 1 WHERE sender= %@", @(MESSAGE_FLAG_LISTENED), [NSString stringWithFormat:@"%lld", targetUid]];
+//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET flags= %@, haveread= 1 WHERE sender= %@",
+//        @(MESSAGE_FLAG_LISTENED), [NSString stringWithFormat:@"%lld", targetUid]];
 //    }
 //
 //    BOOL r = [db executeUpdate:sqlStr];
@@ -1451,13 +1490,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 #pragma mark - Testing
 
 - (void)checkDuplicateMessageForPeer:(int64_t)peer {
-    NSString *sql = [NSString stringWithFormat:@"SELECT sender, timestamp, readuuid FROM peer_message WHERE peer = %@", @(peer)];
+    NSString *sql =
+        [NSString stringWithFormat:@"SELECT sender, timestamp, readuuid FROM peer_message WHERE peer = %@", @(peer)];
 #if DEBUG
     NSLog(@">>> query sql %@", sql);
 #endif
-//    self. = [db executeQuery:sql];
+    //    self. = [db executeQuery:sql];
 }
 
 @end
-
-
