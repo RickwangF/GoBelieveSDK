@@ -11,6 +11,14 @@
 
 @implementation NSString (JSMessagesView)
 
+- (BOOL)isEmpty {
+    return self.length < 1;
+}
+
+- (BOOL)isNotEmpty {
+    return self.length > 0;
+}
+
 - (NSString *)trimWhitespace {
     return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
@@ -45,10 +53,4 @@
     return s;
 }
 
-- (BOOL)hasContent {
-    if (self == nil || self.length == 0) {
-        return NO;
-    }
-    return YES;
-}
 @end

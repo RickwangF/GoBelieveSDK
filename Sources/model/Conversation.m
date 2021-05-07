@@ -7,8 +7,36 @@
 //
 
 #import "Conversation.h"
+#import "Conversation+Private.h"
+
+@import FMDB;
 
 @implementation Conversation
+
++ (nonnull instancetype)conversationFromResultSet:(FMResultSet*)rs {
+    Conversation *conversation = [[Conversation alloc] init];
+    conversation.uid = [rs longLongIntForColumn:@"conversationid"];
+    conversation.avatarURL = [rs stringForColumn:@"avatar"];
+    conversation.name = [rs stringForColumn:@"nickname"];
+    conversation.timestamp = [rs longLongIntForColumn:@"timestamp"];
+    conversation.content = [rs stringForColumn:@"content"];
+    conversation.msguuid = [rs stringForColumn:@"msguuid"];
+    conversation.isCallback = [rs boolForColumn:@"is_callback"];
+    conversation.isGroup = [rs boolForColumn:@"is_group"];
+    conversation.isDelete = [rs boolForColumn:@"is_delete"];
+    conversation.isTop = [rs boolForColumn:@"is_top"];
+    conversation.newMsgCount = [rs intForColumn:@"unreadcount"];
+    conversation.memberType = [rs intForColumn:@"member_type"];
+    conversation.memberLevel = [rs stringForColumn:@"member_level"];
+    conversation.memberImg = [rs stringForColumn:@"member_img"];
+    conversation.draft = [rs stringForColumn:@"draft"];
+    conversation.unsendTag = [rs boolForColumn:@"unsend_tag"];
+    conversation.targetId = [rs stringForColumn:@"target_id"];
+    conversation.is_self = [rs boolForColumn:@"is_self"];
+    conversation.area = [rs stringForColumn:@"area"];
+    conversation.remarkName = [rs stringForColumn:@"remark_name"];
+    return conversation;
+}
 
 @end
 

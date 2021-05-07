@@ -8,11 +8,9 @@
 #import <Foundation/Foundation.h>
 #import "MessageNotification.h"
 
-@interface MessageHeadline : MessageNotificationContent
+@interface MessageHeadline : MessageNotification
 @property(nonatomic, readonly) NSString *headline;
 
 -(id)initWithHeadline:(NSString*)headline;
 
 @end
-
-typedef MessageHeadline MessageHeadlineContent;

@@ -5,30 +5,33 @@
 //  Created by ch999 on 2021/4/19.
 //
 
-#import <Foundation/Foundation.h>
 #import "Conversation.h"
+#import "GBConversationIterator.h"
+
+#import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
-#import "GBConversdationIterator.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SQLConversationDB : NSObject
+
+@property(nonatomic, strong, readonly, class) SQLConversationDB *instance;
+
 @property(nonatomic, strong) FMDatabaseQueue *dbQueue;
 /// 会话表id(唯一值，每个用户一个)
 @property(nonatomic, assign) NSInteger conversationTableId;
-+ (SQLConversationDB *)instance;
 
 /// 获取会员会话列表
-- (id<GBConversdationIterator>)memberConversation;
+- (id<GBConversationIterator>)memberConversation;
 
 /// 获取内部聊天会话列表
-- (id<GBConversdationIterator>)internalConversation;
+- (id<GBConversationIterator>)internalConversation;
 
 /// 获取所有置顶聊天会话列表
-- (id<GBConversdationIterator>)topConversation;
+- (id<GBConversationIterator>)topConversation;
 
 /// 获取所有未置顶聊天会话列表
-- (id<GBConversdationIterator>)untopConversation;
+- (id<GBConversationIterator>)untopConversation;
 
 /// 添加会话
 /// @param conversation 添加的会话
@@ -45,8 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 隐藏会话
 /// @param isHide 是否隐藏
 /// @param uid 删除会话的id
-- (void)disposeConversationIsHide:(BOOL)isHide
-                              uid:(int64_t)uid;
+- (void)disposeConversationIsHide:(BOOL)isHide uid:(int64_t)uid;
 
 /// 清空会话未读数量
 /// @param uid 清空会话的id
@@ -55,14 +57,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 保存草稿消息
 /// @param uid 保存草稿会话的id
 /// @param draft 保存草稿会话的文字
-- (void)saveDraftToConversationWithUid:(int64_t)uid
-                                 draft:(NSString *)draft;
+- (void)saveDraftToConversationWithUid:(int64_t)uid draft:(NSString *)draft;
 
 /// 修改会话置顶状态
 /// @param isTop 是否置顶
 /// @param uid 操作会话的uid
-- (void)disposeConversationIsTop:(BOOL)isTop
-                             uid:(int64_t)uid;
+- (void)disposeConversationIsTop:(BOOL)isTop uid:(int64_t)uid;
 
 /// 根据uid修改会话targetId、昵称、头像
 /// @param targetId 需要记录的targetId
@@ -111,8 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 修改会话失败状态
 /// @param haveFailed 是否有失败消息
 /// @param targetUid 目标会话uid
-- (void)updateConversationSendFailedStatus:(BOOL)haveFailed
-                                 targetUid:(int64_t)targetUid;
+- (void)updateConversationSendFailedStatus:(BOOL)haveFailed targetUid:(int64_t)targetUid;
 
 /// 修改会话撤回状态数据
 /// @param uuids 消息uuid数组

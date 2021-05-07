@@ -8,10 +8,8 @@
 #import <Foundation/Foundation.h>
 #import "MessageNotification.h"
 
-@interface MessageRevoke : MessageNotificationContent
+@interface MessageRevoke : MessageNotification
 - (id)initWithMsgId:(NSString*)msgid;
 
 @property(nonatomic, readonly) NSString* msgid;
 @end
-
-typedef MessageRevoke MessageRevokeContent;

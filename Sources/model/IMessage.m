@@ -72,19 +72,19 @@
     } else if ([dict objectForKey:@"location"] != nil) {
         content = [[MessageLocationContent alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"notification"] != nil) {
-        content = [[MessageGroupNotificationContent alloc] initWithRaw:rawContent];
+        content = [[MessageGroupNotification alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"link"]) {
         content = [[MessageLinkContent alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"attachment"] != nil) {
         content = [[MessageAttachmentContent alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"timestamp"] != nil) {
-        content = [[MessageTimeBaseContent alloc] initWithRaw:rawContent];
+        content = [[MessageTimeBase alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"headline"] != nil) {
-        content = [[MessageHeadlineContent alloc] initWithRaw:rawContent];
+        content = [[MessageHeadline alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"voip"] != nil) {
-        content = [[MessageVOIPContent alloc] initWithRaw:rawContent];
+        content = [[MessageVOIP alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"group_voip"] != nil) {
-        content = [[MessageGroupVOIPContent alloc] initWithRaw:rawContent];
+        content = [[MessageGroupVOIP alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"p2p_session"] != nil) {
         content = [[MessageP2PSession alloc] initWithRaw:rawContent];
     } else if ([dict objectForKey:@"secret"] != nil) {
@@ -186,14 +186,14 @@
     return nil;
 }
 
--(MessageNotificationContent*)notificationContent {
+-(MessageNotification*)notificationContent {
     if (self.type == MESSAGE_GROUP_NOTIFICATION ||
         self.type == MESSAGE_TIME_BASE ||
         self.type == MESSAGE_HEADLINE ||
         self.type == MESSAGE_GROUP_VOIP ||
         self.type == MESSAGE_REVOKE ||
         self.type == MESSAGE_ACK) {
-        return (MessageNotificationContent*)self.content;
+        return (MessageNotification*)self.content;
     }
     return nil;
 }
@@ -212,30 +212,30 @@
     return nil;
 }
 
--(MessageTimeBaseContent*)timeBaseContent {
+-(MessageTimeBase*)timeBaseContent {
     if (self.type == MESSAGE_TIME_BASE) {
-        return (MessageTimeBaseContent*)self.content;
+        return (MessageTimeBase*)self.content;
     }
     return nil;
 }
 
--(MessageVOIPContent*)voipContent {
+-(MessageVOIP*)voipContent {
     if (self.type == MESSAGE_VOIP) {
-        return (MessageVOIPContent*)self.content;
+        return (MessageVOIP*)self.content;
     }
     return nil;
 }
 
--(MessageGroupVOIPContent*)groupVOIPContent {
+-(MessageGroupVOIP*)groupVOIPContent {
     if (self.type == MESSAGE_GROUP_VOIP) {
-        return (MessageGroupVOIPContent*)self.content;
+        return (MessageGroupVOIP*)self.content;
     }
     return nil;
 }
 
--(MessageGroupNotificationContent*)groupNotificationContent {
+-(MessageGroupNotification*)groupNotificationContent {
     if (self.type == MESSAGE_GROUP_NOTIFICATION) {
-        return (MessageGroupNotificationContent*)self.content;
+        return (MessageGroupNotification*)self.content;
     }
     return nil;
 }

@@ -53,7 +53,7 @@
             m.flags = m.flags | MESSAGE_FLAG_ACK;
         }
         if (im.isGroupNotification) {
-            MessageGroupNotificationContent *obj = [[MessageGroupNotificationContent alloc] initWithNotification:im.content];
+            MessageGroupNotification *obj = [[MessageGroupNotification alloc] initWithNotification:im.content];
             im.receiver = obj.groupID;
             im.timestamp = obj.timestamp;
             

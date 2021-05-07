@@ -22,10 +22,10 @@ FOUNDATION_EXPORT const unsigned char gobelieveSDKVersionString[];
 //#import <Gobelieve/wavwriter.h>
 //#import <Gobelieve/wav_amr.h>
 #import <Gobelieve/NSDate+Format.h>
-#import <Gobelieve/NSString+JSMessagesView.h>
+//#import <Gobelieve/NSString+JSMessagesView.h>
 #import <Gobelieve/CustomerMessageDB.h>
 #import <Gobelieve/EPeerMessageDB.h>
-#import <Gobelieve/GBConversdationIterator.h>
+#import <Gobelieve/GBConversationIterator.h>
 #import <Gobelieve/GroupMessageDB.h>
 #import <Gobelieve/IMessageDB.h>
 #import <Gobelieve/IMessageIterator.h>
@@ -34,7 +34,7 @@ FOUNDATION_EXPORT const unsigned char gobelieveSDKVersionString[];
 #import <Gobelieve/SQLCustomerMessageDB.h>
 #import <Gobelieve/SQLGroupMessageDB.h>
 #import <Gobelieve/SQLPeerMessageDB.h>
-#import <Gobelieve/Gobelieve.h>
+//#import <Gobelieve/Gobelieve.h>
 #import <Gobelieve/CustomerMessageHandler.h>
 #import <Gobelieve/GroupMessageHandler.h>
 #import <Gobelieve/PeerMessageHandler.h>
@@ -43,7 +43,6 @@ FOUNDATION_EXPORT const unsigned char gobelieveSDKVersionString[];
 #import <Gobelieve/IMService.h>
 #import <Gobelieve/Message.h>
 #import <Gobelieve/Conversation.h>
-#import <Gobelieve/FileCache.h>
 #import <Gobelieve/ICustomerMessage.h>
 #import <Gobelieve/IMessage.h>
 #import <Gobelieve/IUser.h>
@@ -71,5 +70,6 @@ FOUNDATION_EXPORT const unsigned char gobelieveSDKVersionString[];
 #import <Gobelieve/AsyncSSLTCP.h>
 #import <Gobelieve/AsyncTCP.h>
 #import <Gobelieve/TCPConnection.h>
+#import <Gobelieve/FileCache.h>
 #import <Gobelieve/GOReachability.h>
-#import <Gobelieve/util.h>
+//#import <Gobelieve/util.h>

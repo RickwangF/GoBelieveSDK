@@ -8,12 +8,10 @@
 #import <Foundation/Foundation.h>
 #import "MessageNotification.h"
 
-@interface MessageGroupVOIP : MessageNotificationContent
+@interface MessageGroupVOIP : MessageNotification
 
 @property(nonatomic) int64_t initiator;
 @property(nonatomic) BOOL finished;
 
 -(id)initWithInitiator:(int64_t)initiator finished:(BOOL)finished;
 @end
-
-typedef MessageGroupVOIP MessageGroupVOIPContent;

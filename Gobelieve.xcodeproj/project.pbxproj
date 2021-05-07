@@ -15,7 +15,7 @@
 		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
 		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
 		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
-		52B7AC90263517EF00E71A8C /* GBConversdationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversdationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 52BD5F8526392E9700560059 /* gobelieveConversation.db */; };
 		52EA091626299508003652B7 /* Gobelieve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA090C26299508003652B7 /* Gobelieve.framework */; };
 		52EA091D26299508003652B7 /* Gobelieve.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA090F26299508003652B7 /* Gobelieve.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -69,7 +69,6 @@
 		52EA09CA2629953C003652B7 /* MessageNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA095C2629953C003652B7 /* MessageNotification.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09CB2629953C003652B7 /* MessageACK.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA095D2629953C003652B7 /* MessageACK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09CC2629953C003652B7 /* MessageGroupNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA095E2629953C003652B7 /* MessageGroupNotification.m */; };
-		52EA09CD2629953C003652B7 /* FileCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA095F2629953C003652B7 /* FileCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09CE2629953C003652B7 /* MessageVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09602629953C003652B7 /* MessageVideo.m */; };
 		52EA09CF2629953C003652B7 /* MessageText.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09612629953C003652B7 /* MessageText.m */; };
 		52EA09D02629953C003652B7 /* MessageSecret.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09622629953C003652B7 /* MessageSecret.m */; };
@@ -85,7 +84,6 @@
 		52EA09DA2629953C003652B7 /* Conversation.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096C2629953C003652B7 /* Conversation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09DB2629953C003652B7 /* IUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096D2629953C003652B7 /* IUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09DC2629953C003652B7 /* MessageVideo.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096E2629953C003652B7 /* MessageVideo.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52EA09DD2629953C003652B7 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA096F2629953C003652B7 /* FileCache.m */; };
 		52EA09DE2629953C003652B7 /* MessageGroupNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09702629953C003652B7 /* MessageGroupNotification.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09DF2629953C003652B7 /* MessageACK.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09712629953C003652B7 /* MessageACK.m */; };
 		52EA09E02629953C003652B7 /* MessageNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09722629953C003652B7 /* MessageNotification.m */; };
@@ -97,7 +95,7 @@
 		52EA09E62629953C003652B7 /* MessageContent.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09782629953C003652B7 /* MessageContent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09E82629953C003652B7 /* wav_amr.c in Sources */ = {isa = PBXBuildFile; fileRef = 52EA097B2629953C003652B7 /* wav_amr.c */; };
 		52EA09EE2629953C003652B7 /* wav_amr.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09812629953C003652B7 /* wav_amr.h */; };
-		52EA09F02629953C003652B7 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09832629953C003652B7 /* util.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		52EA09F02629953C003652B7 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09832629953C003652B7 /* util.h */; };
 		52EA09F12629953C003652B7 /* NSDate+Format.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09852629953C003652B7 /* NSDate+Format.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09862629953C003652B7 /* NSString+JSMessagesView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09F32629953C003652B7 /* NSDate+Format.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09872629953C003652B7 /* NSDate+Format.m */; };
@@ -119,6 +117,13 @@
 		52F45F58262D765100DCD1F2 /* SQLConversationDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 52F45F56262D765100DCD1F2 /* SQLConversationDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52F45F59262D765100DCD1F2 /* SQLConversationDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F45F57262D765100DCD1F2 /* SQLConversationDB.m */; };
 		5B6E247326BD85A913B5F95F /* Pods_Gobelieve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A88DBB7E38C4BD0FFC7C004D /* Pods_Gobelieve.framework */; };
+		AC96A35DED16CD6278671B40 /* FileCache.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A424C5B4200ACC805AC5 /* FileCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC96A3D6632CECFD06B7A2A5 /* MagicTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A6452C11EB785CBF4712 /* MagicTests.m */; };
+		AC96A3FD146F19D2C1C71855 /* Random.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC96AB240022D1C1EE5F6010 /* Random.mm */; };
+		AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A395B5A64A5D949BD815 /* Conversation+Private.h */; };
+		AC96A861EE2590B82A0E8F92 /* magic.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96AE914D91036C62702FDA /* magic.h */; };
+		AC96A9556C4E07CDF5E1F613 /* ConversationTest_1000.db in Resources */ = {isa = PBXBuildFile; fileRef = AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */; };
+		AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A30B3BF2D02FA6607133 /* FileCache.m */; };
 		BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */; };
 /* End PBXBuildFile section */
 
@@ -140,12 +145,12 @@
 		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
 		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
 		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
-		52B7AC8F263517BA00E71A8C /* GBConversdationIterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBConversdationIterator.h; sourceTree = "<group>"; };
+		52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBConversationIterator.h; sourceTree = "<group>"; };
 		52BD5F8526392E9700560059 /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
 		52EA090C26299508003652B7 /* Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA090F26299508003652B7 /* Gobelieve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Gobelieve.h; sourceTree = "<group>"; };
 		52EA091026299508003652B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52EA091526299508003652B7 /* gobelieveSDKTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = gobelieveSDKTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		52EA091526299508003652B7 /* GobelieveTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GobelieveTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA091C26299508003652B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52EA09282629953B003652B7 /* TCPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TCPConnection.m; sourceTree = "<group>"; };
 		52EA092A2629953B003652B7 /* TAHttpOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAHttpOperation.h; sourceTree = "<group>"; };
@@ -197,7 +202,6 @@
 		52EA095C2629953C003652B7 /* MessageNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageNotification.h; sourceTree = "<group>"; };
 		52EA095D2629953C003652B7 /* MessageACK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageACK.h; sourceTree = "<group>"; };
 		52EA095E2629953C003652B7 /* MessageGroupNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageGroupNotification.m; sourceTree = "<group>"; };
-		52EA095F2629953C003652B7 /* FileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileCache.h; sourceTree = "<group>"; };
 		52EA09602629953C003652B7 /* MessageVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageVideo.m; sourceTree = "<group>"; };
 		52EA09612629953C003652B7 /* MessageText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageText.m; sourceTree = "<group>"; };
 		52EA09622629953C003652B7 /* MessageSecret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageSecret.m; sourceTree = "<group>"; };
@@ -213,7 +217,6 @@
 		52EA096C2629953C003652B7 /* Conversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversation.h; sourceTree = "<group>"; };
 		52EA096D2629953C003652B7 /* IUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUser.h; sourceTree = "<group>"; };
 		52EA096E2629953C003652B7 /* MessageVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageVideo.h; sourceTree = "<group>"; };
-		52EA096F2629953C003652B7 /* FileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileCache.m; sourceTree = "<group>"; };
 		52EA09702629953C003652B7 /* MessageGroupNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageGroupNotification.h; sourceTree = "<group>"; };
 		52EA09712629953C003652B7 /* MessageACK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageACK.m; sourceTree = "<group>"; };
 		52EA09722629953C003652B7 /* MessageNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageNotification.m; sourceTree = "<group>"; };
@@ -250,6 +253,14 @@
 		7783BB84D082771973150BA7 /* Pods_Gobelieve_gobelieveSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve_gobelieveSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		97B62E49A412C00D25584A60 /* Pods-Gobelieve.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.debug.xcconfig"; sourceTree = "<group>"; };
 		A88DBB7E38C4BD0FFC7C004D /* Pods_Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC96A30B3BF2D02FA6607133 /* FileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileCache.m; sourceTree = "<group>"; };
+		AC96A395B5A64A5D949BD815 /* Conversation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Conversation+Private.h"; sourceTree = "<group>"; };
+		AC96A424C5B4200ACC805AC5 /* FileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileCache.h; sourceTree = "<group>"; };
+		AC96A6452C11EB785CBF4712 /* MagicTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicTests.m; sourceTree = "<group>"; };
+		AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */ = {isa = PBXFileReference; lastKnownFileType = file.db; path = ConversationTest_1000.db; sourceTree = "<group>"; };
+		AC96AB240022D1C1EE5F6010 /* Random.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Random.mm; sourceTree = "<group>"; };
+		AC96AD326AC48A6089F798DD /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
+		AC96AE914D91036C62702FDA /* magic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magic.h; sourceTree = "<group>"; };
 		BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLConversationDBTests.m; sourceTree = "<group>"; };
 		CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.release.xcconfig"; sourceTree = "<group>"; };
 		FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -292,7 +303,7 @@
 			isa = PBXGroup;
 			children = (
 				52EA090C26299508003652B7 /* Gobelieve.framework */,
-				52EA091526299508003652B7 /* gobelieveSDKTests.xctest */,
+				52EA091526299508003652B7 /* GobelieveTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -321,6 +332,7 @@
 			children = (
 				BC7B10492643C85D0078B9D6 /* db */,
 				52EA091C26299508003652B7 /* Info.plist */,
+				AC96AA644CC9F4DF02E9452B /* utils */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -337,23 +349,23 @@
 		52EA09302629953B003652B7 /* db */ = {
 			isa = PBXGroup;
 			children = (
-				52EA093E2629953B003652B7 /* IMessageDB.h */,
-				52EA093F2629953B003652B7 /* GroupMessageDB.h */,
-				52EA09382629953B003652B7 /* IMessageIterator.h */,
-				52B7AC8F263517BA00E71A8C /* GBConversdationIterator.h */,
 				52EA09372629953B003652B7 /* CustomerMessageDB.h */,
+				52EA09342629953B003652B7 /* EPeerMessageDB.h */,
+				52EA093C2629953B003652B7 /* EPeerMessageDB.m */,
+				52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */,
+				52EA093F2629953B003652B7 /* GroupMessageDB.h */,
+				52EA093E2629953B003652B7 /* IMessageDB.h */,
+				52EA09382629953B003652B7 /* IMessageIterator.h */,
 				52EA09312629953B003652B7 /* PeerMessageDB.h */,
 				52EA093A2629953B003652B7 /* PeerMessageDB.m */,
+				52F45F56262D765100DCD1F2 /* SQLConversationDB.h */,
+				52F45F57262D765100DCD1F2 /* SQLConversationDB.m */,
 				52EA09322629953B003652B7 /* SQLCustomerMessageDB.h */,
 				52EA09392629953B003652B7 /* SQLCustomerMessageDB.m */,
 				52EA093D2629953B003652B7 /* SQLGroupMessageDB.h */,
 				52EA09332629953B003652B7 /* SQLGroupMessageDB.m */,
-				52EA09342629953B003652B7 /* EPeerMessageDB.h */,
-				52EA093C2629953B003652B7 /* EPeerMessageDB.m */,
 				52EA09402629953B003652B7 /* SQLPeerMessageDB.h */,
 				52EA09362629953B003652B7 /* SQLPeerMessageDB.m */,
-				52F45F56262D765100DCD1F2 /* SQLConversationDB.h */,
-				52F45F57262D765100DCD1F2 /* SQLConversationDB.m */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -407,8 +419,7 @@
 				52EA09722629953C003652B7 /* MessageNotification.m */,
 				52EA095D2629953C003652B7 /* MessageACK.h */,
 				52EA09712629953C003652B7 /* MessageACK.m */,
-				52EA095F2629953C003652B7 /* FileCache.h */,
-				52EA096F2629953C003652B7 /* FileCache.m */,
+				AC96A395B5A64A5D949BD815 /* Conversation+Private.h */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -464,10 +475,21 @@
 			path = handler;
 			sourceTree = "<group>";
 		};
+		AC96AA644CC9F4DF02E9452B /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				AC96A6452C11EB785CBF4712 /* MagicTests.m */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		BC7B10492643C85D0078B9D6 /* db */ = {
 			isa = PBXGroup;
 			children = (
 				BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */,
+				AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */,
+				AC96AB240022D1C1EE5F6010 /* Random.mm */,
+				AC96AD326AC48A6089F798DD /* Random.h */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -503,10 +525,13 @@
 		BC7B104E2643CD550078B9D6 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				AC96A424C5B4200ACC805AC5 /* FileCache.h */,
+				AC96A30B3BF2D02FA6607133 /* FileCache.m */,
 				52EA09462629953C003652B7 /* GOReachability.h */,
 				52EA092D2629953B003652B7 /* GOReachability.m */,
 				52EA09432629953B003652B7 /* util.c */,
 				52EA09832629953C003652B7 /* util.h */,
+				AC96AE914D91036C62702FDA /* magic.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -569,7 +594,6 @@
 				52EA09C62629953C003652B7 /* MessageFile.h in Headers */,
 				52EA09D52629953C003652B7 /* MessageVOIP.h in Headers */,
 				5227ABD3262E6C7B001A309C /* wavreader.h in Headers */,
-				52EA09CD2629953C003652B7 /* FileCache.h in Headers */,
 				52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */,
 				52EA09B32629953C003652B7 /* AsyncRawTCP.h in Headers */,
 				52EA09C72629953C003652B7 /* ICustomerMessage.h in Headers */,
@@ -590,11 +614,14 @@
 				52F45F58262D765100DCD1F2 /* SQLConversationDB.h in Headers */,
 				52EA091D26299508003652B7 /* Gobelieve.h in Headers */,
 				52EA09FA2629953C003652B7 /* CustomerMessageHandler.h in Headers */,
-				52B7AC90263517EF00E71A8C /* GBConversdationIterator.h in Headers */,
+				52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */,
 				52EA09FC2629953C003652B7 /* GroupMessageHandler.h in Headers */,
 				52EA09AE2629953C003652B7 /* GroupMessageDB.h in Headers */,
 				52EA09A62629953C003652B7 /* CustomerMessageDB.h in Headers */,
 				52EA09F82629953C003652B7 /* IMService.h in Headers */,
+				AC96A35DED16CD6278671B40 /* FileCache.h in Headers */,
+				AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */,
+				AC96A861EE2590B82A0E8F92 /* magic.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -620,9 +647,9 @@
 			productReference = 52EA090C26299508003652B7 /* Gobelieve.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		52EA091426299508003652B7 /* gobelieveSDKTests */ = {
+		52EA091426299508003652B7 /* GobelieveTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 52EA092326299508003652B7 /* Build configuration list for PBXNativeTarget "gobelieveSDKTests" */;
+			buildConfigurationList = 52EA092326299508003652B7 /* Build configuration list for PBXNativeTarget "GobelieveTests" */;
 			buildPhases = (
 				E976E08A11F8570FFADD0532 /* [CP] Check Pods Manifest.lock */,
 				52EA091126299508003652B7 /* Sources */,
@@ -635,9 +662,9 @@
 			dependencies = (
 				52EA091826299508003652B7 /* PBXTargetDependency */,
 			);
-			name = gobelieveSDKTests;
+			name = GobelieveTests;
 			productName = gobelieveSDKTests;
-			productReference = 52EA091526299508003652B7 /* gobelieveSDKTests.xctest */;
+			productReference = 52EA091526299508003652B7 /* GobelieveTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -670,7 +697,7 @@
 			projectRoot = "";
 			targets = (
 				52EA090B26299508003652B7 /* Gobelieve */,
-				52EA091426299508003652B7 /* gobelieveSDKTests */,
+				52EA091426299508003652B7 /* GobelieveTests */,
 			);
 		};
 /* End PBXProject section */
@@ -689,6 +716,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC96A9556C4E07CDF5E1F613 /* ConversationTest_1000.db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -802,7 +830,6 @@
 				52EA09CC2629953C003652B7 /* MessageGroupNotification.m in Sources */,
 				5227ABD2262E6C7B001A309C /* wavreader.c in Sources */,
 				52EA09B62629953C003652B7 /* AsyncSSLTCP.m in Sources */,
-				52EA09DD2629953C003652B7 /* FileCache.m in Sources */,
 				52EA0A012629953C003652B7 /* AsyncRawTCP.m in Sources */,
 				52F45F59262D765100DCD1F2 /* SQLConversationDB.m in Sources */,
 				52EA09F32629953C003652B7 /* NSDate+Format.m in Sources */,
@@ -812,6 +839,7 @@
 				52EA09D72629953C003652B7 /* MessageAudio.m in Sources */,
 				52EA09CE2629953C003652B7 /* MessageVideo.m in Sources */,
 				52EA09E42629953C003652B7 /* MessageGroupVOIP.m in Sources */,
+				AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -820,6 +848,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */,
+				AC96A3FD146F19D2C1C71855 /* Random.mm in Sources */,
+				AC96A3D6632CECFD06B7A2A5 /* MagicTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1034,6 +1064,13 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-l\"sqlite3\"",
+					"-framework",
+					"\"FMDB\"",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gobelieve.gobelieveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1051,6 +1088,13 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-l\"sqlite3\"",
+					"-framework",
+					"\"FMDB\"",
+					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gobelieve.gobelieveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1079,7 +1123,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		52EA092326299508003652B7 /* Build configuration list for PBXNativeTarget "gobelieveSDKTests" */ = {
+		52EA092326299508003652B7 /* Build configuration list for PBXNativeTarget "GobelieveTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				52EA092426299508003652B7 /* Debug */,

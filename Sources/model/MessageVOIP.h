@@ -20,4 +20,3 @@
 
 -(id)initWithFlag:(int)flag duration:(int)duration videoEnabled:(BOOL)videoEnabled;
 @end
-typedef MessageVOIP MessageVOIPContent;
