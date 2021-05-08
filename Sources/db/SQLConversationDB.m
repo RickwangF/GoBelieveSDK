@@ -345,8 +345,8 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *uuidStr = stringOrEmpty(msgUUID);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp= "
-                        @"%@, unreadcount = ?, is_callback= 0 WHERE conversationid = ?",
+      [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp= \
+                        ?, unreadcount = ?, is_callback= 0 WHERE conversationid = ?",
                         contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
     }];
 }
