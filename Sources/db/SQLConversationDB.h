@@ -64,6 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uid 操作会话的uid
 - (void)disposeConversationIsTop:(BOOL)isTop uid:(int64_t)uid;
 
+/// 修改会话备注名称
+/// @param remarkName 备注名
+/// @param uid 操作会话的uid
+- (void)updateConversationRemarkName:(NSString *)remarkName uid:(int64_t)uid;
+
 /// 根据uid修改会话targetId、昵称、头像
 /// @param targetId 需要记录的targetId
 /// @param nickname 需要记录的昵称

@@ -38,9 +38,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
-        [dbQueue inDatabase:^(FMDatabase *db) {
-          self.rs = [db executeQuery:sql];
+        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+            self.rs = [db executeQuery:sql];
         }];
+//        [dbQueue inDatabase:^(FMDatabase *db) {
+//          self.rs = [db executeQuery:sql];
+//        }];
     }
     return self;
 }
@@ -57,9 +60,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
-        [dbQueue inDatabase:^(FMDatabase *db) {
-          self.rs = [db executeQuery:sql];
+        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+            self.rs = [db executeQuery:sql];
         }];
+//        [dbQueue inDatabase:^(FMDatabase *db) {
+//          self.rs = [db executeQuery:sql];
+//        }];
     }
     return self;
 }
@@ -75,9 +81,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
-        [dbQueue inDatabase:^(FMDatabase *db) {
-          self.rs = [db executeQuery:sql];
+        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+            self.rs = [db executeQuery:sql];
         }];
+//        [dbQueue inDatabase:^(FMDatabase *db) {
+//          self.rs = [db executeQuery:sql];
+//        }];
     }
     return self;
 }
@@ -254,6 +263,17 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
       [db executeUpdate:@"UPDATE gb_conversation SET is_top = ? WHERE conversationid = ?", @(isTop), @(uid)];
+    }];
+}
+
+/// 修改会话备注名称
+/// @param remarkName 备注名
+/// @param uid 操作会话的uid
+- (void)updateConversationRemarkName:(NSString *)remarkName uid:(int64_t)uid {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+      [db executeUpdate:@"UPDATE gb_conversation SET remark_name = ? WHERE conversationid = ?", remarkName, @(uid)];
     }];
 }
 
