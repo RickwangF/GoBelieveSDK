@@ -48,6 +48,10 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     return self;
 }
 
+- (void)dealloc {
+    [self.rs close];
+}
+
 - (SQLGBConversdationIterator *)initInternalListWithDBQueue:(FMDatabaseQueue *)dbQueue {
     self = [super init];
     if (self) {

@@ -486,10 +486,10 @@
 		BC7B10492643C85D0078B9D6 /* db */ = {
 			isa = PBXGroup;
 			children = (
-				BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */,
 				AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */,
-				AC96AB240022D1C1EE5F6010 /* Random.mm */,
 				AC96AD326AC48A6089F798DD /* Random.h */,
+				AC96AB240022D1C1EE5F6010 /* Random.mm */,
+				BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */,
 			);
 			path = db;
 			sourceTree = "<group>";

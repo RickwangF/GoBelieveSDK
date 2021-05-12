@@ -185,6 +185,19 @@ static NSString* kCreateTable = @"create table gb_conversation"
     XCTAssertEqualObjects(result.avatarURL, avatar);
 }
 
+- (void)testMulitThreadAccess {
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_apply(1000, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^(size_t index) {
+        dispatch_group_enter(group);
+        Conversation* value = [SQLConversationDBTests randomConversation];
+        value.uid = index;
+        [self->_db addConversation:value];
+        dispatch_group_leave(group);
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    XCTAssertEqual([self countOfConversation], 1000);
+}
+
 #ifdef GOBELIEVE_TEST_PERFORMANCE
 
 - (void)testPerformanceConversationInsert {
