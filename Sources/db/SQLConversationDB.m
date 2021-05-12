@@ -102,9 +102,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
-        [dbQueue inDatabase:^(FMDatabase *db) {
-          self.rs = [db executeQuery:sql];
+        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+            self.rs = [db executeQuery:sql];
         }];
+//        [dbQueue inDatabase:^(FMDatabase *db) {
+//          self.rs = [db executeQuery:sql];
+//        }];
     }
     return self;
 }
