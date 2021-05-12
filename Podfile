@@ -10,7 +10,7 @@ target 'Gobelieve' do
 
   # Pods for Gobelieve
 
-  target 'gobelieveSDKTests' do
+  target 'GobelieveTests' do
     # Pods for testing
   end
 

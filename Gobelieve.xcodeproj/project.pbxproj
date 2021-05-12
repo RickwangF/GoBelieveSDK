@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		47723BB8880566463F080A5E /* Pods_Gobelieve_gobelieveSDKTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7783BB84D082771973150BA7 /* Pods_Gobelieve_gobelieveSDKTests.framework */; };
 		5227ABD2262E6C7B001A309C /* wavreader.c in Sources */ = {isa = PBXBuildFile; fileRef = 5227ABD0262E6C7B001A309C /* wavreader.c */; };
 		5227ABD3262E6C7B001A309C /* wavreader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227ABD1262E6C7B001A309C /* wavreader.h */; };
 		5227AC1F262E747B001A309C /* wavwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC1D262E747B001A309C /* wavwriter.h */; };
@@ -125,6 +124,7 @@
 		AC96A9556C4E07CDF5E1F613 /* ConversationTest_1000.db in Resources */ = {isa = PBXBuildFile; fileRef = AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */; };
 		AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A30B3BF2D02FA6607133 /* FileCache.m */; };
 		BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */; };
+		F8C84AD95B98F3254E9B4E64 /* Pods_Gobelieve_GobelieveTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +138,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve_GobelieveTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5227ABD0262E6C7B001A309C /* wavreader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wavreader.c; sourceTree = "<group>"; };
 		5227ABD1262E6C7B001A309C /* wavreader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavreader.h; sourceTree = "<group>"; };
 		5227AC1D262E747B001A309C /* wavwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavwriter.h; sourceTree = "<group>"; };
@@ -250,7 +251,8 @@
 		52F45F56262D765100DCD1F2 /* SQLConversationDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SQLConversationDB.h; sourceTree = "<group>"; };
 		52F45F57262D765100DCD1F2 /* SQLConversationDB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLConversationDB.m; sourceTree = "<group>"; };
 		5FF4EAB559B264FA042809F0 /* Pods-Gobelieve-gobelieveSDKTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-gobelieveSDKTests.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests.release.xcconfig"; sourceTree = "<group>"; };
-		7783BB84D082771973150BA7 /* Pods_Gobelieve_gobelieveSDKTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve_gobelieveSDKTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-GobelieveTests.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests.debug.xcconfig"; sourceTree = "<group>"; };
+		84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-GobelieveTests.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests.release.xcconfig"; sourceTree = "<group>"; };
 		97B62E49A412C00D25584A60 /* Pods-Gobelieve.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.debug.xcconfig"; sourceTree = "<group>"; };
 		A88DBB7E38C4BD0FFC7C004D /* Pods_Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC96A30B3BF2D02FA6607133 /* FileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileCache.m; sourceTree = "<group>"; };
@@ -281,7 +283,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52EA091626299508003652B7 /* Gobelieve.framework in Frameworks */,
-				47723BB8880566463F080A5E /* Pods_Gobelieve_gobelieveSDKTests.framework in Frameworks */,
+				F8C84AD95B98F3254E9B4E64 /* Pods_Gobelieve_GobelieveTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +545,8 @@
 				CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */,
 				FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */,
 				5FF4EAB559B264FA042809F0 /* Pods-Gobelieve-gobelieveSDKTests.release.xcconfig */,
+				6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */,
+				84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -551,7 +555,7 @@
 			isa = PBXGroup;
 			children = (
 				A88DBB7E38C4BD0FFC7C004D /* Pods_Gobelieve.framework */,
-				7783BB84D082771973150BA7 /* Pods_Gobelieve_gobelieveSDKTests.framework */,
+				2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -729,15 +733,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E976E08A11F8570FFADD0532 /* [CP] Check Pods Manifest.lock */ = {
@@ -755,7 +759,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Gobelieve-gobelieveSDKTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Gobelieve-GobelieveTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1054,7 +1058,7 @@
 		};
 		52EA092426299508003652B7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */;
+			baseConfigurationReference = 6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SK7MNDQK8Q;
@@ -1079,7 +1083,7 @@
 		};
 		52EA092526299508003652B7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5FF4EAB559B264FA042809F0 /* Pods-Gobelieve-gobelieveSDKTests.release.xcconfig */;
+			baseConfigurationReference = 84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SK7MNDQK8Q;
