@@ -162,7 +162,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         }
         [result close];
         if (haveRecord) {
-            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
+            BOOL state = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
              @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
              @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
              @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
@@ -171,6 +171,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
              @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
              @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
              @(conversation.uid)];
+            if (completion) {
+                completion(state);
+            }
             return;
         }
         //      NSString *sqlStr = [NSString
@@ -201,11 +204,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
                       @(conversation.is_self),
                       areaStr,
                       remarkNameStr];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(state);
-            }
-        });
+        if (completion) {
+            completion(state);
+        }
     }];
 }
 
