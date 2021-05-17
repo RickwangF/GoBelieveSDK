@@ -61,7 +61,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     [rs close];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (completion) {
-            completion([conversations copy]);
+            completion(conversations);
         }
     });
 }
