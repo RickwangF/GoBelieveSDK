@@ -11,122 +11,17 @@
 
 NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? value : @""; }
 
-//static const NSString *converAllColumns =
-//    @"conversationid, avatar, nickname, timestamp, content, msguuid, is_callback, is_group, is_delete, is_top, "
-//    @"unreadcount, member_type, member_level, member_img, draft, unsend_tag, target_id, is_self, area, remark_name";
-
-@interface SQLGBConversdationIterator : NSObject <GBConversationIterator>
-@property(nonatomic, strong) FMResultSet *rs;
-
-- (instancetype)initMemberListWithDBQueue:(FMDatabaseQueue *)dbQueue;
-- (instancetype)initInternalListWithDBQueue:(FMDatabaseQueue *)dbQueue;
-- (instancetype)initTopListWithDBQueue:(FMDatabaseQueue *)dbQueue;
-- (instancetype)initUntopListWithDBQueue:(FMDatabaseQueue *)dbQueue;
-@end
-
-@implementation SQLGBConversdationIterator
-
-- (SQLGBConversdationIterator *)initMemberListWithDBQueue:(FMDatabaseQueue *)dbQueue {
-    self = [super init];
-    if (self) {
-        // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        //        NSString *sql =
-        //            [NSString stringWithFormat:@"SELECT %@ FROM gb_conversation WHERE member_type = 1 AND is_delete=
-        //            0",
-        //                                       converAllColumns];
-        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 AND is_delete = 0");
-#if DEBUG
-        NSLog(@">>> query sql %@", sql);
-#endif
-        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-            self.rs = [db executeQuery:sql];
-        }];
-//        [dbQueue inDatabase:^(FMDatabase *db) {
-//          self.rs = [db executeQuery:sql];
-//        }];
-    }
-    return self;
-}
-
-- (void)dealloc {
-    [self.rs close];
-}
-
-- (SQLGBConversdationIterator *)initInternalListWithDBQueue:(FMDatabaseQueue *)dbQueue {
-    self = [super init];
-    if (self) {
-        // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        //        NSString *sql =
-        //            [NSString stringWithFormat:@"SELECT %@ FROM gb_conversation WHERE member_type = 0 AND is_delete=
-        //            0",
-        //                                       converAllColumns];
-        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 0 AND is_delete = 0");
-#if DEBUG
-        NSLog(@">>> query sql %@", sql);
-#endif
-        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-            self.rs = [db executeQuery:sql];
-        }];
-//        [dbQueue inDatabase:^(FMDatabase *db) {
-//          self.rs = [db executeQuery:sql];
-//        }];
-    }
-    return self;
-}
-
-- (SQLGBConversdationIterator *)initTopListWithDBQueue:(FMDatabaseQueue *)dbQueue {
-    self = [super init];
-    if (self) {
-        // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        //        NSString *sql = [NSString
-        //            stringWithFormat:@"SELECT %@ FROM gb_conversation WHERE is_top = 1 AND is_delete= 0",
-        //            converAllColumns];
-        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 1 AND is_delete = 0");
-#if DEBUG
-        NSLog(@">>> query sql %@", sql);
-#endif
-        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-            self.rs = [db executeQuery:sql];
-        }];
-//        [dbQueue inDatabase:^(FMDatabase *db) {
-//          self.rs = [db executeQuery:sql];
-//        }];
-    }
-    return self;
-}
-
-- (SQLGBConversdationIterator *)initUntopListWithDBQueue:(FMDatabaseQueue *)dbQueue {
-    self = [super init];
-    if (self) {
-        // 取到数据的第一条应该是这批数据中最老的的消息，所以做timestamp升序排序
-        //        NSString *sql = [NSString
-        //            stringWithFormat:@"SELECT %@ FROM gb_conversation WHERE is_top = 0 AND is_delete= 0",
-        //            converAllColumns];
-        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 0 AND is_delete = 0");
-#if DEBUG
-        NSLog(@">>> query sql %@", sql);
-#endif
-        [dbQueue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-            self.rs = [db executeQuery:sql];
-        }];
-//        [dbQueue inDatabase:^(FMDatabase *db) {
-//          self.rs = [db executeQuery:sql];
-//        }];
-    }
-    return self;
-}
-
-- (Conversation *)next {
-    BOOL result = [self.rs next];
-    if (!result) {
-        return nil;
-    }
-    return [Conversation conversationFromResultSet:self.rs];
-}
-
-@end
-
 @implementation SQLConversationDB
+
+/// 数据库操作线程，所有相关操作都要在这个线程执行
+static dispatch_queue_t databaseExecuteQueue = nil;
+
++ (dispatch_queue_t)excuteQueue {
+    if (!databaseExecuteQueue) {
+        databaseExecuteQueue = dispatch_queue_create("com.9ji.excute.database", DISPATCH_QUEUE_CONCURRENT);
+    }
+    return databaseExecuteQueue;
+}
 
 + (SQLConversationDB *)instance {
     static SQLConversationDB *m;
@@ -141,29 +36,110 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     _conversationTableId = conversationTableId;
 }
 
+/// 会话列表统一解析方法，解析完成后会关闭数据库链接，并执行回调block（切换回主线程）
+/// @param rs 数据库数据集，内含数据库链接
+/// @param completion 查询完成回调block
+- (void)parseConversationList:(FMResultSet *)rs :(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    if (!rs) {
+        if (completion) {
+            completion(@[]);
+        }
+        return;
+    }
+    NSMutableArray<Conversation *> *conversations = [[NSMutableArray alloc] initWithCapacity:20];
+    BOOL result = true;
+    while (result) {
+        Conversation *conversation = [Conversation conversationFromResultSet:rs];
+        result = [rs next];
+        if (conversation.uid != 0) {
+            [conversations addObject:conversation];
+        }
+        if (!result) {
+            NSLog(@">>> last row for conversation reach, total %lu rows", (unsigned long)conversations.count);
+        }
+    }
+    [rs close];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (completion) {
+            completion([conversations copy]);
+        }
+    });
+}
+
 /// 获取会员会话列表
-- (id<GBConversationIterator>)memberConversation {
-    return [[SQLGBConversdationIterator alloc] initMemberListWithDBQueue:self.dbQueue];
+- (void)memberConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    __weak typeof(self) weakSelf = self;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 ");
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        FMResultSet *rs = [db executeQuery:sql];
+        [weakSelf parseConversationList:rs :completion];
+    }];
 }
 
 /// 获取内部聊天会话列表
-- (id<GBConversationIterator>)internalConversation {
-    return [[SQLGBConversdationIterator alloc] initInternalListWithDBQueue:self.dbQueue];
+- (void)internalConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    __weak typeof(self) weakSelf = self;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 0 AND is_delete = 0");
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        FMResultSet *rs = [db executeQuery:sql];
+        [weakSelf parseConversationList:rs :completion];
+    }];
 }
 
 /// 获取所有置顶聊天会话列表
-- (id<GBConversationIterator>)topConversation {
-    return [[SQLGBConversdationIterator alloc] initTopListWithDBQueue:self.dbQueue];
+- (void)topConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    __weak typeof(self) weakSelf = self;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 0 AND is_delete = 0");
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        FMResultSet *rs = [db executeQuery:sql];
+        [weakSelf parseConversationList:rs :completion];
+    }];
+}
+
+/// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
+- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    __weak typeof(self) weakSelf = self;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        FMResultSet *rs = [db executeQuery:@"select * from gb_conversation \
+                                            where is_delete = 0 \
+                                            group by is_top, timestamp, conversationid \
+                                            order by is_top desc, timestamp \
+                                            desc"];
+        [weakSelf parseConversationList:rs :completion];
+    }];
 }
 
 /// 获取所有未置顶聊天会话列表
-- (id<GBConversationIterator>)untopConversation {
-    return [[SQLGBConversdationIterator alloc] initUntopListWithDBQueue:self.dbQueue];
+- (void)untopConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    __weak typeof(self) weakSelf = self;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 1 AND is_delete = 0");
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        FMResultSet *rs = [db executeQuery:sql];
+        [weakSelf parseConversationList:rs :completion];
+    }];
 }
 
 /// 添加会话
 /// @param conversation 添加的会话
-- (void)addConversation:(Conversation *)conversation {
+/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
+- (void)addConversation:(Conversation *)conversation completion:(void (^ _Nullable)(BOOL state))completion {
     FMDatabaseQueue *queue = self.dbQueue;
 
     NSString *avatar = stringOrEmpty(conversation.avatarURL);
@@ -178,38 +154,58 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      BOOL haveRecord = NO;
-      FMResultSet *result = [db
-          executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
-      if (result.next) {
-          haveRecord = YES;
-      }
-      [result close];
-      if (haveRecord) {
-          [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
-                            @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
-                            @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
-                            @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
-                            avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
-                            @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
-                            @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
-                            @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
-                            @(conversation.uid)];
-          return;
-      }
-      //      NSString *sqlStr = [NSString
-      //          stringWithFormat:@"INSERT INTO gb_conversation (%@) VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,
-      //          ?, "
-      //                           @" ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)",
-      //                           converAllColumns];
-      NSString *sqlStr =
-          @"INSERT INTO gb_conversation (" ALL_COL ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, "
-           " ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
-      [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content, readUUID,
-                        @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
-                        @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
-                        memberImg, draft, @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr,
-                        remarkNameStr];
+        BOOL haveRecord = NO;
+        FMResultSet *result = [db
+                               executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
+        if (result.next) {
+            haveRecord = YES;
+        }
+        [result close];
+        if (haveRecord) {
+            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
+             @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
+             @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
+             @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
+             avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
+             @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+             @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
+             @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
+             @(conversation.uid)];
+            return;
+        }
+        //      NSString *sqlStr = [NSString
+        //          stringWithFormat:@"INSERT INTO gb_conversation (%@) VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,
+        //          ?, "
+        //                           @" ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)",
+        //                           converAllColumns];
+        NSString *sqlStr =
+        @"INSERT INTO gb_conversation (" ALL_COL ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, "
+        " ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+        BOOL state = [db executeUpdate:sqlStr,
+                      @(conversation.uid),
+                      avatar, nickname,
+                      @(conversation.timestamp),
+                      content,
+                      readUUID,
+                      @(conversation.isCallback),
+                      @(conversation.isGroup),
+                      @(conversation.isDelete),
+                      @(conversation.isTop),
+                      @(conversation.newMsgCount),
+                      @(conversation.memberType),
+                      memberLevel,
+                      memberImg,
+                      draft,
+                      @(conversation.unsendTag),
+                      targetId,
+                      @(conversation.is_self),
+                      areaStr,
+                      remarkNameStr];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(state);
+            }
+        });
     }];
 }
 

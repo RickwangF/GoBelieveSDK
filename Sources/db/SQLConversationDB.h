@@ -6,7 +6,6 @@
 //
 
 #import "Conversation.h"
-#import "GBConversationIterator.h"
 
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
@@ -21,21 +20,25 @@ NS_ASSUME_NONNULL_BEGIN
 /// 会话表id(唯一值，每个用户一个)
 @property(nonatomic, assign) NSInteger conversationTableId;
 
+/// 数据库操作线程，所有相关操作都要在这个线程执行
++ (dispatch_queue_t)excuteQueue;
+
 /// 获取会员会话列表
-- (id<GBConversationIterator>)memberConversation;
-
+- (void)memberConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取内部聊天会话列表
-- (id<GBConversationIterator>)internalConversation;
-
+- (void)internalConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有置顶聊天会话列表
-- (id<GBConversationIterator>)topConversation;
-
+- (void)topConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有未置顶聊天会话列表
-- (id<GBConversationIterator>)untopConversation;
+- (void)untopConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+
+/// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
+- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
 
 /// 添加会话
 /// @param conversation 添加的会话
-- (void)addConversation:(Conversation *)conversation;
+/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
+- (void)addConversation:(Conversation *)conversation completion:(void (^ _Nullable)(BOOL state))completion;
 
 /// 整体会话替换，将会话的所有展示内容做替换
 /// @param conversation 添加的会话
