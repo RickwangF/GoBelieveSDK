@@ -39,7 +39,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 /// 会话列表统一解析方法，解析完成后会关闭数据库链接，并执行回调block（切换回主线程）
 /// @param rs 数据库数据集，内含数据库链接
 /// @param completion 查询完成回调block
-- (void)parseConversationList:(FMResultSet *)rs :(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)parseConversationList:(FMResultSet *)rs completion:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     if (!rs) {
         if (completion) {
             completion(@[]);
@@ -76,7 +76,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -90,7 +90,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -104,7 +104,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -118,7 +118,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
                                             group by is_top, timestamp, conversationid \
                                             order by is_top desc, timestamp \
                                             desc"];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -132,7 +132,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
