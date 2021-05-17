@@ -34,7 +34,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         //            [NSString stringWithFormat:@"SELECT %@ FROM gb_conversation WHERE member_type = 1 AND is_delete=
         //            0",
         //                                       converAllColumns];
-        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 AND is_delete = 0");
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 ");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
@@ -150,6 +150,40 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 /// 获取所有置顶聊天会话列表
 - (id<GBConversationIterator>)topConversation {
     return [[SQLGBConversdationIterator alloc] initTopListWithDBQueue:self.dbQueue];
+}
+
+/// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
+- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        FMResultSet *rs = [db executeQuery:@"select * from gb_conversation \
+                                            where is_delete = 0 \
+                                            group by is_top, timestamp, conversationid \
+                                            order by is_top desc, timestamp \
+                                            desc"];
+        if (!rs) {
+            if (completion) {
+                completion(@[]);
+            }
+            return;
+        }
+        NSMutableArray<Conversation *> *conversations = [[NSMutableArray alloc] initWithCapacity:20];
+        BOOL result = true;
+        while (result) {
+            Conversation *conversation = [Conversation conversationFromResultSet:rs];
+            [conversations addObject:conversation];
+            result = [rs next];
+            if (!result) {
+                NSLog(@">>> last row for conversation reach, total %ld rows", conversations.count);
+            }
+        }
+        [rs close];
+        dispatch_async(dispatch_get_main_queue(), ^{        
+            if (completion) {
+                completion([conversations copy]);
+            }
+        });
+    }];
 }
 
 /// 获取所有未置顶聊天会话列表

@@ -33,6 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取所有未置顶聊天会话列表
 - (id<GBConversationIterator>)untopConversation;
 
+/// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
+- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+
 /// 添加会话
 /// @param conversation 添加的会话
 - (void)addConversation:(Conversation *)conversation;
