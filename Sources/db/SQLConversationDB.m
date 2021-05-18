@@ -5,8 +5,8 @@
 //  Created by ch999 on 2021/4/19.
 //
 
-#import "SQLConversationDB+Private.h"
 #import "Conversation+Private.h"
+#import "SQLConversationDB+Private.h"
 
 NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? value : @""; }
 
@@ -113,16 +113,8 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        FMResultSet *rs =
-            [db executeQuery:@"select * from gb_conversation \
-                                            "
-                             @"where is_delete = 0 \
-                                            group by "
-                             @"is_top, timestamp, conversationid \
-                                        "
-                             @"    order by is_top desc, timestamp \
-                                      "
-                             @"      desc"];
+        FMResultSet *rs = [db executeQuery:@"select * from gb_conversation  where is_delete = 0  group by is_top, "
+                                           @"timestamp, conversationid order by is_top desc, timestamp desc"];
         [weakSelf parseConversationList:rs completion:completion];
     }];
 }
@@ -359,11 +351,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *uuidStr = stringOrEmpty(msgUUID);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db executeUpdate:
-                @"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp= \
-                        ?, "
-                @"unreadcount = ?, is_callback= 0 WHERE conversationid = ?",
-                contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
+        [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp=  ?, unreadcount = ?, "
+                          @"is_callback= 0 WHERE conversationid = ?",
+                          contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
     }];
 }
 
