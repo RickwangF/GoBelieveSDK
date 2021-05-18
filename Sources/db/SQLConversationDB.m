@@ -39,7 +39,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 /// 会话列表统一解析方法，解析完成后会关闭数据库链接，并执行回调block（切换回主线程）
 /// @param rs 数据库数据集，内含数据库链接
 /// @param completion 查询完成回调block
-- (void)parseConversationList:(FMResultSet *)rs :(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)parseConversationList:(FMResultSet *)rs completion:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     if (!rs) {
         if (completion) {
             completion(@[]);
@@ -61,7 +61,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     [rs close];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (completion) {
-            completion([conversations copy]);
+            completion(conversations);
         }
     });
 }
@@ -76,7 +76,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -90,7 +90,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -104,7 +104,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -118,7 +118,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
                                             group by is_top, timestamp, conversationid \
                                             order by is_top desc, timestamp \
                                             desc"];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -132,7 +132,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs :completion];
+        [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
@@ -162,7 +162,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         }
         [result close];
         if (haveRecord) {
-            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
+            BOOL state = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
              @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
              @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
              @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
@@ -171,6 +171,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
              @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
              @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
              @(conversation.uid)];
+            if (completion) {
+                completion(state);
+            }
             return;
         }
         //      NSString *sqlStr = [NSString
@@ -201,11 +204,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
                       @(conversation.is_self),
                       areaStr,
                       remarkNameStr];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completion) {
-                completion(state);
-            }
-        });
+        if (completion) {
+            completion(state);
+        }
     }];
 }
 
