@@ -69,70 +69,65 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 /// 获取会员会话列表
 - (void)memberConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 ");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取内部聊天会话列表
 - (void)internalConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 0 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有置顶聊天会话列表
 - (void)topConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 0 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
 - (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         FMResultSet *rs = [db executeQuery:@"select * from gb_conversation \
                                             where is_delete = 0 \
                                             group by is_top, timestamp, conversationid \
                                             order by is_top desc, timestamp \
                                             desc"];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有未置顶聊天会话列表
 - (void)untopConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 1 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
