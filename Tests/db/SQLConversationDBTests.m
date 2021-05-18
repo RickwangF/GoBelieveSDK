@@ -7,10 +7,10 @@
 
 #import <XCTest/XCTest.h>
 #import "Random.h"
+#import <Gobelieve/Gobelieve.h>
+#import "SQLConversationDB+Private.h" // 必须要放在 Gobelieve.h 后边
 
 //#define GOBELIEVE_TEST_PERFORMANCE 1
-
-@import Gobelieve;
 
 static NSString* kCreateTable = @"create table gb_conversation"
                                 "("
@@ -185,12 +185,12 @@ static NSString* kCreateTable = @"create table gb_conversation"
     XCTAssertEqualObjects(result.avatarURL, avatar);
 }
 
-- (void)testMulitThreadAccess {
+- (void)testMultiThreadAccess {
     dispatch_group_t group = dispatch_group_create();
     dispatch_apply(1000, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^(size_t index) {
         dispatch_group_enter(group);
         Conversation* value = [SQLConversationDBTests randomConversation];
-        value.uid = index;
+        value.uid = (int64_t) index;
         [self->_db addConversation:value];
         dispatch_group_leave(group);
     });
@@ -267,27 +267,6 @@ static NSString* kCreateTable = @"create table gb_conversation"
     FMDatabaseQueue* queue = [[FMDatabaseQueue alloc] initWithPath:path];
     return queue;
 }
-
-//@property(nonatomic, copy) NSString *name;
-//@property(nonatomic, copy) NSString *avatarURL;
-//@property(nonatomic, copy) NSString *content;
-//@property(nonatomic, copy) NSString *msguuid;
-//@property(nonatomic, assign) int64_t uid;
-//@property (nonatomic, copy) NSString *targetId;
-//@property(nonatomic, assign) BOOL isTop;
-//@property(nonatomic, assign) BOOL isCallback;
-//@property(nonatomic, assign) BOOL isDelete;
-//@property(nonatomic, assign) BOOL isGroup;
-//@property(nonatomic, copy) NSString *memberLevel;
-//@property(nonatomic, assign) NSInteger memberType;
-//@property(nonatomic, copy) NSString *memberImg;
-//@property(nonatomic, copy) NSString *draft;
-//@property(nonatomic, assign) BOOL unsendTag;
-//@property(nonatomic) int newMsgCount;
-//@property(nonatomic) NSInteger timestamp;
-//@property(nonatomic, assign) BOOL is_self;
-//@property(nonatomic, copy) NSString *area;
-//@property(nonatomic, copy) NSString *remarkName;
 
 + (Conversation*)randomConversation {
     Conversation* conversation = [[Conversation alloc] init];

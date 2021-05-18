@@ -5,8 +5,7 @@
 //  Created by ch999 on 2021/4/19.
 //
 
-#import "SQLConversationDB.h"
-
+#import "SQLConversationDB+Private.h"
 #import "Conversation+Private.h"
 
 NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? value : @""; }
@@ -27,7 +26,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     static SQLConversationDB *m;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-      m = [[SQLConversationDB alloc] init];
+        m = [[SQLConversationDB alloc] init];
     });
     return m;
 }
@@ -39,7 +38,8 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 /// 会话列表统一解析方法，解析完成后会关闭数据库链接，并执行回调block（切换回主线程）
 /// @param rs 数据库数据集，内含数据库链接
 /// @param completion 查询完成回调block
-- (void)parseConversationList:(FMResultSet *)rs completion:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)parseConversationList:(FMResultSet *)rs
+                   completion:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     if (!rs) {
         if (completion) {
             completion(@[]);
@@ -67,7 +67,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 }
 
 /// 获取会员会话列表
-- (void)memberConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)memberConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -81,7 +81,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 }
 
 /// 获取内部聊天会话列表
-- (void)internalConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)internalConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -95,7 +95,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 }
 
 /// 获取所有置顶聊天会话列表
-- (void)topConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)topConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -109,21 +109,26 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 }
 
 /// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
-- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)getSortTopChatConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        FMResultSet *rs = [db executeQuery:@"select * from gb_conversation \
-                                            where is_delete = 0 \
-                                            group by is_top, timestamp, conversationid \
-                                            order by is_top desc, timestamp \
-                                            desc"];
+        FMResultSet *rs =
+            [db executeQuery:@"select * from gb_conversation \
+                                            "
+                             @"where is_delete = 0 \
+                                            group by "
+                             @"is_top, timestamp, conversationid \
+                                        "
+                             @"    order by is_top desc, timestamp \
+                                      "
+                             @"      desc"];
         [weakSelf parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有未置顶聊天会话列表
-- (void)untopConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion {
+- (void)untopConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     FMDatabaseQueue *queue = self.dbQueue;
     __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -136,10 +141,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     }];
 }
 
-/// 添加会话
-/// @param conversation 添加的会话
-/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
-- (void)addConversation:(Conversation *)conversation completion:(void (^ _Nullable)(BOOL state))completion {
+- (BOOL)addConversation:(Conversation *)conversation {
     FMDatabaseQueue *queue = self.dbQueue;
 
     NSString *avatar = stringOrEmpty(conversation.avatarURL);
@@ -153,61 +155,48 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
 
+    __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         BOOL haveRecord = NO;
         FMResultSet *result = [db
-                               executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
+            executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
         if (result.next) {
             haveRecord = YES;
         }
         [result close];
         if (haveRecord) {
-            BOOL state = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
-             @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
-             @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
-             @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
-             avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
-             @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
-             @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
-             @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
-             @(conversation.uid)];
-            if (completion) {
-                completion(state);
-            }
+            success = [db
+                executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
+                              @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
+                              @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
+                              @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
+                              avatar, nickname, @(conversation.timestamp), content, readUUID,
+                              @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                              @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                              memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                              @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
             return;
         }
-        //      NSString *sqlStr = [NSString
-        //          stringWithFormat:@"INSERT INTO gb_conversation (%@) VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,
-        //          ?, "
-        //                           @" ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)",
-        //                           converAllColumns];
-        NSString *sqlStr =
-        @"INSERT INTO gb_conversation (" ALL_COL ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, "
-        " ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
-        BOOL state = [db executeUpdate:sqlStr,
-                      @(conversation.uid),
-                      avatar, nickname,
-                      @(conversation.timestamp),
-                      content,
-                      readUUID,
-                      @(conversation.isCallback),
-                      @(conversation.isGroup),
-                      @(conversation.isDelete),
-                      @(conversation.isTop),
-                      @(conversation.newMsgCount),
-                      @(conversation.memberType),
-                      memberLevel,
-                      memberImg,
-                      draft,
-                      @(conversation.unsendTag),
-                      targetId,
-                      @(conversation.is_self),
-                      areaStr,
-                      remarkNameStr];
-        if (completion) {
-            completion(state);
-        }
+        NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
+                            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+        success =
+            [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
+                              readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                              @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                              memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                              @(conversation.is_self), areaStr, remarkNameStr];
     }];
+    return success;
+}
+
+/// 添加会话
+/// @param conversation 添加的会话
+/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
+- (void)addConversation:(Conversation *)conversation completion:(void (^_Nullable)(BOOL state))completion {
+    BOOL success = [self addConversation:conversation];
+    if (completion) {
+        completion(success);
+    }
 }
 
 /// 整体会话替换，将会话的所有展示内容做替换，一般在将服务端会话请求下来时使用
@@ -227,15 +216,15 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
-                        @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
-                        @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                        @"?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
-                        avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
-                        @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
-                        @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
-                        @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
-                        @(conversation.uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+                          @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
+                          @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+                          @"?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
+                          avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
+                          @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+                          @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
+                          @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
+                          @(conversation.uid)];
     }];
 }
 
@@ -244,7 +233,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 - (void)deleteConversationWithUid:(int64_t)uid {
     FMDatabaseQueue *queue = self.dbQueue;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"DELETE FROM gb_conversation WHERE conversationid = ?", @(uid)];
+        [db executeUpdate:@"DELETE FROM gb_conversation WHERE conversationid = ?", @(uid)];
     }];
 }
 
@@ -255,7 +244,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET is_delete= ? WHERE conversationid = ?", @(isHide), @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET is_delete= ? WHERE conversationid = ?", @(isHide), @(uid)];
     }];
 }
 
@@ -266,7 +255,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET is_top = ? WHERE conversationid = ?", @(isTop), @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET is_top = ? WHERE conversationid = ?", @(isTop), @(uid)];
     }];
 }
 
@@ -277,7 +266,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET remark_name = ? WHERE conversationid = ?", remarkName, @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET remark_name = ? WHERE conversationid = ?", remarkName, @(uid)];
     }];
 }
 
@@ -287,7 +276,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = 0 WHERE conversationid = ?", @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = 0 WHERE conversationid = ?", @(uid)];
     }];
 }
 
@@ -300,7 +289,7 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *draftStr = stringOrEmpty(draft);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
     }];
 }
 
@@ -320,8 +309,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *targetIdStr = stringOrEmpty(targetId);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, target_id = ? WHERE conversationid = ?",
-                        avatarStr, nicknameStr, targetIdStr, @(uid)];
+        [db executeUpdate:
+                @"UPDATE gb_conversation SET avatar = ?, nickname = ?, target_id = ? WHERE conversationid = ?",
+                avatarStr, nicknameStr, targetIdStr, @(uid)];
     }];
 }
 
@@ -346,9 +336,9 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *remarkNameStr = stringOrEmpty(remarkName);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET member_type = ?, member_level = ?, member_img = ?, "
-                        @"area = ?, remark_name = ? WHERE conversationid = ?",
-                        @(memberType), memberLevelStr, memberImgStr, areaStr, remarkNameStr, @(uid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET member_type = ?, member_level = ?, member_img = ?, "
+                          @"area = ?, remark_name = ? WHERE conversationid = ?",
+                          @(memberType), memberLevelStr, memberImgStr, areaStr, remarkNameStr, @(uid)];
     }];
 }
 
@@ -369,9 +359,11 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     NSString *uuidStr = stringOrEmpty(msgUUID);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp= \
-                        ?, unreadcount = ?, is_callback= 0 WHERE conversationid = ?",
-                        contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
+        [db executeUpdate:
+                @"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp= \
+                        ?, "
+                @"unreadcount = ?, is_callback= 0 WHERE conversationid = ?",
+                contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
     }];
 }
 
@@ -381,12 +373,12 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     __block NSInteger unreadCount = 0;
     FMDatabaseQueue *queue = self.dbQueue;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      FMResultSet *result =
-          [db executeQuery:@"SELECT unreadcount FROM gb_conversation WHERE conversationid = ?", @(receiver)];
-      if ([result next]) {
-          unreadCount = [result longLongIntForColumn:@"unreadcount"];
-      }
-      [result close];
+        FMResultSet *result =
+            [db executeQuery:@"SELECT unreadcount FROM gb_conversation WHERE conversationid = ?", @(receiver)];
+        if ([result next]) {
+            unreadCount = [result longLongIntForColumn:@"unreadcount"];
+        }
+        [result close];
     }];
     return unreadCount;
 }
@@ -399,11 +391,11 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      FMResultSet *rs = [db executeQuery:@"SELECT * FROM gb_conversation WHERE conversationid = ?", @(targetUid)];
-      if ([rs next]) {
-          reConver = [Conversation conversationFromResultSet:rs];
-      }
-      [rs close];
+        FMResultSet *rs = [db executeQuery:@"SELECT * FROM gb_conversation WHERE conversationid = ?", @(targetUid)];
+        if ([rs next]) {
+            reConver = [Conversation conversationFromResultSet:rs];
+        }
+        [rs close];
     }];
 
     return reConver;
@@ -416,8 +408,8 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      [db executeUpdate:@"UPDATE gb_conversation SET unsend_tag = ? WHERE conversationid = ?", @(haveFailed),
-                        @(targetUid)];
+        [db executeUpdate:@"UPDATE gb_conversation SET unsend_tag = ? WHERE conversationid = ?", @(haveFailed),
+                          @(targetUid)];
     }];
 }
 
@@ -427,20 +419,20 @@ static dispatch_queue_t databaseExecuteQueue = nil;
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-      NSString *sqlStr = @"";
-      if (uuids.count > 0) {
-          NSMutableString *str = [[NSMutableString alloc] init];
-          [str appendString:@"("];
-          for (NSString *subStr in uuids) {
-              [str appendString:[NSString stringWithFormat:@"'%@', ", subStr]];
-          }
-          [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
-          [str appendString:@")"];
-          sqlStr = [NSString
-              stringWithFormat:@"UPDATE gb_conversation SET is_self= 0, is_callback= 1 WHERE msguuid IN %@", str];
-      }
+        NSString *sqlStr = @"";
+        if (uuids.count > 0) {
+            NSMutableString *str = [[NSMutableString alloc] init];
+            [str appendString:@"("];
+            for (NSString *subStr in uuids) {
+                [str appendString:[NSString stringWithFormat:@"'%@', ", subStr]];
+            }
+            [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
+            [str appendString:@")"];
+            sqlStr = [NSString
+                stringWithFormat:@"UPDATE gb_conversation SET is_self= 0, is_callback= 1 WHERE msguuid IN %@", str];
+        }
 
-      [db executeUpdate:sqlStr];
+        [db executeUpdate:sqlStr];
     }];
 }
 
