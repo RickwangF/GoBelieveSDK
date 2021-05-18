@@ -62,5 +62,5 @@ int64_t randomInt64() {
 }
 
 BOOL randomBool() {
-    return (randomNumber() % 2) > 1;
+    return (randomNumber() % 2) > 0;
 }

@@ -13,19 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 
-void randomSeed();
+void randomSeed(void);
 
-NSString* randomString();
+NSString* randomString(void);
 NSString* randomStringCount(NSUInteger count);
 
-NSString* _Nullable randomNullString();
+NSString* _Nullable randomNullString(void);
 NSString* _Nullable randomNullStringCount(NSUInteger count);
 
-NSInteger randomInteger();
-int randomInt();
-int64_t randomInt64();
+NSInteger randomInteger(void);
+int randomInt(void);
+int64_t randomInt64(void);
 
-BOOL randomBool();
+BOOL randomBool(void);
 
 #if (__cplusplus)
 };

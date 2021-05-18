@@ -96,7 +96,7 @@
 		52EA09EE2629953C003652B7 /* wav_amr.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09812629953C003652B7 /* wav_amr.h */; };
 		52EA09F02629953C003652B7 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09832629953C003652B7 /* util.h */; };
 		52EA09F12629953C003652B7 /* NSDate+Format.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09852629953C003652B7 /* NSDate+Format.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09862629953C003652B7 /* NSString+JSMessagesView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09862629953C003652B7 /* NSString+JSMessagesView.h */; };
 		52EA09F32629953C003652B7 /* NSDate+Format.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09872629953C003652B7 /* NSDate+Format.m */; };
 		52EA09F42629953C003652B7 /* NSString+JSMessagesView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09882629953C003652B7 /* NSString+JSMessagesView.m */; };
 		52EA09F52629953C003652B7 /* Message.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09892629953C003652B7 /* Message.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -123,6 +123,7 @@
 		AC96A861EE2590B82A0E8F92 /* magic.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96AE914D91036C62702FDA /* magic.h */; };
 		AC96A9556C4E07CDF5E1F613 /* ConversationTest_1000.db in Resources */ = {isa = PBXBuildFile; fileRef = AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */; };
 		AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A30B3BF2D02FA6607133 /* FileCache.m */; };
+		AC96AE62C701AB7EB59C3EC6 /* SQLConversationDB+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */; };
 		BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */; };
 		F8C84AD95B98F3254E9B4E64 /* Pods_Gobelieve_GobelieveTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */; };
 /* End PBXBuildFile section */
@@ -259,6 +260,7 @@
 		AC96A395B5A64A5D949BD815 /* Conversation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Conversation+Private.h"; sourceTree = "<group>"; };
 		AC96A424C5B4200ACC805AC5 /* FileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileCache.h; sourceTree = "<group>"; };
 		AC96A6452C11EB785CBF4712 /* MagicTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicTests.m; sourceTree = "<group>"; };
+		AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SQLConversationDB+Private.h"; sourceTree = "<group>"; };
 		AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */ = {isa = PBXFileReference; lastKnownFileType = file.db; path = ConversationTest_1000.db; sourceTree = "<group>"; };
 		AC96AB240022D1C1EE5F6010 /* Random.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Random.mm; sourceTree = "<group>"; };
 		AC96AD326AC48A6089F798DD /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
@@ -362,6 +364,7 @@
 				52EA093A2629953B003652B7 /* PeerMessageDB.m */,
 				52F45F56262D765100DCD1F2 /* SQLConversationDB.h */,
 				52F45F57262D765100DCD1F2 /* SQLConversationDB.m */,
+				AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */,
 				52EA09322629953B003652B7 /* SQLCustomerMessageDB.h */,
 				52EA09392629953B003652B7 /* SQLCustomerMessageDB.m */,
 				52EA093D2629953B003652B7 /* SQLGroupMessageDB.h */,
@@ -626,6 +629,7 @@
 				AC96A35DED16CD6278671B40 /* FileCache.h in Headers */,
 				AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */,
 				AC96A861EE2590B82A0E8F92 /* magic.h in Headers */,
+				AC96AE62C701AB7EB59C3EC6 /* SQLConversationDB+Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
