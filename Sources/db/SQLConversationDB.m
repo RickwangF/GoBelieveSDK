@@ -10,16 +10,20 @@
 
 NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? value : @""; }
 
+@interface SQLConversationDB ()
+/// FMDB数据库多线程队列
+@property(nonatomic, strong) FMDatabaseQueue *dbQueue;
+@end
+
 @implementation SQLConversationDB
 
-/// 数据库操作线程，所有相关操作都要在这个线程执行
-static dispatch_queue_t databaseExecuteQueue = nil;
-
-+ (dispatch_queue_t)excuteQueue {
-    if (!databaseExecuteQueue) {
-        databaseExecuteQueue = dispatch_queue_create("com.9ji.excute.database", DISPATCH_QUEUE_CONCURRENT);
-    }
-    return databaseExecuteQueue;
++ (dispatch_queue_t)executeQueue {
+    static dispatch_queue_t queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("com.9ji.excute.database", DISPATCH_QUEUE_CONCURRENT);
+    });
+    return queue;
 }
 
 + (SQLConversationDB *)instance {
@@ -29,6 +33,19 @@ static dispatch_queue_t databaseExecuteQueue = nil;
         m = [[SQLConversationDB alloc] init];
     });
     return m;
+}
+
++ (void)setDataBaseQueuePath:(NSString *)path {
+    if (!(path && path.length > 0)) {
+        NSLog(@">>> invalid path for database %@.", path);
+        return;
+    }
+    
+    if (SQLConversationDB.instance.dbQueue) {
+        NSLog(@">>> database already created, no path set for %@.", path);
+        return;
+    }
+    SQLConversationDB.instance.dbQueue = [[FMDatabaseQueue alloc] initWithPath:path];
 }
 
 - (void)setConversationTableId:(NSInteger)conversationTableId {
@@ -41,9 +58,11 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 - (void)parseConversationList:(FMResultSet *)rs
                    completion:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
     if (!rs) {
-        if (completion) {
-            completion(@[]);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (completion) {
+                completion(@[]);
+            }
+        });
         return;
     }
     NSMutableArray<Conversation *> *conversations = [[NSMutableArray alloc] initWithCapacity:20];
@@ -67,69 +86,69 @@ static dispatch_queue_t databaseExecuteQueue = nil;
 }
 
 /// 获取会员会话列表
-- (void)memberConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
+- (void)memberConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** memberConversationWithCompletion: must passs nonnull completion.");
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 1 ");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取内部聊天会话列表
-- (void)internalConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
+- (void)internalConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** internalConversationWithCompletion: must passs nonnull completion.");
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 0 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有置顶聊天会话列表
-- (void)topConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
+- (void)topConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** topConversationWithCompletion: must passs nonnull completion.");
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 0 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
-- (void)getSortTopChatConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
+- (void)getSortTopChatConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** getSortTopChatConversationWithCompletion: must passs nonnull completion.");
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         FMResultSet *rs = [db executeQuery:@"select * from gb_conversation  where is_delete = 0  group by is_top, "
                                            @"timestamp, conversationid order by is_top desc, timestamp desc"];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 
 /// 获取所有未置顶聊天会话列表
-- (void)untopConversation:(void (^_Nullable)(NSArray<Conversation *> *_Nonnull))completion {
+- (void)untopConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** untopConversationWithCompletion: must passs nonnull completion.");
     FMDatabaseQueue *queue = self.dbQueue;
-    __weak typeof(self) weakSelf = self;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE is_top = 1 AND is_delete = 0");
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
 #endif
         FMResultSet *rs = [db executeQuery:sql];
-        [weakSelf parseConversationList:rs completion:completion];
+        [self parseConversationList:rs completion:completion];
     }];
 }
 

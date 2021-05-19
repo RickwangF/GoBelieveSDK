@@ -15,25 +15,26 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SQLConversationDB : NSObject
 
 @property(nonatomic, strong, readonly, class) SQLConversationDB *instance;
-
-@property(nonatomic, strong) FMDatabaseQueue *dbQueue;
+/// 数据库操作线程，所有相关操作都要在这个线程执行
+@property(nonatomic, strong, readonly, class) dispatch_queue_t executeQueue;
 /// 会话表id(唯一值，每个用户一个)
 @property(nonatomic, assign) NSInteger conversationTableId;
 
-/// 数据库操作线程，所有相关操作都要在这个线程执行
-+ (dispatch_queue_t)excuteQueue;
+/// 初始化数据库多线程队列方法
+/// @param path 数据库路径
++ (void)setDataBaseQueuePath:(NSString *)path;
 
 /// 获取会员会话列表
-- (void)memberConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+- (void)memberConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取内部聊天会话列表
-- (void)internalConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+- (void)internalConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有置顶聊天会话列表
-- (void)topConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+- (void)topConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有未置顶聊天会话列表
-- (void)untopConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+- (void)untopConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 
 /// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
-- (void)getSortTopChatConversation:(void (^ _Nullable)(NSArray<Conversation *> * _Nonnull))completion;
+- (void)getSortTopChatConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 
 /// 添加会话
 /// @param conversation 添加的会话
