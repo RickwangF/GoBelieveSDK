@@ -41,10 +41,10 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         return;
     }
     
-    if (SQLConversationDB.instance.dbQueue) {
-        NSLog(@">>> database already created, no path set for %@.", path);
-        return;
-    }
+//    if (SQLConversationDB.instance.dbQueue) {
+//        NSLog(@">>> database already created, no path set for %@.", path);
+//        return;
+//    }
     SQLConversationDB.instance.dbQueue = [[FMDatabaseQueue alloc] initWithPath:path];
 }
 
