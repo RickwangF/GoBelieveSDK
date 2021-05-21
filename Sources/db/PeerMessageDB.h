@@ -10,5 +10,9 @@
 #import "SQLPeerMessageDB.h"
 
 @interface PeerMessageDB : SQLPeerMessageDB <IMessageDB>
-+ (PeerMessageDB *)instance;
++ (PeerMessageDB * _Nonnull)instance;
+
+/// 批量更新多个消息为已读状态
+/// @param uuids 消息唯一标识符
+- (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids;
 @end
