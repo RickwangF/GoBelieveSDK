@@ -329,7 +329,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMDatabase *db = self.db;
     NSMutableArray *failedArr = [[NSMutableArray alloc] init];
     FMResultSet *rs =
-        [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=?", @(MESSAGE_FLAG_FAILURE), @(uid)];
+        [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=? AND callback == 0 AND deletetag = 0", @(MESSAGE_FLAG_FAILURE), @(uid)];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
@@ -422,8 +422,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND sender= %@", @(1),
-                str, @(sender)];
+                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@ AND sender= %@", @(1),
+                str, @(MESSAGE_FLAG_FAILURE), @(sender)];
 
         BOOL r = [db executeUpdate:sqlStr];
         if (!r) {
