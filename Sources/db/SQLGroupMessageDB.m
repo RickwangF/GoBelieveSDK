@@ -309,7 +309,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     FMDatabase *db = self.db;
     NSMutableArray *failedArr = [[NSMutableArray alloc] init];
     FMResultSet *rs =
-        [db executeQuery:@"SELECT * FROM group_message WHERE flags=? AND group_id=?", @(MESSAGE_FLAG_FAILURE), @(gid)];
+        [db executeQuery:@"SELECT * FROM group_message WHERE flags=? AND group_id=? AND callback == 0 AND deletetag = 0", @(MESSAGE_FLAG_FAILURE), @(gid)];
     if ([rs next]) {
         IMessage *msg = [[IMessage alloc] init];
         [msg setSender:[rs longLongIntForColumn:@"sender"]];
