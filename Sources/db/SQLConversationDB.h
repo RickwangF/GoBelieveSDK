@@ -113,6 +113,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param receiver 消息接收方
 - (NSInteger)getConversationNewMsgCountWithReceiver:(int64_t)receiver;
 
+/// 获取所有会话未读数量
+- (NSInteger)getAllConversationNewMsgCount;
+
 /// 根据targetUid获取会话
 /// @param targetUid 目标会话uid
 - (Conversation *)getConversationWithTargetUid:(int64_t)targetUid;
