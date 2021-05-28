@@ -126,6 +126,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uuids 消息uuid数组
 - (void)updateConversationCallBackStatusWithMsgUUIDs:(NSArray<NSString *> *)uuids;
 
+#if DEBUG
+/// 执行SQL语句，单元测试使用
+/// @param statements SQL语句
+- (void)executeStatements:(NSString *)statements;
+/// 访问数据库，block在专门的数据库队列同步执行
+/// @param block 数据库访问回调
+- (void)inDatabase:(__attribute__((noescape)) void (^)(FMDatabase *db))block;
+/// 关闭数据库，单元测试使用
+- (void)close;
+#endif
+
 ///// 修改会话数据
 ///// @param conversation 添加的会话
 //- (BOOL)amendConversation:(Conversation *)conversation;

@@ -51,11 +51,12 @@ static NSString* kCreateTable = @"create table gb_conversation"
 
 - (void)setUp {
     _db = [SQLConversationDB instance];
-    _db.dbQueue = [SQLConversationDBTests memoryQueue];
+    [SQLConversationDB setDataBaseQueuePath:@":memory:"];
+    [_db executeStatements:kCreateTable];
 }
 
 - (void)tearDown {
-    [_db.dbQueue close];
+    [_db close];
 }
 
 - (void)testConversationInsertSuccess {
@@ -221,7 +222,7 @@ static NSString* kCreateTable = @"create table gb_conversation"
 
 - (NSInteger)countOfConversation {
     __block NSInteger result;
-    [_db.dbQueue inDatabase:^(FMDatabase* db) {
+    [_db inDatabase:^(FMDatabase* db) {
         FMResultSet* resultSet = [db executeQuery:@"select count(0) from gb_conversation;"];
         [resultSet next];
         result = [resultSet intForColumnIndex:0];
