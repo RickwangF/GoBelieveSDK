@@ -413,6 +413,19 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     return unreadCount;
 }
 
+/// 获取所有会话未读数量
+- (NSInteger)getAllConversationNewMsgCount {
+    __block NSInteger msgCount = 0;
+    FMDatabaseQueue *queue = self.dbQueue;
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        FMResultSet *result = [db executeQuery:@"SELECT SUM(unreadcount) FROM gb_conversation"];
+        if ([result next]) {
+            msgCount = [result longLongIntForColumn:@"SUM(unreadcount)"];
+        }
+    }];
+    return msgCount;
+}
+
 /// 根据targetUid获取会话
 /// @param targetUid 目标会话uid
 - (Conversation *)getConversationWithTargetUid:(int64_t)targetUid {
