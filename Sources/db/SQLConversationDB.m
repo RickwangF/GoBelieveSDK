@@ -378,12 +378,14 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 /// @param content 消息内容
 /// @param msgUUID 消息uuid
 /// @param timestamp 时间
-/// @param count 消息数量
+/// @param count 需要添加的消息数量
+/// @param clearCount 是否需要清空消息数量
 /// @param receiver 消息接收方
 - (void)updateConversationMessageWithContent:(NSString *)content
                                      msgUUID:(NSString *)msgUUID
                                    timestamp:(int64_t)timestamp
                                        count:(NSInteger)count
+                                  clearCount:(BOOL)clearCount
                                     receiver:(int64_t)receiver {
     FMDatabaseQueue *queue = self.dbQueue;
 
@@ -391,9 +393,19 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *uuidStr = stringOrEmpty(msgUUID);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSInteger unreadCount = 0;
+        if (clearCount == NO) {
+            FMResultSet *result =
+                [db executeQuery:@"SELECT unreadcount FROM gb_conversation WHERE conversationid = ?", @(receiver)];
+            if ([result next]) {
+                unreadCount = [result longLongIntForColumn:@"unreadcount"];
+            }
+            [result close];
+        }
+        
         [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp=  ?, unreadcount = ?, "
                           @"is_callback= 0 WHERE conversationid = ?",
-                          contentStr, uuidStr, @(timestamp), @(count), @(receiver)];
+         contentStr, uuidStr, @(timestamp), clearCount == YES ? @(0) : @(unreadCount + count), @(receiver)];
     }];
 }
 
