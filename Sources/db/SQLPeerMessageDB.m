@@ -46,6 +46,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND timestamp > %@ AND "
                                                    @"deletetag = 0 ORDER BY timestamp ASC LIMIT 0,20",
                                                    @(peer), @(timeStamp)];
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
         self.rs = [db executeQuery:sql];
     }
     return self;
@@ -148,20 +151,26 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         return nil;
     }
 
-    IMessage *msg = [[IMessage alloc] init];
-    [msg setSender:[self.rs longLongIntForColumn:@"sender"]];
-    [msg setReceiver:[self.rs longLongIntForColumn:@"receiver"]];
-    [msg setTimestamp:[self.rs longLongIntForColumn:@"timestamp"]];
-    [msg setFlags:[self.rs intForColumn:@"flags"]];
-    [msg setRawContent:[self.rs stringForColumn:@"content"]];
-    [msg setHaveRead:[self.rs intForColumn:@"haveread"] == 1];
-    [msg setReadUUID:[self.rs stringForColumn:@"readuuid"]];
-    [msg setManualWidth:(float)[self.rs doubleForColumn:@"cachewidth"]];
-    [msg setManualHeight:(float)[self.rs intForColumn:@"cacheheight"]];
-    [msg setLineHeight:(float)[self.rs intForColumn:@"lineheight"]];
-    [msg setCallBack:[self.rs intForColumn:@"callback"] == 1];
-    [msg setDeleteTag:[self.rs intForColumn:@"deletetag"] == 1];
-    return msg;
+    return [SQLPeerMessageIterator messageFromResultSet:self.rs];
+}
+
+/// 将FMDB结果集转化成IMessage对象
+/// @param set 数据库结果集
++ (IMessage *)messageFromResultSet:(FMResultSet *)set {
+    IMessage *message = [[IMessage alloc] init];
+    [message setSender:[set longLongIntForColumn:@"sender"]];
+    [message setReceiver:[set longLongIntForColumn:@"receiver"]];
+    [message setTimestamp:[set longLongIntForColumn:@"timestamp"]];
+    [message setFlags:[set intForColumn:@"flags"]];
+    [message setRawContent:[set stringForColumn:@"content"]];
+    [message setHaveRead:[set intForColumn:@"haveread"] == 1];
+    [message setReadUUID:[set stringForColumn:@"readuuid"]];
+    [message setManualWidth:(float)[set doubleForColumn:@"cachewidth"]];
+    [message setManualHeight:(float)[set intForColumn:@"cacheheight"]];
+    [message setLineHeight:(float)[set intForColumn:@"lineheight"]];
+    [message setCallBack:[set intForColumn:@"callback"] == 1];
+    [message setDeleteTag:[set intForColumn:@"deletetag"] == 1];
+    return message;
 }
 
 @end
@@ -173,19 +182,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     NSString *sqlStr = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE readuuid= %@", uuid];
     FMResultSet *rs = [self.db executeQuery:sqlStr];
     if ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [rs close];
         return msg;
     }
@@ -331,19 +328,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMResultSet *rs =
         [db executeQuery:@"SELECT * FROM peer_message WHERE flags=? AND peer=? AND callback == 0 AND deletetag = 0", @(MESSAGE_FLAG_FAILURE), @(uid)];
     if ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [failedArr addObject:msg];
     }
     [rs close];
@@ -464,19 +449,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [messageArr addObject:msg];
     }
     [rs close];
@@ -494,19 +467,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [messageArr addObject:msg];
     }
     [rs close];
@@ -561,7 +522,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     BOOL haveLineHeight = NO;
     BOOL haveCallBack = NO;
     BOOL haveDeleteMessage = NO;
-    FMResultSet *result = [db executeQuery:@"SELECT * FROM group_message"];
+    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message"];
     for (int i = 0; i < [result columnCount]; i++) {
         NSString *columnName = [result columnNameForIndex:i];
         if ([columnName containsString:@"cacheheight"]) {
@@ -627,19 +588,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMResultSet *rs = [db executeQuery:sqlStr];
 
     if ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [db commit];
         [rs close];
         return msg;
@@ -667,19 +616,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
                      @"cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?",
                      @(msgID)];
     if ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [rs close];
         return msg;
     }
@@ -759,50 +696,36 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     FMDatabase *db = self.db;
     // 前两条数据和后18条数据合并，最后按时间升序排序
     NSString *selectStr = [NSString
-        stringWithFormat:
-            @"SELECT * FROM (SELECT * FROM peer_message\
-                           WHERE peer = %@\
-                  "
-            @"         AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@')\
-   "
-            @"                        AND deletetag = 0\
-                           ORDER BY timestamp\
-               "
-            @"            DESC\
-                           LIMIT 0,2)\
-                           union\
-              "
-            @"             SELECT * FROM (SELECT * FROM peer_message \
-                           WHERE peer = %@\
-    "
-            @"                       AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND "
-            @"readuuid = '%@')\
-                           AND deletetag = 0\
-                           ORDER BY "
-            @"timestamp\
-                           ASC\
-                           LIMIT 0,18)\
-                      "
-            @"     ORDER BY timestamp\
-                           ASC",
-            @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
+          stringWithFormat:@"SELECT * FROM (SELECT * FROM peer_message "
+                           @"WHERE peer = %@ "
+                           @"AND timestamp < (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND readuuid = '%@') "
+                           @"AND deletetag = 0 "
+                           @"ORDER BY timestamp "
+                           @"DESC "
+                           @"LIMIT 0,2) "
+                           @"union "
+                           @"SELECT * FROM (SELECT * FROM peer_message "
+                           @"WHERE peer = %@ "
+                           @"AND timestamp >= (SELECT timestamp FROM peer_message b  WHERE peer = %@ AND "
+                           @"readuuid = '%@') "
+                           @"AND deletetag = 0 "
+                           @"ORDER BY "
+                           @"timestamp "
+                           @"ASC "
+                           @"LIMIT 0,18) "
+                           @"ORDER BY timestamp "
+                           @"ASC ",
+                           @(conversationID),
+                           @(conversationID),
+                           uuid,
+                           @(conversationID),
+                           @(conversationID),
+                           uuid];
 
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
-        IMessage *msg = [[IMessage alloc] init];
-        [msg setSender:[rs longLongIntForColumn:@"sender"]];
-        [msg setReceiver:[rs longLongIntForColumn:@"receiver"]];
-        [msg setTimestamp:[rs longLongIntForColumn:@"timestamp"]];
-        [msg setFlags:[rs intForColumn:@"flags"]];
-        [msg setRawContent:[rs stringForColumn:@"content"]];
-        [msg setHaveRead:[rs intForColumn:@"haveread"] == 1];
-        [msg setReadUUID:[rs stringForColumn:@"readuuid"]];
-        [msg setManualWidth:(float)[rs doubleForColumn:@"cachewidth"]];
-        [msg setManualHeight:(float)[rs intForColumn:@"cacheheight"]];
-        [msg setLineHeight:(float)[rs intForColumn:@"lineheight"]];
-        [msg setCallBack:[rs intForColumn:@"callback"] == 1];
-        [msg setDeleteTag:[rs intForColumn:@"deletetag"] == 1];
+        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
         [messageArr addObject:msg];
     }
     [rs close];

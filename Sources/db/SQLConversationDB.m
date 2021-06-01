@@ -48,6 +48,27 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     SQLConversationDB.instance.dbQueue = [[FMDatabaseQueue alloc] initWithPath:path];
 }
 
+#if DEBUG
+- (void)executeStatements:(NSString *)statements {
+    if (!(statements && statements.length > 0)) {
+        NSLog(@">>> invalid statements %@", statements);
+        return;
+    }
+    
+    [self.dbQueue inDatabase:^(FMDatabase * _Nonnull db) {
+        [db executeStatements:statements];
+    }];
+}
+
+- (void)inDatabase:(__attribute__((noescape)) void (^)(FMDatabase *db))block {
+    [self.dbQueue inDatabase:block];
+}
+
+- (void)close {
+    [self.dbQueue close];
+}
+#endif
+
 - (void)setConversationTableId:(NSInteger)conversationTableId {
     _conversationTableId = conversationTableId;
 }
