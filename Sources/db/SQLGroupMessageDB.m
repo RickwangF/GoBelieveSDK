@@ -504,6 +504,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     BOOL haveLineHeight = NO;
     BOOL haveCallBack = NO;
     BOOL haveDeleteMessage = NO;
+    BOOL haveRead = NO;
     FMResultSet *result = [db executeQuery:@"SELECT * FROM group_message"];
     for (int i = 0; i < [result columnCount]; i++) {
         NSString *columnName = [result columnNameForIndex:i];
@@ -517,6 +518,8 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
             haveCallBack = YES;
         } else if ([columnName containsString:@"deletetag"]) {
             haveDeleteMessage = YES;
+        } else if ([columnName containsString:@"haveread"]) {
+            haveRead = YES;
         }
     }
     if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES &&
@@ -537,11 +540,11 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     }
     if (haveCallBack == NO) {
         BOOL addCH = [db executeUpdate:@"ALTER TABLE group_message ADD callback"];
-        NSLog(@"插入callback列%@", addCH == YES ? @"成功" : @"失败");
+        NSLog(@"群插入callback列%@", addCH == YES ? @"成功" : @"失败");
     }
     if (haveDeleteMessage == NO) {
         BOOL addDH = [db executeUpdate:@"ALTER TABLE group_message ADD deletetag"];
-        NSLog(@"插入deletetag列%@", addDH == YES ? @"成功" : @"失败");
+        NSLog(@"群插入deletetag列%@", addDH == YES ? @"成功" : @"失败");
     }
     [result close];
 }
