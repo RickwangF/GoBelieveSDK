@@ -14,6 +14,7 @@
 		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
 		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
 		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
+		525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 525FD2392666001600496C89 /* IMessage+CreatorMode.m */; };
 		5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */; };
 		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 52BD5F8526392E9700560059 /* gobelieveConversation.db */; };
@@ -148,6 +149,8 @@
 		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
 		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
 		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
+		525FD2382666001600496C89 /* IMessage+CreatorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IMessage+CreatorMode.h"; sourceTree = "<group>"; };
+		525FD2392666001600496C89 /* IMessage+CreatorMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IMessage+CreatorMode.m"; sourceTree = "<group>"; };
 		5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLGroupMessageDBTests.m; sourceTree = "<group>"; };
 		52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBConversationIterator.h; sourceTree = "<group>"; };
 		52BD5F8526392E9700560059 /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
@@ -496,6 +499,8 @@
 				AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */,
 				AC96AD326AC48A6089F798DD /* Random.h */,
 				AC96AB240022D1C1EE5F6010 /* Random.mm */,
+				525FD2382666001600496C89 /* IMessage+CreatorMode.h */,
+				525FD2392666001600496C89 /* IMessage+CreatorMode.m */,
 				BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */,
 				5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */,
 			);
@@ -860,6 +865,7 @@
 			files = (
 				BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */,
 				AC96A3FD146F19D2C1C71855 /* Random.mm in Sources */,
+				525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */,
 				5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */,
 				AC96A3D6632CECFD06B7A2A5 /* MagicTests.m in Sources */,
 			);
