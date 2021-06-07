@@ -134,6 +134,20 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+/// 获取群聊会话列表
+- (void)groupConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
+    NSAssert(completion != nil, @"*** internalConversationWithCompletion: must passs nonnull completion.");
+    FMDatabaseQueue *queue = self.dbQueue;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        NSString *sql = @("SELECT " ALL_COL " FROM gb_conversation WHERE member_type = 2 AND is_delete = 0");
+#if DEBUG
+        NSLog(@">>> query sql %@", sql);
+#endif
+        FMResultSet *rs = [db executeQuery:sql];
+        [self parseConversationList:rs completion:completion];
+    }];
+}
+
 /// 获取所有置顶聊天会话列表
 - (void)topConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion {
     NSAssert(completion != nil, @"*** topConversationWithCompletion: must passs nonnull completion.");
@@ -489,6 +503,32 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 
         [db executeUpdate:sqlStr];
     }];
+}
+
+/// 手动添加会话
+/// @param conversation 所需添加内部咨询会话的conversation
+- (BOOL)manualAddConversationWithConversation:(Conversation *)conversation {
+    FMDatabaseQueue *queue = self.dbQueue;
+    
+    __block BOOL haveRecord = NO;
+    __block BOOL success = NO;
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        FMResultSet *checkRs = [db executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", conversation.uid];
+        if ([checkRs next]) {
+            haveRecord = YES;
+        }
+        [checkRs close];
+        
+        if (haveRecord == NO) {
+            NSString *sqlStr = @"INSERT INTO gb_conversation(" ALL_COL
+            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+            
+            success = [db executeUpdate:sqlStr, @(conversation.uid), conversation.avatarURL, conversation.name, @(conversation.timestamp), conversation.content, conversation.msguuid, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                       conversation.memberLevel, conversation.memberImg, conversation.draft, @(conversation.unsendTag), conversation.targetId,
+                       @(conversation.is_self), conversation.area, conversation.remarkName];
+        }
+    }];
+    return success;
 }
 
 ///// 修改会话数据

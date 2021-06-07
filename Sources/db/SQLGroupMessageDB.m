@@ -207,10 +207,10 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         //    deletetag, content"
         NSString *readuuid = [msg.readUUID isNotEmpty] ? msg.readUUID : @"";
         NSString *content = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
-        BOOL result = [db executeUpdate:@"INSERT INTO group_message (group_id, sender, receiver, timestamp, flags, "
+        BOOL result = [db executeUpdate:@"INSERT INTO group_message (group_id, sender, timestamp, flags, "
                                         @"haveread, readuuid, cacheheight, cachewidth, lineheight, callback, "
-                                        @"deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                                        @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags),
+                                        @"deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                        @(uid), @(msg.sender), @(msg.timestamp), @(msg.flags),
                                         @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth),
                                         @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
 

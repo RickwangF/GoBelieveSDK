@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)memberConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取内部聊天会话列表
 - (void)internalConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
+/// 获取群聊会话列表
+- (void)groupConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有置顶聊天会话列表
 - (void)topConversationWithCompletion:(void (^ _Nonnull)(NSArray<Conversation *> * _Nonnull))completion;
 /// 获取所有未置顶聊天会话列表
@@ -130,6 +132,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 修改会话撤回状态数据
 /// @param uuids 消息uuid数组
 - (void)updateConversationCallBackStatusWithMsgUUIDs:(NSArray<NSString *> *)uuids;
+
+/// 手动添加会话
+/// @param conversation 所需添加内部咨询会话的conversation
+- (BOOL)manualAddConversationWithConversation:(Conversation *)conversation;
 
 #if DEBUG
 /// 执行SQL语句，单元测试使用
