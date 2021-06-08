@@ -210,27 +210,16 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             haveRecord = YES;
         }
         [result close];
-        if (haveRecord) {
-            success = [db
-                executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, "
-                              @"msguuid = ?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount= "
-                              @"?, member_type = ?, member_level=?, member_img = ?, draft = ?, unsend_tag = ?, "
-                              @"target_id = ?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
-                              avatar, nickname, @(conversation.timestamp), content, readUUID,
-                              @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
-                              @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
-                              memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                              @(conversation.is_self), areaStr, remarkNameStr, @(conversation.uid)];
-            return;
-        }
-        NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
-        success =
-            [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
-                              readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
-                              @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
-                              memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                              @(conversation.is_self), areaStr, remarkNameStr];
+        if (haveRecord == NO) {
+            NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+            success =
+                [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
+                                  readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                                  @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                                  memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                                  @(conversation.is_self), areaStr, remarkNameStr];
+        }        
     }];
     return success;
 }
