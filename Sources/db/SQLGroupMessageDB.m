@@ -11,6 +11,8 @@
 
 #import "NSString+JSMessagesView.h"
 
+@import SQLite3;
+
 static const NSString *allColumns = @"sender, group_id, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
                                     @"lineheight, callback, deletetag, content";
 
@@ -430,7 +432,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword {
     FMDatabase *db = self.db;
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE content LIKE '%%%@%%'", keyword];
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE REGEXP(content, '%@')", keyword];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -447,7 +449,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE content LIKE '%%%@%%' AND group_id = %@",
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE REGEXP(content, '%@') AND group_id = %@",
                                    keyword, @(targetUid)];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
@@ -457,6 +459,45 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     }
     [rs close];
     return messageArr;
+}
+
+/// 给数据库动态添加正则匹配方法
+/// 使用方法示例，下面这个SQL语句会查询content字段中包含你好字样的记录：
+/// SELECT * FROM group_message WHERE REGEXP(content, '你好')
+- (void)regularExpressionFunctionAdd {
+    [self.db makeFunctionNamed:@"REGEXP" arguments:2 block:^(void * _Nonnull context, int argc, void * _Nonnull * _Nonnull argv) {
+        if ((sqlite3_value_type(argv[0]) == SQLITE_TEXT) && (sqlite3_value_type(argv[1]) == SQLITE_TEXT)) {
+            @autoreleasepool {
+                const char *cString = (const char *)sqlite3_value_text(argv[0]);
+                const char *cString2 = (const char *)sqlite3_value_text(argv[1]);
+                NSString *content = [NSString stringWithUTF8String:cString];
+                NSString *keyword = [NSString stringWithUTF8String:cString2];
+                NSError *error = nil;
+                NSRegularExpression *expr = [NSRegularExpression regularExpressionWithPattern:[NSString stringWithFormat:@"\"content\":\"[^\"]{0,}%@", keyword] options:NSRegularExpressionCaseInsensitive error:&error];
+                if (error) {
+#if DEBUG
+                    NSLog(@">>> expression error: %@", error.localizedDescription);
+#endif
+                    sqlite3_result_null(context);
+                    return;
+                }
+                NSTextCheckingResult *result = [expr firstMatchInString:content options:NSMatchingReportCompletion range:NSMakeRange(0, content.length)];
+                if (!result || result.range.location == NSNotFound) {
+//#if DEBUG
+//                    NSLog(@">>> not found %@ at %@", expr.pattern, content);
+//#endif
+                    sqlite3_result_null(context);
+                    return;
+                }
+                sqlite3_result_int(context, 1);
+            }
+        } else {
+#if DEBUG
+            NSLog(@"Unknown formart for REGEXP (%d, %d) %s:%d", sqlite3_value_type(argv[0]), sqlite3_value_type(argv[1]), __FUNCTION__, __LINE__);
+#endif
+            sqlite3_result_null(context);
+        }
+    }];
 }
 
 - (BOOL)addFlag:(NSString *)uuid flag:(int)f {

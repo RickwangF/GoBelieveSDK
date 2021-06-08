@@ -92,6 +92,11 @@
 /// @param targetUid targetUid
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid;
 
+/// 给数据库动态添加正则匹配方法
+/// 使用方法示例，下面这个SQL语句会查询content字段中包含你好字样的记录：
+/// SELECT * FROM group_message WHERE REGEXP(content, '你好')
+- (void)regularExpressionFunctionAdd;
+
 /// 手动检查是否有自定义添加字段
 - (void)checkHaveManualColumn;
 
