@@ -219,7 +219,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                   @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                   memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
                                   @(conversation.is_self), areaStr, remarkNameStr];
-        }        
+                
     }];
     return success;
 }
