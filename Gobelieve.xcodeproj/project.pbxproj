@@ -17,7 +17,7 @@
 		525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 525FD2392666001600496C89 /* IMessage+CreatorMode.m */; };
 		5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */; };
 		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 52BD5F8526392E9700560059 /* gobelieveConversation.db */; };
+		52E9C51D267068BF00CFB0EC /* gobelieveConversation.db in Resources */ = {isa = PBXBuildFile; fileRef = 52E9C51C267068BF00CFB0EC /* gobelieveConversation.db */; };
 		52EA091626299508003652B7 /* Gobelieve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52EA090C26299508003652B7 /* Gobelieve.framework */; };
 		52EA091D26299508003652B7 /* Gobelieve.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA090F26299508003652B7 /* Gobelieve.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09992629953C003652B7 /* TCPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09282629953B003652B7 /* TCPConnection.m */; };
@@ -153,7 +153,7 @@
 		525FD2392666001600496C89 /* IMessage+CreatorMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IMessage+CreatorMode.m"; sourceTree = "<group>"; };
 		5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLGroupMessageDBTests.m; sourceTree = "<group>"; };
 		52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBConversationIterator.h; sourceTree = "<group>"; };
-		52BD5F8526392E9700560059 /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
+		52E9C51C267068BF00CFB0EC /* gobelieveConversation.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieveConversation.db; sourceTree = "<group>"; };
 		52EA090C26299508003652B7 /* Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		52EA090F26299508003652B7 /* Gobelieve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Gobelieve.h; sourceTree = "<group>"; };
 		52EA091026299508003652B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -464,7 +464,7 @@
 		52EA098B2629953C003652B7 /* imKitRes */ = {
 			isa = PBXGroup;
 			children = (
-				52BD5F8526392E9700560059 /* gobelieveConversation.db */,
+				52E9C51C267068BF00CFB0EC /* gobelieveConversation.db */,
 				52EA098C2629953C003652B7 /* gobelieve.db */,
 			);
 			path = imKitRes;
@@ -724,7 +724,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52EA09F72629953C003652B7 /* gobelieve.db in Resources */,
-				52BD5F8626392E9700560059 /* gobelieveConversation.db in Resources */,
+				52E9C51D267068BF00CFB0EC /* gobelieveConversation.db in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
