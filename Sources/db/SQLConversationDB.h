@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
 - (void)addConversation:(Conversation *)conversation completion:(void (^ _Nullable)(BOOL state))completion;
 
+/// 检测是否存在表结构字段
+- (void)manualCheckConversationDBColumn;
+
 /// 整体会话替换，将会话的所有展示内容做替换
 /// @param conversation 添加的会话
 - (void)replaceConversation:(Conversation *)conversation;

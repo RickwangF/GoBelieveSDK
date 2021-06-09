@@ -27,11 +27,12 @@
 #define COL_IS_SELF is_self
 #define COL_AREA area
 #define COL_REMARKNAME remark_name
+#define COL_CONVERSATION_TYPE conversation_type
 
 #define ALL_COL                                                                                                        \
     comma(COL_UID, COL_AVATARURL, COL_NAME, COL_TIMESTAMP, COL_CONTENT, COL_MSGUUID, COL_ISCALLBACK, COL_ISGROUP,      \
           COL_ISDELETE, COL_ISTOP, COL_NEWMSGCOUNT, COL_MEMBERTYPE, COL_MEMBERLEVEL, COL_MEMBERIMG, COL_DRAFT,         \
-          COL_UNSENDTAG, COL_TARGETID, COL_IS_SELF, COL_AREA, COL_REMARKNAME)
+          COL_UNSENDTAG, COL_TARGETID, COL_IS_SELF, COL_AREA, COL_REMARKNAME, COL_CONVERSATION_TYPE)
 
 @class FMResultSet;
 

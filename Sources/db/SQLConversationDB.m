@@ -212,17 +212,61 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         [result close];
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
             success =
                 [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
                                   readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                   @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                   memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                  @(conversation.is_self), areaStr, remarkNameStr];
+                                  @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)];
+        }else{
+            success =
+            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+                              @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
+                              @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+                              @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?",
+                              avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
+                              @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+                              @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
+                              @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
+                              @(conversation.uid)];
         }
-                
     }];
     return success;
+}
+
+/// 检测是否存在表结构字段
+- (void)manualCheckConversationDBColumn {
+    FMDatabaseQueue *queue = self.dbQueue;
+    
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        FMResultSet *result = [db executeQuery:@"SELECT * FROM gb_conversation LIMIT 10;"];
+        
+        // 字段名
+        NSArray<NSString *> *columnNames = @[@"conversation_type"];
+        
+        // 字段生成约束
+        NSArray<NSString *> *constraints = @[@"INTEGER NOT NULL DEFAULT 0"];
+        
+        // 表中所有字段名
+        NSDictionary<NSString *, NSNumber *> *all = [result columnNameToIndexMap];
+
+        for (int j = 0; j < columnNames.count; j++) {
+            NSString *name = columnNames[j];
+            __block BOOL found = NO;
+            [all enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSNumber * _Nonnull obj, BOOL * _Nonnull stop) {
+                if ([key isEqualToString:name]) {
+                    found = YES;
+                    *stop = true;
+                }
+            }];
+            if (!found) {
+                BOOL state = [db executeUpdate:[NSString stringWithFormat:@"ALTER TABLE gb_conversation ADD %@ %@", name, constraints[j]]];
+                NSLog(@"群插入%@列%@", name, state ? @"成功" : @"失败");
+            }
+        }
+        [result close];
+    }];
 }
 
 /// 添加会话
@@ -255,11 +299,11 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                           @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
                           @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                          @"?, is_self = ?, area = ?, remark_name = ? WHERE conversationid  = ?",
+                          @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?",
                           avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
-                          @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr,
+                          @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
                           @(conversation.uid)];
     }];
 }
@@ -514,7 +558,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation(" ALL_COL
-            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?)";
+            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?)";
             
             success = [db executeUpdate:sqlStr, @(conversation.uid), conversation.avatarURL, conversation.name, @(conversation.timestamp), conversation.content, conversation.msguuid, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                        conversation.memberLevel, conversation.memberImg, conversation.draft, @(conversation.unsendTag), conversation.targetId,

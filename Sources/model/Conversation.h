@@ -61,6 +61,8 @@
 @property(nonatomic, copy) NSString *area;
 /// 备注名
 @property(nonatomic, copy) NSString *remarkName;
+/// 会话类型
+@property(nonatomic, assign) NSInteger conversationType;
 @end
 
 @interface IGroup : NSObject

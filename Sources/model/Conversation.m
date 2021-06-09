@@ -35,6 +35,7 @@
     conversation.is_self = [rs boolForColumn:@"is_self"];
     conversation.area = [rs stringForColumn:@"area"];
     conversation.remarkName = [rs stringForColumn:@"remark_name"];
+    conversation.conversationType = [rs intForColumn:@"conversation_type"];
     return conversation;
 }
 
