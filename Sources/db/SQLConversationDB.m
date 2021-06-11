@@ -426,12 +426,16 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 /// @param content 消息内容
 /// @param msgUUID 消息uuid
 /// @param timestamp 时间
+/// @param isSelf 是否自己发送
+/// @param isCallBack 是否撤回
 /// @param count 需要添加的消息数量
 /// @param clearCount 是否需要清空消息数量
 /// @param receiver 消息接收方
 - (void)updateConversationMessageWithContent:(NSString *)content
                                      msgUUID:(NSString *)msgUUID
                                    timestamp:(int64_t)timestamp
+                                      isSelf:(BOOL)isSelf
+                                  isCallBack:(BOOL)isCallBack
                                        count:(NSInteger)count
                                   clearCount:(BOOL)clearCount
                                     receiver:(int64_t)receiver {
@@ -452,8 +456,8 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         }
         
         [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp=  ?, unreadcount = ?, "
-                          @"is_callback= 0 WHERE conversationid = ?",
-         contentStr, uuidStr, @(timestamp), clearCount == YES ? @(0) : @(unreadCount + count), @(receiver)];
+                          @"is_callback= ?, is_Self= ? WHERE conversationid = ?",
+         contentStr, uuidStr, @(timestamp), clearCount == YES ? @(0) : @(unreadCount + count), isCallBack == YES ? @(1) : @(0), isSelf == YES ? @(1) : @(0), @(receiver)];
     }];
 }
 
