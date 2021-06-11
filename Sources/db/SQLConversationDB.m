@@ -539,7 +539,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
             [str appendString:@")"];
             sqlStr = [NSString
-                stringWithFormat:@"UPDATE gb_conversation SET is_self= 0, is_callback= 1 WHERE msguuid IN %@", str];
+                stringWithFormat:@"UPDATE gb_conversation SET is_callback= 1 WHERE msguuid IN %@", str];
         }
 
         [db executeUpdate:sqlStr];
