@@ -279,6 +279,17 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }
 }
 
+/// 删除所有会话
+- (void)clearAllConversationCompletion:(void (^_Nullable)(BOOL state))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        BOOL success = [db executeUpdate:@"DELETE FROM gb_conversation"];
+        if (completion) {
+            completion(success);
+        }
+    }];
+}
+
 /// 整体会话替换，将会话的所有展示内容做替换，一般在将服务端会话请求下来时使用
 /// @param conversation 添加的会话
 - (void)replaceConversation:(Conversation *)conversation {

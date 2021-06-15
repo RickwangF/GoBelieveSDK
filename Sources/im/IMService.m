@@ -244,6 +244,11 @@
     [self publishRTMessage:rt];
 }
 
+- (void)handleGroupRTMessage:(Message *)msg {
+    RTMessage *rt = (RTMessage*)msg.body;
+    [self publishGroupRTMessage:rt];
+}
+
 -(void)handleAuthStatus:(Message*)msg {
     int status = [(NSNumber*)msg.body intValue];
     NSLog(@"auth status:%d", status);
@@ -495,6 +500,17 @@
     }];
 }
 
+-(void)publishGroupRTMessage:(RTMessage*)rt {
+    [self runOnMainThread:^{
+        for (NSValue *value in self.rtObservers) {
+            id<RTMessageObserver> ob = [value nonretainedObjectValue];
+            if ([ob respondsToSelector:@selector(onGroupRTMessage:)]) {
+                [ob onGroupRTMessage:rt];
+            }
+        }
+    }];
+}
+
 -(void)publishSystemMessage:(NSString*)sys {
     [self runOnMainThread:^{
         for (NSValue *value in self.systemObservers) {
@@ -615,6 +631,8 @@
         [self handleCustomerSupportMessage:msg];
     } else if (msg.cmd == MSG_RT) {
         [self handleRTMessage:msg];
+    } else if (msg.cmd == MSG_Group_RT) {
+        [self handleGroupRTMessage:msg];
     } else if (msg.cmd == MSG_SYNC_NOTIFY) {
         [self handleSyncNotify:msg];
     } else if (msg.cmd == MSG_SYNC_BEGIN) {

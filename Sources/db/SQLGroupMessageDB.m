@@ -549,7 +549,8 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                                          @"callback",
                                          @"deletetag",
                                          @"haveread",
-                                         @"readuuid"];
+                                         @"readuuid",
+                                         @"haveevaluate"];
     // 字段生成约束
     NSArray<NSString *> *constraints = @[@"INTEGER NOT NULL DEFAULT 0",
                                          @"INTEGER NOT NULL DEFAULT 0",
@@ -557,7 +558,8 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                                          @"INTEGER NOT NULL DEFAULT 0",
                                          @"INTEGER NOT NULL DEFAULT 0",
                                          @"INTEGER NOT NULL DEFAULT 0",
-                                         @"TEXT"];
+                                         @"TEXT",
+                                         @"INTEGER NOT NULL DEFAULT 0"];
     
     // 表中所有字段名
     NSDictionary<NSString *, NSNumber *> *all = [result columnNameToIndexMap];

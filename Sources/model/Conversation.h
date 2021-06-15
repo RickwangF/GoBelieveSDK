@@ -61,7 +61,7 @@
 @property(nonatomic, copy) NSString *area;
 /// 备注名
 @property(nonatomic, copy) NSString *remarkName;
-/// 会话类型
+/// 会话类型：0会员在线客服，1内部员工私聊，2专属客服聊天，3内部员工在线客服
 @property(nonatomic, assign) NSInteger conversationType;
 @end
 

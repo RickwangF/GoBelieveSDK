@@ -46,6 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 检测是否存在表结构字段
 - (void)manualCheckConversationDBColumn;
 
+/// 删除所有会话
+- (void)clearAllConversationCompletion:(void (^_Nullable)(BOOL state))completion;
+
 /// 整体会话替换，将会话的所有展示内容做替换
 /// @param conversation 添加的会话
 - (void)replaceConversation:(Conversation *)conversation;

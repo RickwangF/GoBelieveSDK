@@ -23,6 +23,7 @@
 #define MSG_AUTH_TOKEN 15
 
 #define MSG_RT 17
+#define MSG_Group_RT 71
 #define MSG_ENTER_ROOM 18
 #define MSG_LEAVE_ROOM 19
 #define MSG_ROOM_IM 20

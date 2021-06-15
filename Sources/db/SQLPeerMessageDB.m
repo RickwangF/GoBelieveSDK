@@ -558,51 +558,86 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// 手动检查是否有自定义添加字段
 - (void)checkHaveManualColumn {
     FMDatabase *db = self.db;
-    BOOL haveCacheHeight = NO;
-    BOOL haveCacheWidth = NO;
-    BOOL haveLineHeight = NO;
-    BOOL haveCallBack = NO;
-    BOOL haveDeleteMessage = NO;
-    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message"];
-    for (int i = 0; i < [result columnCount]; i++) {
-        NSString *columnName = [result columnNameForIndex:i];
-        if ([columnName containsString:@"cacheheight"]) {
-            haveCacheHeight = YES;
-        } else if ([columnName containsString:@"cachewidth"]) {
-            haveCacheWidth = YES;
-        } else if ([columnName containsString:@"lineheight"]) {
-            haveLineHeight = YES;
-        } else if ([columnName containsString:@"callback"]) {
-            haveCallBack = YES;
-        } else if ([columnName containsString:@"deletetag"]) {
-            haveDeleteMessage = YES;
+    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message LIMIT 10;"];
+    // 字段名
+    NSArray<NSString *> *columnNames = @[@"cacheheight",
+                                         @"cachewidth",
+                                         @"lineheight",
+                                         @"callback",
+                                         @"deletetag",
+                                         @"haveread",
+                                         @"readuuid"];
+    // 字段生成约束
+    NSArray<NSString *> *constraints = @[@"INTEGER NOT NULL DEFAULT 0",
+                                         @"INTEGER NOT NULL DEFAULT 0",
+                                         @"INTEGER NOT NULL DEFAULT 0",
+                                         @"INTEGER NOT NULL DEFAULT 0",
+                                         @"INTEGER NOT NULL DEFAULT 0",
+                                         @"INTEGER NOT NULL DEFAULT 0",
+                                         @"TEXT"];
+    // 表中所有字段名
+    NSDictionary<NSString *, NSNumber *> *all = [result columnNameToIndexMap];
+
+    for (int j = 0; j < columnNames.count; j++) {
+        NSString *name = columnNames[j];
+        __block BOOL found = NO;
+        [all enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSNumber * _Nonnull obj, BOOL * _Nonnull stop) {
+            if ([key isEqualToString:name]) {
+                found = YES;
+                *stop = true;
+            }
+        }];
+        if (!found) {
+            BOOL state = [db executeUpdate:[NSString stringWithFormat:@"ALTER TABLE peer_message ADD %@ %@", name, constraints[j]]];
+            NSLog(@"群插入%@列%@", name, state ? @"成功" : @"失败");
         }
     }
-    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES &&
-        haveDeleteMessage == YES) {
-        return;
-    }
-    if (haveCacheHeight == NO) {
-        BOOL addCH = [db executeUpdate:@"ALTER TABLE peer_message ADD cacheheight"];
-        NSLog(@"插入cacheheight列%@", addCH == YES ? @"成功" : @"失败");
-    }
-    if (haveCacheWidth == NO) {
-        BOOL addCW = [db executeUpdate:@"ALTER TABLE peer_message ADD cachewidth"];
-        NSLog(@"插入cachewidth列%@", addCW == YES ? @"成功" : @"失败");
-    }
-    if (haveLineHeight == NO) {
-        BOOL addLH = [db executeUpdate:@"ALTER TABLE peer_message ADD lineheight"];
-        NSLog(@"插入lineheight列%@", addLH == YES ? @"成功" : @"失败");
-    }
-    if (haveCallBack == NO) {
-        BOOL addCH = [db executeUpdate:@"ALTER TABLE peer_message ADD callback"];
-        NSLog(@"插入callback列%@", addCH == YES ? @"成功" : @"失败");
-    }
-    if (haveDeleteMessage == NO) {
-        BOOL addDH = [db executeUpdate:@"ALTER TABLE peer_message ADD deletetag"];
-        NSLog(@"插入deletetag列%@", addDH == YES ? @"成功" : @"失败");
-    }
     [result close];
+//    BOOL haveCacheHeight = NO;
+//    BOOL haveCacheWidth = NO;
+//    BOOL haveLineHeight = NO;
+//    BOOL haveCallBack = NO;
+//    BOOL haveDeleteMessage = NO;
+//    FMResultSet *result = [db executeQuery:@"SELECT * FROM peer_message"];
+//    for (int i = 0; i < [result columnCount]; i++) {
+//        NSString *columnName = [result columnNameForIndex:i];
+//        if ([columnName containsString:@"cacheheight"]) {
+//            haveCacheHeight = YES;
+//        } else if ([columnName containsString:@"cachewidth"]) {
+//            haveCacheWidth = YES;
+//        } else if ([columnName containsString:@"lineheight"]) {
+//            haveLineHeight = YES;
+//        } else if ([columnName containsString:@"callback"]) {
+//            haveCallBack = YES;
+//        } else if ([columnName containsString:@"deletetag"]) {
+//            haveDeleteMessage = YES;
+//        }
+//    }
+//    if (haveCacheWidth == YES && haveLineHeight == YES && haveCacheHeight == YES && haveCallBack == YES &&
+//        haveDeleteMessage == YES) {
+//        return;
+//    }
+//    if (haveCacheHeight == NO) {
+//        BOOL addCH = [db executeUpdate:@"ALTER TABLE peer_message ADD cacheheight"];
+//        NSLog(@"插入cacheheight列%@", addCH == YES ? @"成功" : @"失败");
+//    }
+//    if (haveCacheWidth == NO) {
+//        BOOL addCW = [db executeUpdate:@"ALTER TABLE peer_message ADD cachewidth"];
+//        NSLog(@"插入cachewidth列%@", addCW == YES ? @"成功" : @"失败");
+//    }
+//    if (haveLineHeight == NO) {
+//        BOOL addLH = [db executeUpdate:@"ALTER TABLE peer_message ADD lineheight"];
+//        NSLog(@"插入lineheight列%@", addLH == YES ? @"成功" : @"失败");
+//    }
+//    if (haveCallBack == NO) {
+//        BOOL addCH = [db executeUpdate:@"ALTER TABLE peer_message ADD callback"];
+//        NSLog(@"插入callback列%@", addCH == YES ? @"成功" : @"失败");
+//    }
+//    if (haveDeleteMessage == NO) {
+//        BOOL addDH = [db executeUpdate:@"ALTER TABLE peer_message ADD deletetag"];
+//        NSLog(@"插入deletetag列%@", addDH == YES ? @"成功" : @"失败");
+//    }
+//    [result close];
 }
 
 /// 清除消息数据

@@ -65,7 +65,7 @@
 
 @optional
 -(void)onRTMessage:(RTMessage*)rt;
-
+-(void)onGroupRTMessage:(RTMessage*)rt;
 @end
 
 @protocol SystemMessageObserver <NSObject>
