@@ -14,6 +14,9 @@
 		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
 		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
 		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
+		5243E6FC2678B9FA009E8F48 /* IMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E6FB2678B9FA009E8F48 /* IMessage.m */; };
+		5243E7032678BB24009E8F48 /* IMService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E7012678BB24009E8F48 /* IMService.m */; };
+		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; };
 		525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 525FD2392666001600496C89 /* IMessage+CreatorMode.m */; };
 		5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */; };
 		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -26,7 +29,6 @@
 		52EA099C2629953C003652B7 /* Message.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA092C2629953B003652B7 /* Message.m */; };
 		52EA099D2629953C003652B7 /* GOReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA092D2629953B003652B7 /* GOReachability.m */; };
 		52EA099E2629953C003652B7 /* TCPConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA092E2629953B003652B7 /* TCPConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52EA099F2629953C003652B7 /* IMService.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA092F2629953B003652B7 /* IMService.m */; };
 		52EA09A02629953C003652B7 /* PeerMessageDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09312629953B003652B7 /* PeerMessageDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09A12629953C003652B7 /* SQLCustomerMessageDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09322629953B003652B7 /* SQLCustomerMessageDB.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09A22629953C003652B7 /* SQLGroupMessageDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09332629953B003652B7 /* SQLGroupMessageDB.m */; };
@@ -81,7 +83,6 @@
 		52EA09D62629953C003652B7 /* MessageTimeBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09682629953C003652B7 /* MessageTimeBase.m */; };
 		52EA09D72629953C003652B7 /* MessageAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA09692629953C003652B7 /* MessageAudio.m */; };
 		52EA09D82629953C003652B7 /* MessageP2PSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096A2629953C003652B7 /* MessageP2PSession.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		52EA09D92629953C003652B7 /* IMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 52EA096B2629953C003652B7 /* IMessage.m */; };
 		52EA09DA2629953C003652B7 /* Conversation.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096C2629953C003652B7 /* Conversation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09DB2629953C003652B7 /* IUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096D2629953C003652B7 /* IUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09DC2629953C003652B7 /* MessageVideo.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA096E2629953C003652B7 /* MessageVideo.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -104,7 +105,6 @@
 		52EA09F52629953C003652B7 /* Message.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09892629953C003652B7 /* Message.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09F62629953C003652B7 /* AsyncTCP.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA098A2629953C003652B7 /* AsyncTCP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09F72629953C003652B7 /* gobelieve.db in Resources */ = {isa = PBXBuildFile; fileRef = 52EA098C2629953C003652B7 /* gobelieve.db */; };
-		52EA09F82629953C003652B7 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA098D2629953C003652B7 /* IMService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09F92629953C003652B7 /* SyncKeyHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA098F2629953C003652B7 /* SyncKeyHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09FA2629953C003652B7 /* CustomerMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09902629953C003652B7 /* CustomerMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		52EA09FB2629953C003652B7 /* PeerMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 52EA09912629953C003652B7 /* PeerMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -149,6 +149,9 @@
 		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
 		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
 		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
+		5243E6FB2678B9FA009E8F48 /* IMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMessage.m; sourceTree = "<group>"; };
+		5243E7012678BB24009E8F48 /* IMService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMService.m; sourceTree = "<group>"; };
+		5243E7022678BB24009E8F48 /* IMService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMService.h; sourceTree = "<group>"; };
 		525FD2382666001600496C89 /* IMessage+CreatorMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IMessage+CreatorMode.h"; sourceTree = "<group>"; };
 		525FD2392666001600496C89 /* IMessage+CreatorMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IMessage+CreatorMode.m"; sourceTree = "<group>"; };
 		5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLGroupMessageDBTests.m; sourceTree = "<group>"; };
@@ -165,7 +168,6 @@
 		52EA092C2629953B003652B7 /* Message.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Message.m; sourceTree = "<group>"; };
 		52EA092D2629953B003652B7 /* GOReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GOReachability.m; sourceTree = "<group>"; };
 		52EA092E2629953B003652B7 /* TCPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TCPConnection.h; sourceTree = "<group>"; };
-		52EA092F2629953B003652B7 /* IMService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMService.m; sourceTree = "<group>"; };
 		52EA09312629953B003652B7 /* PeerMessageDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeerMessageDB.h; sourceTree = "<group>"; };
 		52EA09322629953B003652B7 /* SQLCustomerMessageDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SQLCustomerMessageDB.h; sourceTree = "<group>"; };
 		52EA09332629953B003652B7 /* SQLGroupMessageDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SQLGroupMessageDB.m; sourceTree = "<group>"; };
@@ -220,7 +222,6 @@
 		52EA09682629953C003652B7 /* MessageTimeBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageTimeBase.m; sourceTree = "<group>"; };
 		52EA09692629953C003652B7 /* MessageAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageAudio.m; sourceTree = "<group>"; };
 		52EA096A2629953C003652B7 /* MessageP2PSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageP2PSession.h; sourceTree = "<group>"; };
-		52EA096B2629953C003652B7 /* IMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMessage.m; sourceTree = "<group>"; };
 		52EA096C2629953C003652B7 /* Conversation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversation.h; sourceTree = "<group>"; };
 		52EA096D2629953C003652B7 /* IUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IUser.h; sourceTree = "<group>"; };
 		52EA096E2629953C003652B7 /* MessageVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageVideo.h; sourceTree = "<group>"; };
@@ -243,7 +244,6 @@
 		52EA09892629953C003652B7 /* Message.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Message.h; sourceTree = "<group>"; };
 		52EA098A2629953C003652B7 /* AsyncTCP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsyncTCP.h; sourceTree = "<group>"; };
 		52EA098C2629953C003652B7 /* gobelieve.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = gobelieve.db; sourceTree = "<group>"; };
-		52EA098D2629953C003652B7 /* IMService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMService.h; sourceTree = "<group>"; };
 		52EA098F2629953C003652B7 /* SyncKeyHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncKeyHandler.h; sourceTree = "<group>"; };
 		52EA09902629953C003652B7 /* CustomerMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomerMessageHandler.h; sourceTree = "<group>"; };
 		52EA09912629953C003652B7 /* PeerMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeerMessageHandler.h; sourceTree = "<group>"; };
@@ -384,7 +384,7 @@
 			isa = PBXGroup;
 			children = (
 				52EA09542629953C003652B7 /* IMessage.h */,
-				52EA096B2629953C003652B7 /* IMessage.m */,
+				5243E6FB2678B9FA009E8F48 /* IMessage.m */,
 				52EA094A2629953C003652B7 /* MessageText.h */,
 				52EA09612629953C003652B7 /* MessageText.m */,
 				52EA09782629953C003652B7 /* MessageContent.h */,
@@ -527,8 +527,8 @@
 			children = (
 				52EA09412629953B003652B7 /* IMHttpAPI.h */,
 				52EA09982629953C003652B7 /* IMHttpAPI.m */,
-				52EA098D2629953C003652B7 /* IMService.h */,
-				52EA092F2629953B003652B7 /* IMService.m */,
+				5243E7022678BB24009E8F48 /* IMService.h */,
+				5243E7012678BB24009E8F48 /* IMService.m */,
 				52EA09892629953C003652B7 /* Message.h */,
 				52EA092C2629953B003652B7 /* Message.m */,
 			);
@@ -610,6 +610,7 @@
 				52EA09D52629953C003652B7 /* MessageVOIP.h in Headers */,
 				5227ABD3262E6C7B001A309C /* wavreader.h in Headers */,
 				52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */,
+				5243E7042678BB24009E8F48 /* IMService.h in Headers */,
 				52EA09B32629953C003652B7 /* AsyncRawTCP.h in Headers */,
 				52EA09C72629953C003652B7 /* ICustomerMessage.h in Headers */,
 				52EA09B42629953C003652B7 /* AsyncSSLTCP.h in Headers */,
@@ -633,7 +634,6 @@
 				52EA09FC2629953C003652B7 /* GroupMessageHandler.h in Headers */,
 				52EA09AE2629953C003652B7 /* GroupMessageDB.h in Headers */,
 				52EA09A62629953C003652B7 /* CustomerMessageDB.h in Headers */,
-				52EA09F82629953C003652B7 /* IMService.h in Headers */,
 				AC96A35DED16CD6278671B40 /* FileCache.h in Headers */,
 				AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */,
 				AC96A861EE2590B82A0E8F92 /* magic.h in Headers */,
@@ -828,10 +828,10 @@
 				52EA09A22629953C003652B7 /* SQLGroupMessageDB.m in Sources */,
 				52EA09C32629953C003652B7 /* MessageP2PSession.m in Sources */,
 				52EA09C12629953C003652B7 /* Conversation.m in Sources */,
-				52EA099F2629953C003652B7 /* IMService.m in Sources */,
 				52EA09A52629953C003652B7 /* SQLPeerMessageDB.m in Sources */,
 				52EA0A022629953C003652B7 /* IMHttpAPI.m in Sources */,
 				52EA0A002629953C003652B7 /* GroupMessageHandler.m in Sources */,
+				5243E6FC2678B9FA009E8F48 /* IMessage.m in Sources */,
 				52EA09C02629953C003652B7 /* IUser.m in Sources */,
 				52EA09A92629953C003652B7 /* PeerMessageDB.m in Sources */,
 				52EA09B12629953C003652B7 /* AsyncTCP.m in Sources */,
@@ -840,7 +840,6 @@
 				52EA09AB2629953C003652B7 /* EPeerMessageDB.m in Sources */,
 				52EA09D42629953C003652B7 /* MessageHeadline.m in Sources */,
 				52EA09FD2629953C003652B7 /* PeerMessageHandler.m in Sources */,
-				52EA09D92629953C003652B7 /* IMessage.m in Sources */,
 				52EA09992629953C003652B7 /* TCPConnection.m in Sources */,
 				52EA09CF2629953C003652B7 /* MessageText.m in Sources */,
 				52EA09CC2629953C003652B7 /* MessageGroupNotification.m in Sources */,
@@ -851,6 +850,7 @@
 				52EA09F32629953C003652B7 /* NSDate+Format.m in Sources */,
 				52EA09FF2629953C003652B7 /* SyncKeyHandler.m in Sources */,
 				52EA09A82629953C003652B7 /* SQLCustomerMessageDB.m in Sources */,
+				5243E7032678BB24009E8F48 /* IMService.m in Sources */,
 				52EA09D02629953C003652B7 /* MessageSecret.m in Sources */,
 				52EA09D72629953C003652B7 /* MessageAudio.m in Sources */,
 				52EA09CE2629953C003652B7 /* MessageVideo.m in Sources */,

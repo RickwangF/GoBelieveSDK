@@ -51,6 +51,7 @@
 
 //保证一个时刻只存在一个同步过程，否则会导致获取到重复的消息
 @property(nonatomic, assign) int64_t peedingSyncKey;
+//@property(nonatomic, assign) BOOL isSyncing;
 @property(nonatomic, assign) int32_t syncTimestmap;
 
 
@@ -948,10 +949,25 @@
     });
 }
 
+- (void)sendGroupRTMessageAsync:(RTMessage *)msg {
+    dispatch_async(self.queue, ^{
+        [self sendGroupRTMessage:msg];
+    });
+}
+
 -(BOOL)sendRTMessage:(RTMessage *)rt {
     [self assertWorkQueue];
     Message *m = [[Message alloc] init];
     m.cmd = MSG_RT;
+    m.body = rt;
+    BOOL r = [self sendMessage:m];
+    return r;
+}
+
+-(BOOL)sendGroupRTMessage:(RTMessage *)rt {
+    [self assertWorkQueue];
+    Message *m = [[Message alloc] init];
+    m.cmd = MSG_Group_RT;
     m.body = rt;
     BOOL r = [self sendMessage:m];
     return r;

@@ -136,6 +136,19 @@
         }
         memcpy(p, s, l);
         return [NSData dataWithBytes:buf length:HEAD_SIZE + 16 +l];
+    } else if (self.cmd == MSG_ROOM_IM || self.cmd == MSG_Group_RT) {
+        RoomMessage *rm = (RoomMessage*)self.body;
+        writeInt64(rm.sender, p);
+        p += 8;
+        writeInt64(rm.receiver, p);
+        p += 8;
+        const char *s = [rm.content UTF8String];
+        size_t l = strlen(s);
+        if ((l + 28) > 64*1024) {
+            return nil;
+        }
+        memcpy(p, s, l);
+        return [NSData dataWithBytes:buf length:HEAD_SIZE + 16 +l];
     } else if (self.cmd == MSG_UNREAD_COUNT) {
         NSNumber *u = (NSNumber*)self.body;
         writeInt32([u intValue], p);
@@ -214,6 +227,15 @@
         self.body = [[NSString alloc] initWithBytes:p length:data.length-HEAD_SIZE encoding:NSUTF8StringEncoding];
         return YES;
     } else if (self.cmd == MSG_ROOM_IM || self.cmd == MSG_RT) {
+        RoomMessage *rm = [[RoomMessage alloc] init];
+        rm.sender = readInt64(p);
+        p += 8;
+        rm.receiver = readInt64(p);
+        p += 8;
+        rm.content = [[NSString alloc] initWithBytes:p length:data.length-24 encoding:NSUTF8StringEncoding];
+        self.body = rm;
+        return YES;
+    } else if (self.cmd == MSG_ROOM_IM || self.cmd == MSG_Group_RT) {
         RoomMessage *rm = [[RoomMessage alloc] init];
         rm.sender = readInt64(p);
         p += 8;

@@ -97,6 +97,7 @@ __attribute__((objc_runtime_name("GoBelieveIMService")))
 @property(nonatomic, copy) NSString *token;
 //客服app需要设置，普通app不需要设置
 @property(nonatomic) int64_t appID;
+@property(nonatomic, assign) BOOL isSyncing;
 
 //离线消息的同步key
 @property(nonatomic) int64_t syncKey;
@@ -105,7 +106,7 @@ __attribute__((objc_runtime_name("GoBelieveIMService")))
 @property(nonatomic, weak)id<IMGroupMessageHandler> groupMessageHandler;
 @property(nonatomic, weak)id<IMCustomerMessageHandler> customerMessageHandler;
 @property(nonatomic, strong)id<IMSyncKeyHandler> syncKeyHandler;
-@property(nonatomic, assign) BOOL isSyncing;
+
 +(IMService*)instance;
 
 //超级群消息的同步key
@@ -122,6 +123,7 @@ __attribute__((objc_runtime_name("GoBelieveIMService")))
 //客服->顾客
 -(void)sendCustomerSupportMessageAsync:(CustomerMessage*)im;
 -(void)sendRTMessageAsync:(RTMessage*)msg;
+-(void)sendGroupRTMessageAsync:(RTMessage*)msg;
 
 -(BOOL)sendPeerMessage:(IMMessage*)msg;
 -(BOOL)sendGroupMessage:(IMMessage*)msg;
@@ -131,6 +133,7 @@ __attribute__((objc_runtime_name("GoBelieveIMService")))
 //客服->顾客
 -(BOOL)sendCustomerSupportMessage:(CustomerMessage*)im;
 -(BOOL)sendRTMessage:(RTMessage*)msg;
+-(BOOL)sendGroupRTMessage:(RTMessage*)msg;
 
 -(void)enterRoom:(int64_t)roomID;
 -(void)leaveRoom:(int64_t)roomID;
