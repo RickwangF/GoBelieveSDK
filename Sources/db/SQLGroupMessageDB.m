@@ -130,6 +130,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 /// @param set 数据库结果集
 + (IMessage *)messageFromResultSet:(FMResultSet *)set {
     IMessage *message = [[IMessage alloc] init];
+    [message setMsgId:[set longLongIntForColumn:@"id"]];
     [message setSender:[set longLongIntForColumn:@"sender"]];
     [message setReceiver:[set longLongIntForColumn:@"group_id"]];
     [message setTimestamp:[set longLongIntForColumn:@"timestamp"]];
@@ -581,6 +582,53 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     [result close];
 }
 
+- (BOOL)fixUUIDMissing {
+    FMDatabase *db = self.db;
+    [db beginTransaction];
+    
+    // 先获取readuuid为空的记录
+    NSString *querySQL = @"SELECT * FROM group_message WHERE readuuid IS NULL";
+    FMResultSet *rs = [db executeQuery:querySQL];
+    NSMutableArray<IMessage *> *messages = [[NSMutableArray alloc] initWithCapacity:100];
+    
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messages addObject:msg];
+    }
+    [rs close];
+
+    for (IMessage *msg in messages) {
+        NSError *error = nil;
+        NSDictionary *contentJSON = [NSJSONSerialization JSONObjectWithData:[msg.rawContent dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
+        if (error) {
+            NSLog(@">>> json convert error %@", error);
+            continue;
+        }
+        
+        // 从content字段中取到uuid
+        NSString *uuid = contentJSON[@"msg_uuid"] ?: @"";
+        if (!(uuid && [uuid isKindOfClass:[NSString class]])) {
+            NSLog(@">>> empty uuid for message %@", @(msg.msgLocalID));
+            continue;
+        }
+        
+        // 更新数据readuuid字段
+        NSString *updateSQL = [NSString stringWithFormat:@"UPDATE group_message SET readuuid= '%@' WHERE id= %@", uuid, @(msg.msgLocalID)];
+#if DEBUG
+        NSLog(@">>> update sql %@", updateSQL);
+#endif
+        BOOL r = [db executeUpdate:updateSQL];
+        if (!r) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+            [db rollback];
+            return NO;
+        }
+    }
+
+    [db commit];
+    return YES;
+}
+
 /// 清除消息数据
 /// @param targetUid 目标uid
 - (BOOL)clearMessagesWithTargetUid:(int64_t)targetUid {
@@ -704,11 +752,17 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     [db beginTransaction];
 
     for (IMessage *msg in msgs) {
-        NSString *uuid = msg.uuid ? msg.uuid : @"";
+        NSError *error = nil;
+        NSDictionary *contentJSON = [NSJSONSerialization JSONObjectWithData:[msg.rawContent dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
+        if (error) {
+            NSLog(@">>> json convert error %@", error);
+            continue;
+        }
+        NSString *uuid = contentJSON[@"msg_uuid"] ?: @"";
         BOOL r =
-            [db executeUpdate:@"INSERT INTO group_message (sender, group_id, timestamp, flags, uuid, content) VALUES "
-                              @"(?, ?, ?, ?, ?, ?)",
-                              @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), uuid, msg.rawContent];
+            [db executeUpdate:@"INSERT INTO group_message (sender, group_id, timestamp, flags, uuid, readuuid, content) VALUES "
+                              @"(?, ?, ?, ?, ?, ?, ?)",
+                              @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), uuid, uuid, msg.rawContent];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             [db rollback];
@@ -760,8 +814,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                            @(conversationID),
                            @(conversationID),
                            uuid];
-    FMResultSet *rs = [db
-        executeQuery:selectStr, @(conversationID), @(conversationID), uuid, @(conversationID), @(conversationID), uuid];
+    FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
         IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];

@@ -108,6 +108,9 @@
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
+/// 更新readuuid为NULL的记录，从content的msg_uuid重新设置
+- (BOOL)fixUUIDMissing;
+
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;
