@@ -761,7 +761,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         NSString *uuid = contentJSON[@"msg_uuid"] ?: @"";
         BOOL r =
             [db executeUpdate:@"INSERT INTO group_message (sender, group_id, timestamp, flags, uuid, readuuid, content) VALUES "
-                              @"(?, ?, ?, ?, ?, ?)",
+                              @"(?, ?, ?, ?, ?, ?, ?)",
                               @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), uuid, uuid, msg.rawContent];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
