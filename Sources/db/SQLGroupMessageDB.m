@@ -308,6 +308,48 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return YES;
 }
 
+/// 批量更新多个消息为已读状态
+/// @param uuids 消息唯一标识符
+- (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids {
+    if (!(uuids && uuids.count > 0)) {
+        return NO;
+    }
+    
+    FMDatabase *db = self.db;
+    
+    BOOL success = true;
+    [db beginTransaction];
+    
+    for (NSString *uuid in uuids) {
+        FMResultSet *rs = [db executeQuery:@"SELECT haveread FROM group_message WHERE readuuid=?", uuid];
+        if (!rs) {
+            continue;
+        }
+        
+        if ([rs next]) {
+            int flags = [rs intForColumn:@"haveread"];
+            flags |= 1;
+
+            BOOL r = [db executeUpdate:@"UPDATE group_message SET haveread= ? WHERE readuuid= ?", @(flags), uuid];
+            success = r;
+            if (!r) {
+                [rs close];
+                NSLog(@"error = %@", [db lastErrorMessage]);
+                continue;
+            }
+        }
+        [rs close];
+    }
+    
+    if (!success) {
+        [db rollback];
+        return NO;
+    }
+    
+    [db commit];
+    return YES;
+}
+
 /// 获取当前目标发送失败消息
 /// @param gid 群聊gid
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)gid {
