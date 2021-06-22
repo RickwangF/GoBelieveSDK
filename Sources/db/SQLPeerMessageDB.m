@@ -394,12 +394,11 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 
 /// 批量更新发送者的消息已读状态
 /// @param uuids 未读消息uuid数组
-/// @param sender 发送者
-- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender {
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids {
+    FMDatabase *db = self.db;
+    NSString *sqlStr;
+    
     if (uuids.count > 0) {
-        FMDatabase *db = self.db;
-        NSString *sqlStr;
-
         NSMutableString *str = [[NSMutableString alloc] init];
         [str appendString:@"("];
         for (NSString *subStr in uuids) {
@@ -409,18 +408,20 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@ AND sender= %@", @(1),
-                str, @(MESSAGE_FLAG_FAILURE), @(sender)];
+                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@", @(1),
+                str, @(MESSAGE_FLAG_FAILURE)];
+    }else{
+        sqlStr = [NSString
+            stringWithFormat:
+                @"UPDATE peer_message SET haveread= %@ WHERE haveread= 0 AND flags != %@", @(1), @(MESSAGE_FLAG_FAILURE)];
+    }
 
-        BOOL r = [db executeUpdate:sqlStr];
-        if (!r) {
-            NSLog(@"error = %@", [db lastErrorMessage]);
-            return NO;
-        }
-        return YES;
-    } else {
+    BOOL r = [db executeUpdate:sqlStr];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;
     }
+    return YES;
 }
 
 /// 更新消息宽高以及行高

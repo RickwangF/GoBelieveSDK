@@ -71,8 +71,7 @@
 
 /// 批量更新发送者的消息已读状态
 /// @param uuids 未读消息uuid数组
-/// @param sender 发送者
-- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender;
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids;
 
 /// 更新消息宽高以及行高
 /// @param width 消息宽度
