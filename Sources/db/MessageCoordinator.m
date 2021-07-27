@@ -29,14 +29,6 @@
         return records;
     }
     
-#if DEBUG
-    MessageRecords *testRecords = [[MessageRecords alloc] init];
-    testRecords.messages = @[];
-    testRecords.uuids = uuids;
-    testRecords.missingUUIDs = uuids;
-    return testRecords;
-#endif
-    
     NSMutableArray<NSString *> *items = [[NSMutableArray alloc] initWithCapacity:uuids.count];
     NSMutableArray<NSString *> *remainItems = [uuids mutableCopy];
     for (NSString *uuid in uuids) {
