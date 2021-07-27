@@ -14,6 +14,12 @@
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
+@interface SQLGroupMessageIterator : NSObject
+/// 将FMDB结果集转化成IMessage对象
+/// @param set 数据库结果集
++ (IMessage *)messageFromResultSet:(FMResultSet *)set;
+@end
+
 @interface SQLGroupMessageDB : NSObject <IMessageDB>
 + (SQLGroupMessageDB *)instance;
 
