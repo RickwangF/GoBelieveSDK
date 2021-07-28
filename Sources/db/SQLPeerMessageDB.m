@@ -7,7 +7,7 @@
 static const NSString *allColumns = @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
                                     @"lineheight, callback, deletetag, content";
 
-@interface SQLPeerMessageIterator : NSObject <IMessageIterator>
+@interface SQLPeerMessageIterator () <IMessageIterator>
 
 //-(SQLPeerMessageIterator*)initWithDB:(FMDatabase*)db peer:(int64_t)peer secret:(BOOL)secret;
 //
