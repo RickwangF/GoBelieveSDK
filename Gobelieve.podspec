@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Gobelieve'
-  s.version          = '0.0.9-t7'
+  s.version          = '0.0.9-t8'
   s.summary          = 'gobelieve'
 
 # This description is used to generate tags and improve search results.
