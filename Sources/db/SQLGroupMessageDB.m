@@ -16,7 +16,7 @@
 static const NSString *allColumns = @"sender, group_id, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
                                     @"lineheight, callback, deletetag, content";
 
-@interface SQLGroupMessageIterator : NSObject <IMessageIterator>
+@interface SQLGroupMessageIterator () <IMessageIterator>
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid;
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid position:(int)msgID;
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid middle:(int)msgID;

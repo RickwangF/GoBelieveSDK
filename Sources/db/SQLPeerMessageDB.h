@@ -13,6 +13,12 @@
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
+@interface SQLPeerMessageIterator : NSObject
+/// 将FMDB结果集转化成IMessage对象
+/// @param set 数据库结果集
++ (IMessage *)messageFromResultSet:(FMResultSet *)set;
+@end
+
 @interface SQLPeerMessageDB : NSObject
 
 @property(nonatomic, strong) FMDatabase *db;
