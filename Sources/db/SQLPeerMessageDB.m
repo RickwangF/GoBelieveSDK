@@ -239,7 +239,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         msg.msgId = rowID;
 
         if (msg.textContent) {
-            NSString *text = [msg.textContent.text tokenizer];
+            NSString *text = [msg.textContent.text isKindOfClass:NSString.class] ? [msg.textContent.text tokenizer]:@"";
             [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
         }
 
