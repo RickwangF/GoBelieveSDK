@@ -384,6 +384,55 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+/// Save draft message.
+/// @param uid The uid of the conversation where the draft will be saved.
+/// @param draft The string of the conversation where the draft will be saved.
+/// @param newConversation The conversation for inspection.
+- (void)saveDraftMessageWithUid:(int64_t)uid draft:(NSString *)draft conversation:(Conversation *)newConversation {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    NSString *draftStr = stringOrEmpty(draft);
+    NSString *avatar = stringOrEmpty(newConversation.avatarURL);
+    NSString *nickname = stringOrEmpty(newConversation.name);
+    NSString *content = stringOrEmpty(newConversation.content);
+    NSString *readUUID = stringOrEmpty(newConversation.msguuid);
+    NSString *memberLevel = stringOrEmpty(newConversation.memberLevel);
+    NSString *memberImg = stringOrEmpty(newConversation.memberImg);
+    NSString *targetId = stringOrEmpty(newConversation.targetId);
+    NSString *areaStr = stringOrEmpty(newConversation.area);
+    NSString *remarkNameStr = stringOrEmpty(newConversation.remarkName);
+            
+    __block BOOL success = NO;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL haveRecord = NO;
+        FMResultSet *result = [db
+                               executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(newConversation.uid)];
+        if (result.next) {
+            haveRecord = YES;
+        }
+        [result close];
+        if (haveRecord == NO) {
+            if (draftStr.length > 0) {
+                /// If there is a conversation but no draft, create a new conversation and update the draft
+                NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
+                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+                success =
+                [db executeUpdate:sqlStr, @(newConversation.uid), avatar, nickname, @(newConversation.timestamp), content,
+                 readUUID, @(newConversation.isCallback), @(newConversation.isGroup), @(newConversation.isDelete),
+                 @(newConversation.isTop), @(newConversation.newMsgCount), @(newConversation.memberType),
+                 memberLevel, memberImg, draftStr, @(newConversation.unsendTag), targetId,
+                 @(newConversation.is_self), areaStr, remarkNameStr, @(newConversation.conversationType)];
+                [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
+            }else{
+                /// If there are neither conversation nor draft, do nothing!
+            }
+        }else{
+            /// If there is a conversation, update the draft!
+            [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
+        }
+    }];
+}
+
 /// 根据uid修改会话targetId、昵称、头像
 /// @param targetId 需要记录的targetId
 /// @param nickname 需要记录的昵称

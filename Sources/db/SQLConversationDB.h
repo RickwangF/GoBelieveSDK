@@ -69,7 +69,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 保存草稿消息
 /// @param uid 保存草稿会话的id
 /// @param draft 保存草稿会话的文字
-- (void)saveDraftToConversationWithUid:(int64_t)uid draft:(NSString *)draft;
+- (void)saveDraftToConversationWithUid:(int64_t)uid draft:(NSString *)draft
+__deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
+
+/// Save draft message.
+/// @param uid The uid of the conversation where the draft will be saved.
+/// @param draft The string of the conversation where the draft will be saved.
+/// @param newConversation The conversation for inspection.
+- (void)saveDraftMessageWithUid:(int64_t)uid draft:(NSString *)draft conversation:(Conversation *)newConversation;
 
 /// 修改会话置顶状态
 /// @param isTop 是否置顶
