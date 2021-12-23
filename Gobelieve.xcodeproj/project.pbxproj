@@ -11,12 +11,9 @@
 		5227ABD3262E6C7B001A309C /* wavreader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227ABD1262E6C7B001A309C /* wavreader.h */; };
 		5227AC1F262E747B001A309C /* wavwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC1D262E747B001A309C /* wavwriter.h */; };
 		5227AC20262E747B001A309C /* wavwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 5227AC1E262E747B001A309C /* wavwriter.c */; };
-		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
-		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
-		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
 		5243E6FC2678B9FA009E8F48 /* IMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E6FB2678B9FA009E8F48 /* IMessage.m */; };
 		5243E7032678BB24009E8F48 /* IMService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E7012678BB24009E8F48 /* IMService.m */; };
-		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; };
+		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 525FD2392666001600496C89 /* IMessage+CreatorMode.m */; };
 		5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */; };
 		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -124,6 +121,8 @@
 		AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A395B5A64A5D949BD815 /* Conversation+Private.h */; };
 		AC96A861EE2590B82A0E8F92 /* magic.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96AE914D91036C62702FDA /* magic.h */; };
 		AC96A9556C4E07CDF5E1F613 /* ConversationTest_1000.db in Resources */ = {isa = PBXBuildFile; fileRef = AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */; };
+		AC96AA6BEB5B99DF78FC3980 /* MessageCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A079E0CC079AC45A974A /* MessageCoordinator.m */; };
+		AC96AC21ACD9606A236814C1 /* MessageCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A7FEB504718BD51568F9 /* MessageCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A30B3BF2D02FA6607133 /* FileCache.m */; };
 		AC96AE62C701AB7EB59C3EC6 /* SQLConversationDB+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */; };
 		BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */; };
@@ -146,9 +145,6 @@
 		5227ABD1262E6C7B001A309C /* wavreader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavreader.h; sourceTree = "<group>"; };
 		5227AC1D262E747B001A309C /* wavwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavwriter.h; sourceTree = "<group>"; };
 		5227AC1E262E747B001A309C /* wavwriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wavwriter.c; sourceTree = "<group>"; };
-		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
-		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
-		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
 		5243E6FB2678B9FA009E8F48 /* IMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMessage.m; sourceTree = "<group>"; };
 		5243E7012678BB24009E8F48 /* IMService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMService.m; sourceTree = "<group>"; };
 		5243E7022678BB24009E8F48 /* IMService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMService.h; sourceTree = "<group>"; };
@@ -256,23 +252,25 @@
 		52EA09982629953C003652B7 /* IMHttpAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMHttpAPI.m; sourceTree = "<group>"; };
 		52F45F56262D765100DCD1F2 /* SQLConversationDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SQLConversationDB.h; sourceTree = "<group>"; };
 		52F45F57262D765100DCD1F2 /* SQLConversationDB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLConversationDB.m; sourceTree = "<group>"; };
-		5FF4EAB559B264FA042809F0 /* Pods-Gobelieve-gobelieveSDKTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-gobelieveSDKTests.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests.release.xcconfig"; sourceTree = "<group>"; };
 		6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-GobelieveTests.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests.debug.xcconfig"; sourceTree = "<group>"; };
 		84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-GobelieveTests.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve-GobelieveTests/Pods-Gobelieve-GobelieveTests.release.xcconfig"; sourceTree = "<group>"; };
 		97B62E49A412C00D25584A60 /* Pods-Gobelieve.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.debug.xcconfig"; sourceTree = "<group>"; };
 		A88DBB7E38C4BD0FFC7C004D /* Pods_Gobelieve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC96A079E0CC079AC45A974A /* MessageCoordinator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessageCoordinator.m; sourceTree = "<group>"; };
 		AC96A30B3BF2D02FA6607133 /* FileCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileCache.m; sourceTree = "<group>"; };
 		AC96A395B5A64A5D949BD815 /* Conversation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Conversation+Private.h"; sourceTree = "<group>"; };
 		AC96A424C5B4200ACC805AC5 /* FileCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileCache.h; sourceTree = "<group>"; };
 		AC96A6452C11EB785CBF4712 /* MagicTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicTests.m; sourceTree = "<group>"; };
+		AC96A7FEB504718BD51568F9 /* MessageCoordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageCoordinator.h; sourceTree = "<group>"; };
 		AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SQLConversationDB+Private.h"; sourceTree = "<group>"; };
 		AC96A8C4AB122640AA40B1E4 /* ConversationTest_1000.db */ = {isa = PBXFileReference; lastKnownFileType = file.db; path = ConversationTest_1000.db; sourceTree = "<group>"; };
 		AC96AB240022D1C1EE5F6010 /* Random.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Random.mm; sourceTree = "<group>"; };
 		AC96AD326AC48A6089F798DD /* Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Random.h; sourceTree = "<group>"; };
 		AC96AE914D91036C62702FDA /* magic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magic.h; sourceTree = "<group>"; };
 		BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLConversationDBTests.m; sourceTree = "<group>"; };
+		BCA2AB7B277411AA0079E2C7 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		BCA2AB7C277411AA0079E2C7 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.release.xcconfig"; sourceTree = "<group>"; };
-		FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -280,7 +278,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */,
 				5B6E247326BD85A913B5F95F /* Pods_Gobelieve.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +297,7 @@
 		52EA090226299508003652B7 = {
 			isa = PBXGroup;
 			children = (
+				BCA2AB7A277411AA0079E2C7 /* Configs */,
 				52EA090E26299508003652B7 /* Sources */,
 				52EA091926299508003652B7 /* Tests */,
 				52EA090D26299508003652B7 /* Products */,
@@ -320,18 +318,9 @@
 		52EA090E26299508003652B7 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				BCA2AB79277411710079E2C7 /* Gobelieve */,
 				52EA090F26299508003652B7 /* Gobelieve.h */,
 				52EA091026299508003652B7 /* Info.plist */,
-				52EA09792629953C003652B7 /* amr */,
-				52EA09842629953C003652B7 /* category */,
-				52EA09302629953B003652B7 /* db */,
-				52EA098E2629953C003652B7 /* handler */,
-				BC7B104D2643CD4D0078B9D6 /* im */,
-				52EA098B2629953C003652B7 /* imKitRes */,
-				52EA09482629953C003652B7 /* model */,
-				52EA09292629953B003652B7 /* request */,
-				BC7B104C2643CCF80078B9D6 /* tcp */,
-				BC7B104E2643CD550078B9D6 /* utils */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -365,6 +354,8 @@
 				52EA093F2629953B003652B7 /* GroupMessageDB.h */,
 				52EA093E2629953B003652B7 /* IMessageDB.h */,
 				52EA09382629953B003652B7 /* IMessageIterator.h */,
+				AC96A7FEB504718BD51568F9 /* MessageCoordinator.h */,
+				AC96A079E0CC079AC45A974A /* MessageCoordinator.m */,
 				52EA09312629953B003652B7 /* PeerMessageDB.h */,
 				52EA093A2629953B003652B7 /* PeerMessageDB.m */,
 				52F45F56262D765100DCD1F2 /* SQLConversationDB.h */,
@@ -437,9 +428,6 @@
 		52EA09792629953C003652B7 /* amr */ = {
 			isa = PBXGroup;
 			children = (
-				5227AC59262E753A001A309C /* interf_dec.h */,
-				5227AC5A262E753A001A309C /* interf_enc.h */,
-				5227AC5B262E753A001A309C /* libopencore-amrnb.a */,
 				52EA097B2629953C003652B7 /* wav_amr.c */,
 				52EA09812629953C003652B7 /* wav_amr.h */,
 				5227ABD0262E6C7B001A309C /* wavreader.c */,
@@ -549,13 +537,37 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
+		BCA2AB79277411710079E2C7 /* Gobelieve */ = {
+			isa = PBXGroup;
+			children = (
+				52EA09792629953C003652B7 /* amr */,
+				52EA09842629953C003652B7 /* category */,
+				52EA09302629953B003652B7 /* db */,
+				52EA098E2629953C003652B7 /* handler */,
+				BC7B104D2643CD4D0078B9D6 /* im */,
+				52EA098B2629953C003652B7 /* imKitRes */,
+				52EA09482629953C003652B7 /* model */,
+				52EA09292629953B003652B7 /* request */,
+				BC7B104C2643CCF80078B9D6 /* tcp */,
+				BC7B104E2643CD550078B9D6 /* utils */,
+			);
+			path = Gobelieve;
+			sourceTree = "<group>";
+		};
+		BCA2AB7A277411AA0079E2C7 /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				BCA2AB7B277411AA0079E2C7 /* Debug.xcconfig */,
+				BCA2AB7C277411AA0079E2C7 /* Release.xcconfig */,
+			);
+			path = Configs;
+			sourceTree = "<group>";
+		};
 		EAAF36CF34AAA97BFE1F4A10 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
 				97B62E49A412C00D25584A60 /* Pods-Gobelieve.debug.xcconfig */,
 				CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */,
-				FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */,
-				5FF4EAB559B264FA042809F0 /* Pods-Gobelieve-gobelieveSDKTests.release.xcconfig */,
 				6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */,
 				84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */,
 			);
@@ -583,7 +595,6 @@
 				52EA09A72629953C003652B7 /* IMessageIterator.h in Headers */,
 				52EA09FB2629953C003652B7 /* PeerMessageHandler.h in Headers */,
 				52EA09BD2629953C003652B7 /* MessageHeadline.h in Headers */,
-				5227AC5C262E753A001A309C /* interf_dec.h in Headers */,
 				5227AC1F262E747B001A309C /* wavwriter.h in Headers */,
 				52EA09D82629953C003652B7 /* MessageP2PSession.h in Headers */,
 				52EA09E62629953C003652B7 /* MessageContent.h in Headers */,
@@ -610,7 +621,6 @@
 				52EA09D52629953C003652B7 /* MessageVOIP.h in Headers */,
 				5227ABD3262E6C7B001A309C /* wavreader.h in Headers */,
 				52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */,
-				5243E7042678BB24009E8F48 /* IMService.h in Headers */,
 				52EA09B32629953C003652B7 /* AsyncRawTCP.h in Headers */,
 				52EA09C72629953C003652B7 /* ICustomerMessage.h in Headers */,
 				52EA09B42629953C003652B7 /* AsyncSSLTCP.h in Headers */,
@@ -624,11 +634,11 @@
 				52EA09E12629953C003652B7 /* MessageLink.h in Headers */,
 				52EA09EE2629953C003652B7 /* wav_amr.h in Headers */,
 				52EA09DA2629953C003652B7 /* Conversation.h in Headers */,
-				5227AC5D262E753A001A309C /* interf_enc.h in Headers */,
 				52EA09A02629953C003652B7 /* PeerMessageDB.h in Headers */,
 				52EA09F92629953C003652B7 /* SyncKeyHandler.h in Headers */,
 				52F45F58262D765100DCD1F2 /* SQLConversationDB.h in Headers */,
 				52EA091D26299508003652B7 /* Gobelieve.h in Headers */,
+				5243E7042678BB24009E8F48 /* IMService.h in Headers */,
 				52EA09FA2629953C003652B7 /* CustomerMessageHandler.h in Headers */,
 				52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */,
 				52EA09FC2629953C003652B7 /* GroupMessageHandler.h in Headers */,
@@ -638,6 +648,7 @@
 				AC96A51F8CAC1FEB30734445 /* Conversation+Private.h in Headers */,
 				AC96A861EE2590B82A0E8F92 /* magic.h in Headers */,
 				AC96AE62C701AB7EB59C3EC6 /* SQLConversationDB+Private.h in Headers */,
+				AC96AC21ACD9606A236814C1 /* MessageCoordinator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -856,6 +867,7 @@
 				52EA09CE2629953C003652B7 /* MessageVideo.m in Sources */,
 				52EA09E42629953C003652B7 /* MessageGroupVOIP.m in Sources */,
 				AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */,
+				AC96AA6BEB5B99DF78FC3980 /* MessageCoordinator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1002,7 +1014,7 @@
 		};
 		52EA092126299508003652B7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 97B62E49A412C00D25584A60 /* Pods-Gobelieve.debug.xcconfig */;
+			baseConfigurationReference = BCA2AB7B277411AA0079E2C7 /* Debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -1037,7 +1049,7 @@
 		};
 		52EA092226299508003652B7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */;
+			baseConfigurationReference = BCA2AB7C277411AA0079E2C7 /* Release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;

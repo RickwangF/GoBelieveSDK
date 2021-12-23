@@ -1,0 +1,13 @@
+//
+//  Release.xcconfig
+//  Gobelieve
+//
+//  Created by Nan Yang on 2021/12/14.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "../Pods/Target Support Files/Pods-Gobelieve/Pods-Gobelieve.release.xcconfig"
+
+// HEADER_SEARCH_PATHS =

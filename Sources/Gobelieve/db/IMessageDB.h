@@ -10,8 +10,10 @@
 
 #import <Foundation/Foundation.h>
 
-#define PAGE_COUNT 20
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol IMessageDB <NSObject>
+
 /// 根据最新时间进行消息降序查询
 /// @param conversationID targetUid
 /// @param timeStamp unix时间
@@ -25,7 +27,7 @@
 /// 获取指定消息的前两条开始往后面的17条数据和前面2条数据，总的20 条数据
 /// @param conversationID 聊天会话id
 /// @param uuid 消息唯一标识符
-- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString *_Nonnull)uuid;
+- (NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString *)uuid;
 
 /// 获取单条消息
 /// @param uuid 消息唯一标识
@@ -101,6 +103,7 @@
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
 #pragma mark - gobelieveHandler method
+
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags;
@@ -109,42 +112,6 @@
 - (BOOL)gobelieveAcknowledgeMessage:(int)msgLocalID;
 - (BOOL)gobelieveMarkMessageFailure:(NSInteger)msg;
 
-//-(id<IMessageIterator>)newMessageIterator:(int64_t)conversationID;
-////下拉刷新
-//-(id<IMessageIterator>)newForwardMessageIterator:(int64_t)conversationID last:(int)lastMsgID;
-//-(id<IMessageIterator>)newMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
-//-(id<IMessageIterator>)newForwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
-//-(id<IMessageIterator>)newMiddleMessageIterator:(int64_t)conversationID messageID:(int)messageID;
-////上拉刷新
-//-(id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID messageID:(int)messageID;
-//-(id<IMessageIterator>)newBackwardMessageIterator:(int64_t)uid timeStamp:(NSInteger)timeStamp;
-//-(IMessage*)getMessage:(int64_t)msgID;
-//-(void)saveMessageAttachment:(IMessage*)msg address:(NSString*)address;
-//-(BOOL)saveMessage:(IMessage*)msg;
-//-(BOOL)saveMessage:(IMessage*)msg andUid:(int64_t)uid;
-//-(BOOL)removeMessage:(NSInteger)msg;
-//-(BOOL)markMessageFailure:(NSInteger)msg;
-//-(BOOL)markMesageListened:(NSInteger)msg;
-//-(BOOL)eraseMessageFailure:(NSInteger)msg;
-//-(BOOL)eraseMessageFailure:(NSInteger)msg haveRead:(BOOL)haveRead;
-//-(BOOL)markMesageHaveRead:(NSString *)readUUID;
-//- (BOOL)checkHaveFailedMessageUid:(int64_t)uid;
-
-//- (BOOL)updateCallBack:(NSString *)uuid;
-//- (BOOL)updateCallBackWithUUIDs:(NSArray *)uuidArr;
-//- (BOOL)updateDelete:(NSString *)uuid;
-
-//- (BOOL)updateHaveRead:(int)haveRead uuidArr:(NSArray *)readUUIDArr;
-//- (BOOL)updateNewMessageWithUUidArr:(NSArray *)readUUIDArr uid:(int64_t)targetUid;
-//- (NSArray *)getUnreadMsgs;
-//- (NSArray *)getRecalledMsgs;
-
-//- (BOOL)updateMessageWidth:(float)width height:(float)height lineHeight:(float)lineHeight msgId:(NSInteger)msg;
-
-////获取存在关键字的消息
-//- (NSArray<IMessage *> *)getTargetMessageAndLocationWithKeyWord:(NSString *)keyWord;
-////获取目标会话下存在关键字的消息
-//- (NSArray<IMessage *> *)getTargetMessageAndLocationWithKeyWord:(NSString *)keyWord target:(int64_t)targetUid;
-//
-//- (NSArray<IMessage *> *)getTargetMessageWith:(IMessage *)message uid:(int64_t)targetUid;
 @end
+
+NS_ASSUME_NONNULL_END
