@@ -1,22 +1,37 @@
 PODS:
-  - FMDB (2.7.3):
-    - FMDB/standard (= 2.7.3)
-  - FMDB/standard (2.7.3)
+  - FMDB (2.7.8):
+    - FMDB/standard (= 2.7.8)
+  - FMDB/standard (2.7.8)
+  - GRDB.swift (5.17.0):
+    - GRDB.swift/standard (= 5.17.0)
+  - GRDB.swift/standard (5.17.0)
+  - JiuFoundation (0.9.8):
+    - JiuFoundation/Core (= 0.9.8)
+    - JiuFoundation/Foundation (= 0.9.8)
+  - JiuFoundation/Core (0.9.8)
+  - JiuFoundation/Foundation (0.9.8):
+    - JiuFoundation/Core
   - opencore-amr/amrnb (0.1.5)
 
 DEPENDENCIES:
-  - FMDB (= 2.7.3)
+  - FMDB (~> 2)
+  - GRDB.swift (~> 5)
+  - JiuFoundation (~> 0.9)
   - opencore-amr/amrnb
 
 SPEC REPOS:
   https://code.9ji.com/9ji_APP_iOS/CHCocoaSpec.git:
     - FMDB
+    - GRDB.swift
+    - JiuFoundation
     - opencore-amr
 
 SPEC CHECKSUMS:
-  FMDB: a6f9d29915ddd7b4514c607dd3d16599aa53566d
+  FMDB: b1cd94244d6db3a0c64f04596ecb0cc1c30edee2
+  GRDB.swift: 1f486c4a9612790f2469b1d725eb948901925d84
+  JiuFoundation: 302da0a5a185f0a74a9b02269bbebc84d2f0094d
   opencore-amr: ddb89b476828d6b715b40eb7b56bf98aa5279698
 
-PODFILE CHECKSUM: 9d1740bff826bde20e68ecbf8374da84dbdd762e
+PODFILE CHECKSUM: 63d058bff98ace980fac3b5ecc087e168e184ffc
 
 COCOAPODS: 1.11.2

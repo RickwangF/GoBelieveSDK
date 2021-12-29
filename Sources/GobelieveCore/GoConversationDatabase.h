@@ -1,53 +1,42 @@
 //
-//  SQLConversationDB.h
-//  Gobelieve
-//
-//  Created by ch999 on 2021/4/19.
+// Created by Nan Yang on 2021/12/23.
 //
 
 #import <Foundation/Foundation.h>
-#import <fmdb/FMDB.h>
-#import <Gobelieve/Conversation.h>
-#import <Gobelieve/GoConversationDatabase.h>
+
+@class Conversation;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SQLConversationDB : NSObject <GoConversationDatabase>
+// 使用接口定义 ConversationDatabase 的公共方法。保证更新时的外部 API 兼容性。
+@protocol GoConversationDatabase <NSObject>
+@required
 
-@property(nonatomic, strong, readonly, class) SQLConversationDB* instance;
+@property(nonatomic, strong, readonly, class) id<GoConversationDatabase> instance
+    API_DEPRECATED_WITH_REPLACEMENT("sharedInstance",
+        macos(10.0, API_TO_BE_DEPRECATED), ios(2.0, API_TO_BE_DEPRECATED));
 
 @property(nonatomic, strong, readonly, class) id<GoConversationDatabase> sharedInstance NS_SWIFT_NAME(shared);
-/// 数据库操作线程，所有相关操作都要在这个线程执行
-@property(nonatomic, strong, readonly, class) dispatch_queue_t executeQueue;
+
++ (void)setDataBaseQueuePath:(NSString*)path;
+
 /// 会话表id(唯一值，每个用户一个)
 @property(nonatomic, assign) NSInteger conversationTableId;
 
-/// 初始化数据库多线程队列方法
-/// @param path 数据库路径
-+ (void)setDataBaseQueuePath:(NSString*)path;
+/**
+ * 同步地添加会话。
+ * @param conversation 要添加的会话。
+ * @return 是否执行成功。
+ */
+- (BOOL)addConversation:(Conversation *)conversation;
 
-///// 获取会员会话列表
-//- (void)memberConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
-//
-///// 获取内部聊天会话列表
-//- (void)internalConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
-//
-///// 获取群聊会话列表
-//- (void)groupConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
-//
-///// 获取所有置顶聊天会话列表
-//- (void)topConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
-//
-///// 获取所有未置顶聊天会话列表
-//- (void)untopConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
+/// 异步地添加会话。
+/// @param conversation 要添加的会话。
+/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在当前线程中回调。
+- (void)addConversation:(Conversation*)conversation completion:(void (^ _Nullable)(BOOL state))completion;
 
 /// 获取所有聊天列表，排序顺序是根据是否置顶和时间戳排序，置顶数据在前面，按时间从新到旧排序
 - (void)getSortTopChatConversationWithCompletion:(void (^)(NSArray<Conversation*>*))completion;
-
-/// 添加会话
-/// @param conversation 添加的会话
-/// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
-- (void)addConversation:(Conversation*)conversation completion:(void (^ _Nullable)(BOOL state))completion;
 
 /// 检测是否存在表结构字段
 - (void)manualCheckConversationDBColumn;
@@ -58,18 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)clearAllConversationCompletion:(void (^ _Nullable)(BOOL state))completion;
 
-/// 整体会话替换，将会话的所有展示内容做替换
-/// @param conversation 添加的会话
-//- (void)replaceConversation:(Conversation*)conversation;
-
-/// 删除会话
-/// @param uid 删除会话的id
+/**
+ * 根据 UID 删除对应的会话。
+ * @param uid 删除会话的 id。
+ */
 - (void)deleteConversationWithUid:(int64_t)uid;
-
-/// 隐藏会话
-/// @param isHide 是否隐藏
-/// @param uid 删除会话的id
-//- (void)disposeConversationIsHide:(BOOL)isHide uid:(int64_t)uid;
 
 /// 清空会话未读数量
 /// @param uid 清空会话的id
@@ -164,41 +146,6 @@ API_DEPRECATED_WITH_REPLACEMENT("-saveDraftMessageWithUid:draft:conversation:",
 /// @param conversation 所需添加内部咨询会话的conversation
 //- (BOOL)manualAddConversationWithConversation:(Conversation*)conversation;
 
-#if DEBUG
-
-/// 执行SQL语句，单元测试使用
-/// @param statements SQL语句
-- (void)executeStatements:(NSString*)statements;
-
-/// 访问数据库，block在专门的数据库队列同步执行
-/// @param block 数据库访问回调
-- (void)inDatabase:(__attribute__((noescape)) void (^)(FMDatabase* db))block;
-
-/// 关闭数据库，单元测试使用
-- (void)close;
-
-#endif
-
-///// 修改会话数据
-///// @param conversation 添加的会话
-//- (BOOL)amendConversation:(Conversation *)conversation;
-//
-///// 修改会话最后一条message的信息
-///// @param message 消息
-///// targetUid 目标会话uid
-//- (BOOL)amendLatestMessage:(IMessage *)message
-//                 targetUid:(int64_t)targetUid;
-//
-///// 获取会话列表
-//- (NSArray<Conversation *> *)getAllConversation;
-//
-///// 根据targetUid获取会话
-///// @param targetUid 目标会话uid
-//- (Conversation *)getConversationWithTargetUid:(int64_t)targetUid;
-//
-///// 根据targetUid删除会话
-///// @param targetUid 目标会话uid
-//- (BOOL)deleteConversationWithTargetUid:(int64_t)targetUid;
 @end
 
 NS_ASSUME_NONNULL_END

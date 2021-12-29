@@ -5,7 +5,9 @@ platform :ios, '9.0'
 use_frameworks!
 
 def allPods
-  pod 'FMDB', '2.7.3'
+  pod 'FMDB', '~> 2'
+  pod 'GRDB.swift', '~> 5'
+  pod 'JiuFoundation', '~> 0.9'
   pod 'opencore-amr/amrnb'
 end
 
