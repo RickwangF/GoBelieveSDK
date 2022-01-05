@@ -13,6 +13,8 @@
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SQLPeerMessageIterator : NSObject
 /// 将FMDB结果集转化成IMessage对象
 /// @param set 数据库结果集
@@ -36,7 +38,7 @@
 
 /// 获取单条消息
 /// @param uuid 消息唯一标识
-- (IMessage *)getMessage:(NSString *)uuid;
+- (IMessage * _Nullable)getMessage:(NSString *)uuid;
 
 /// 存储消息
 /// @param msg 消息体
@@ -110,7 +112,7 @@
 
 /// 通过uid获取当前会话最新的没有做删除的消息
 /// @param targetUid 目标uid
-- (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
+- (IMessage * _Nullable)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
@@ -176,3 +178,5 @@
 //
 //- (void)checkHaveManualColumn;
 @end
+
+NS_ASSUME_NONNULL_END

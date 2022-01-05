@@ -553,7 +553,8 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     __block NSInteger msgCount = 0;
     FMDatabaseQueue *queue = self.dbQueue;
     [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
-        FMResultSet *result = [db executeQuery:@"SELECT SUM(unreadcount) FROM gb_conversation"];
+        /// 已隐藏的会话不统计在内
+        FMResultSet *result = [db executeQuery:@"SELECT SUM(unreadcount) FROM gb_conversation where is_delete = 0"];
         if ([result next]) {
             msgCount = [result longLongIntForColumn:@"SUM(unreadcount)"];
         }
@@ -563,7 +564,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 
 /// 根据targetUid获取会话
 /// @param targetUid 目标会话uid
-- (Conversation *)getConversationWithTargetUid:(int64_t)targetUid {
+- (Conversation * _Nullable)getConversationWithTargetUid:(int64_t)targetUid {
     __block Conversation *reConver = nil;
     dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     FMDatabaseQueue *queue = self.dbQueue;

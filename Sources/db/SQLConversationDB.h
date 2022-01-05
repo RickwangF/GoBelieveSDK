@@ -142,7 +142,7 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
 
 /// 根据targetUid获取会话
 /// @param targetUid 目标会话uid
-- (Conversation *)getConversationWithTargetUid:(int64_t)targetUid;
+- (Conversation * _Nullable)getConversationWithTargetUid:(int64_t)targetUid;
 
 /// 修改会话失败状态
 /// @param haveFailed 是否有失败消息
