@@ -49,6 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 删除所有会话
 - (void)clearAllConversationCompletion:(void (^_Nullable)(BOOL state))completion;
 
+/// 删除除了群聊外的其他会话
+- (void)clearAllConversationExceptGroupTypeCompletion:(void (^_Nullable)(BOOL state))completion;
+
 /// 整体会话替换，将会话的所有展示内容做替换
 /// @param conversation 添加的会话
 - (void)replaceConversation:(Conversation *)conversation;
