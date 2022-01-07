@@ -57,6 +57,10 @@
 /// @param uuid 消息唯一标识
 - (BOOL)markMesageHaveRead:(NSString *)uuid;
 
+/// 批量更新多个消息为已读状态
+/// @param uuids 消息唯一标识符
+- (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids;
+
 /// 获取当前目标发送失败消息
 /// @param uid targetUid
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)uid;
