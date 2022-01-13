@@ -527,9 +527,9 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                 }
                 NSTextCheckingResult *result = [expr firstMatchInString:content options:NSMatchingReportCompletion range:NSMakeRange(0, content.length)];
                 if (!result || result.range.location == NSNotFound) {
-//#if DEBUG
-//                    NSLog(@">>> not found %@ at %@", expr.pattern, content);
-//#endif
+#if DEBUG
+                    NSLog(@">>> group not found %@ at %@", expr.pattern, content);
+#endif
                     sqlite3_result_null(context);
                     return;
                 }

@@ -448,7 +448,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword {
     FMDatabase *db = self.db;
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE REGEXP(content, '%@')", keyword];
+        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE REGEXA(content, '%@')", keyword];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -461,9 +461,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 
 /// 给数据库动态添加正则匹配方法
 /// 使用方法示例，下面这个SQL语句会查询content字段中包含你好字样的记录：
-/// SELECT * FROM peer_message WHERE REGEXP(content, '你好')
+/// SELECT * FROM peer_message WHERE REGEXA(content, '你好')
 - (void)regularExpressionFunctionAdd {
-    [self.db makeFunctionNamed:@"REGEXP" arguments:2 block:^(void * _Nonnull context, int argc, void * _Nonnull * _Nonnull argv) {
+    [self.db makeFunctionNamed:@"REGEXA" arguments:2 block:^(void * _Nonnull context, int argc, void * _Nonnull * _Nonnull argv) {
         if ((sqlite3_value_type(argv[0]) == SQLITE_TEXT) && (sqlite3_value_type(argv[1]) == SQLITE_TEXT)) {
             @autoreleasepool {
                 const char *cString = (const char *)sqlite3_value_text(argv[0]);
@@ -481,9 +481,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
                 }
                 NSTextCheckingResult *result = [expr firstMatchInString:content options:NSMatchingReportCompletion range:NSMakeRange(0, content.length)];
                 if (!result || result.range.location == NSNotFound) {
-//#if DEBUG
-//                    NSLog(@">>> not found %@ at %@", expr.pattern, content);
-//#endif
+#if DEBUG
+                    NSLog(@">>> not found %@ at %@", expr.pattern, content);
+#endif
                     sqlite3_result_null(context);
                     return;
                 }
@@ -491,7 +491,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
             }
         } else {
 #if DEBUG
-            NSLog(@"Unknown formart for REGEXP (%d, %d) %s:%d", sqlite3_value_type(argv[0]), sqlite3_value_type(argv[1]), __FUNCTION__, __LINE__);
+            NSLog(@"Unknown formart for REGEXA (%d, %d) %s:%d", sqlite3_value_type(argv[0]), sqlite3_value_type(argv[1]), __FUNCTION__, __LINE__);
 #endif
             sqlite3_result_null(context);
         }
@@ -504,7 +504,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE REGEXP(content, '%@') AND peer = %@", keyword,
+        [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE REGEXA(content, '%@') AND peer = %@", keyword,
                                    @(targetUid)];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
@@ -798,7 +798,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
                            @(conversationID),
                            @(conversationID),
                            uuid];
-
+#if DEBUG
+    NSLog(@">>> sql fetchHistoryWithConversationID %@", selectStr);
+#endif
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
