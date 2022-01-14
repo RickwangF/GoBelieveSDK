@@ -104,6 +104,10 @@
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
+/// 查询多条消息，根据uuid查
+/// @param uuids 消息uuid集合
+- (NSArray<IMessage *> * _Nonnull)queryMessagesWithUUIDs:(NSArray<NSString *> * _Nonnull)uuids;
+
 #pragma mark - gobelieveHandler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;

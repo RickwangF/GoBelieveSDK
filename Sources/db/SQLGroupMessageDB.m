@@ -867,6 +867,31 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return messageArr;
 }
 
+/// 查询多条消息，根据uuid查
+/// @param uuids 消息uuid集合
+- (NSArray<IMessage *> * _Nonnull)queryMessagesWithUUIDs:(NSArray<NSString *> * _Nonnull)uuids {
+    if (!([uuids isKindOfClass:NSArray.class] && uuids.count > 0)) {
+#if DEBUG
+    NSLog(@">>> queryMessagesWithUUIDs uuids is invalid, %@", uuids);
+#endif
+        return @[];
+    }
+    FMDatabase *db = self.db;
+    NSString *ids = [uuids componentsJoinedByString:@","];
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE readuuid IN (%@)", ids];
+#if DEBUG
+    NSLog(@">>> sql queryMessagesWithUUIDs: %@", sql);
+#endif
+    FMResultSet *rs = [db executeQuery:sql];
+    NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [items addObject:msg];
+    }
+    [rs close];
+    return items;
+}
+
 //-(id<IMessageIterator>)newMiddleMessageIterator:(int64_t)gid messageID:(int)messageID {
 //    return [[SQLGroupMessageIterator alloc] initWithDB:self.db gid:gid middle:messageID];
 //}
