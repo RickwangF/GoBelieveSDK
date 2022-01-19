@@ -11,9 +11,6 @@
 		5227ABD3262E6C7B001A309C /* wavreader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227ABD1262E6C7B001A309C /* wavreader.h */; };
 		5227AC1F262E747B001A309C /* wavwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC1D262E747B001A309C /* wavwriter.h */; };
 		5227AC20262E747B001A309C /* wavwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 5227AC1E262E747B001A309C /* wavwriter.c */; };
-		5227AC5C262E753A001A309C /* interf_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC59262E753A001A309C /* interf_dec.h */; };
-		5227AC5D262E753A001A309C /* interf_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC5A262E753A001A309C /* interf_enc.h */; };
-		5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5227AC5B262E753A001A309C /* libopencore-amrnb.a */; };
 		5243E6FC2678B9FA009E8F48 /* IMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E6FB2678B9FA009E8F48 /* IMessage.m */; };
 		5243E7032678BB24009E8F48 /* IMService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E7012678BB24009E8F48 /* IMService.m */; };
 		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; };
@@ -146,9 +143,6 @@
 		5227ABD1262E6C7B001A309C /* wavreader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavreader.h; sourceTree = "<group>"; };
 		5227AC1D262E747B001A309C /* wavwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavwriter.h; sourceTree = "<group>"; };
 		5227AC1E262E747B001A309C /* wavwriter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wavwriter.c; sourceTree = "<group>"; };
-		5227AC59262E753A001A309C /* interf_dec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_dec.h; sourceTree = "<group>"; };
-		5227AC5A262E753A001A309C /* interf_enc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interf_enc.h; sourceTree = "<group>"; };
-		5227AC5B262E753A001A309C /* libopencore-amrnb.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libopencore-amrnb.a"; sourceTree = "<group>"; };
 		5243E6FB2678B9FA009E8F48 /* IMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMessage.m; sourceTree = "<group>"; };
 		5243E7012678BB24009E8F48 /* IMService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IMService.m; sourceTree = "<group>"; };
 		5243E7022678BB24009E8F48 /* IMService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMService.h; sourceTree = "<group>"; };
@@ -280,7 +274,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5227AC5E262E753A001A309C /* libopencore-amrnb.a in Frameworks */,
 				5B6E247326BD85A913B5F95F /* Pods_Gobelieve.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -437,9 +430,6 @@
 		52EA09792629953C003652B7 /* amr */ = {
 			isa = PBXGroup;
 			children = (
-				5227AC59262E753A001A309C /* interf_dec.h */,
-				5227AC5A262E753A001A309C /* interf_enc.h */,
-				5227AC5B262E753A001A309C /* libopencore-amrnb.a */,
 				52EA097B2629953C003652B7 /* wav_amr.c */,
 				52EA09812629953C003652B7 /* wav_amr.h */,
 				5227ABD0262E6C7B001A309C /* wavreader.c */,
@@ -583,7 +573,6 @@
 				52EA09A72629953C003652B7 /* IMessageIterator.h in Headers */,
 				52EA09FB2629953C003652B7 /* PeerMessageHandler.h in Headers */,
 				52EA09BD2629953C003652B7 /* MessageHeadline.h in Headers */,
-				5227AC5C262E753A001A309C /* interf_dec.h in Headers */,
 				5227AC1F262E747B001A309C /* wavwriter.h in Headers */,
 				52EA09D82629953C003652B7 /* MessageP2PSession.h in Headers */,
 				52EA09E62629953C003652B7 /* MessageContent.h in Headers */,
@@ -624,7 +613,6 @@
 				52EA09E12629953C003652B7 /* MessageLink.h in Headers */,
 				52EA09EE2629953C003652B7 /* wav_amr.h in Headers */,
 				52EA09DA2629953C003652B7 /* Conversation.h in Headers */,
-				5227AC5D262E753A001A309C /* interf_enc.h in Headers */,
 				52EA09A02629953C003652B7 /* PeerMessageDB.h in Headers */,
 				52EA09F92629953C003652B7 /* SyncKeyHandler.h in Headers */,
 				52F45F58262D765100DCD1F2 /* SQLConversationDB.h in Headers */,

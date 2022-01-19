@@ -7,8 +7,7 @@ target 'Gobelieve' do
   use_frameworks!
   
   pod 'FMDB', '2.7.3'
-
-  # Pods for Gobelieve
+  pod 'opencore-amr/amrnb'
 
   target 'GobelieveTests' do
     # Pods for testing

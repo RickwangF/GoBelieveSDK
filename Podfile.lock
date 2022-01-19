@@ -2,17 +2,21 @@ PODS:
   - FMDB (2.7.3):
     - FMDB/standard (= 2.7.3)
   - FMDB/standard (2.7.3)
+  - opencore-amr/amrnb (0.1.5)
 
 DEPENDENCIES:
   - FMDB (= 2.7.3)
+  - opencore-amr/amrnb
 
 SPEC REPOS:
   https://code.9ji.com/9ji_APP_iOS/CHCocoaSpec.git:
     - FMDB
+    - opencore-amr
 
 SPEC CHECKSUMS:
   FMDB: a6f9d29915ddd7b4514c607dd3d16599aa53566d
+  opencore-amr: 2aaf3584a35091a4303a82f7218336e9ac5e4d05
 
-PODFILE CHECKSUM: 4709c557d1eb4ce3fd0aa6a2837ea7bdc18720f0
+PODFILE CHECKSUM: 4bb82d8223366f18efcadaa7f2c928444cca4952
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
