@@ -452,6 +452,39 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return YES;
 }
 
+/// 批量更新消息已读状态，此方法不更新非自己发送的消息已读状态
+/// @param uuids 未读消息uuid数组
+/// @param sender 自己的uid
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender {
+    FMDatabase *db = self.db;
+    NSString *sqlStr;
+    
+    if (uuids.count > 0) {
+        NSMutableString *str = [[NSMutableString alloc] init];
+        [str appendString:@"("];
+        for (NSString *subStr in uuids) {
+            [str appendString:[NSString stringWithFormat:@"'%@', ", subStr]];
+        }
+        [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
+        [str appendString:@")"];
+        sqlStr = [NSString
+            stringWithFormat:
+                @"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@ AND sender = %@", @(1),
+                str, @(MESSAGE_FLAG_FAILURE), @(sender)];
+    }else{
+        sqlStr = [NSString
+            stringWithFormat:
+                @"UPDATE group_message SET haveread= %@ WHERE haveread= 0 AND flags != %@ AND sender = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+    }
+
+    BOOL r = [db executeUpdate:sqlStr];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
+        return NO;
+    }
+    return YES;
+}
+
 /// 更新消息宽高以及行高
 /// @param width 消息宽度
 /// @param height 消息高度
@@ -688,7 +721,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
-    //    SELECT * FROM peer_message WHERE timestamp= (SELECT MAX(timestamp) FROM peer_message) AND peer =
+    //    SELECT * FROM group_message WHERE timestamp= (SELECT MAX(timestamp) FROM group_message) AND peer =
     //    1586920918308426275 AND deletetag = 0
     NSString *sqlStr =
         [NSString stringWithFormat:@"SELECT * FROM group_message WHERE timestamp= (SELECT MAX(timestamp) FROM "
@@ -883,6 +916,89 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     NSLog(@">>> sql queryMessagesWithUUIDs: %@", sql);
 #endif
     FMResultSet *rs = [db executeQuery:sql];
+    NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [items addObject:msg];
+    }
+    [rs close];
+    return items;
+}
+
+/// 查询第一条未读消息（非本人发送）到指定消息的消息集合，按时间升序排列
+/// @param uuid 最后的消息uuid，为nil则返回到最后一条消息
+/// @param targetUID 聊天id，单聊是对方的UID，群聊是GID
+/// @param senderUID 发送方id
+- (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
+    NSString *sql;
+    if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+               @(targetUID),
+               @(senderUID),
+               @(targetUID),
+               @(targetUID),
+               uuid];
+    }   else    {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+               @(targetUID),
+               @(targetUID),
+               @(senderUID)];
+    }
+    
+#if DEBUG
+    NSLog(@">>> sql queryUnreadMessagesToUUID: %@", sql);
+#endif
+    FMResultSet *rs = [self.db executeQuery:sql];
+    NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [items addObject:msg];
+    }
+    [rs close];
+    return items;
+}
+
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nonnull)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID {
+    if (!([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0 && [topUUID isKindOfClass:NSString.class] && topUUID.length > 0)) {
+        return @[];
+    }
+    
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp <= (SELECT timestamp FROM group_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC", @(targetUID), bottomUUID, topUUID];
+    
+#if DEBUG
+    NSLog(@">>> sql queryMessagesToUUID:from:byTargetUID: %@", sql);
+#endif
+    
+    FMResultSet *rs = [self.db executeQuery:sql];
+    NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [items addObject:msg];
+    }
+    [rs close];
+    return items;
+}
+
+- (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
+    NSString *sql;
+    if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND haveread = 0 AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+               @(targetUID),
+               @(senderUID),
+               @(targetUID),
+               @(targetUID),
+               uuid];
+    }   else    {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND haveread = 0 AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+               @(targetUID),
+               @(targetUID),
+               @(senderUID)];
+    }
+    
+#if DEBUG
+    NSLog(@">>> sql queryUnreadOnlyMessagesToUUID: %@", sql);
+#endif
+    FMResultSet *rs = [self.db executeQuery:sql];
     NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
     while ([rs next]) {
         IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];

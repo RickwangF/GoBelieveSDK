@@ -77,6 +77,11 @@
 /// @param uuids 未读消息uuid数组
 - (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids;
 
+/// 批量更新消息已读状态，此方法不更新非自己发送的消息已读状态
+/// @param uuids 未读消息uuid数组
+/// @param sender 自己的uid
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender;
+
 /// 更新消息宽高以及行高
 /// @param width 消息宽度
 /// @param height 消息高度
@@ -107,6 +112,24 @@
 /// 查询多条消息，根据uuid查
 /// @param uuids 消息uuid集合
 - (NSArray<IMessage *> * _Nonnull)queryMessagesWithUUIDs:(NSArray<NSString *> * _Nonnull)uuids;
+
+/// 查询第一条未读消息（非本人发送）到指定消息的消息集合，按时间升序排列
+/// @param uuid 最后的消息uuid，为nil则返回到最后一条消息
+/// @param targetUID 聊天id，单聊是对方的UID，群聊是GID
+/// @param senderUID 发送方id
+- (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
+
+/// 查询第一条未读消息（非本人发送）到指定消息的消息内所有未读消息集合，按时间升序排列
+/// @param uuid 最后的消息uuid，为nil则查到最后一条消息
+/// @param targetUID 聊天id，单聊是对方的UID，群聊是GID
+/// @param senderUID 发送方id
+- (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
+
+/// 查询两条消息之间的所有消息，同一会话下
+/// @param bottomUUID 底部最后一条消息
+/// @param topUUID 顶部第一条消息
+/// @param targetUID 会话uid
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nonnull)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID;
 
 #pragma mark - gobelieveHandler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;

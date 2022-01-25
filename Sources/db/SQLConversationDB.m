@@ -395,6 +395,20 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+- (void)updateConversationUnreadCountWithUid:(int64_t)uid unreadCount:(int64_t)unreadCount completion:(void (^_Nullable)(BOOL state))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL state = [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = ? WHERE conversationid = ?", @(unreadCount), @(uid)];
+#if DEBUG
+        NSLog(@">>> sql update: %@", [NSString stringWithFormat:@"UPDATE gb_conversation SET unreadcount = %@ WHERE conversationid = %@", @(unreadCount), @(uid)]);
+#endif
+        if (completion) {
+            completion(state);
+        }
+    }];
+}
+
 /// Save draft message.
 /// @param uid The uid of the conversation where the draft will be saved.
 /// @param draft The string of the conversation where the draft will be saved.

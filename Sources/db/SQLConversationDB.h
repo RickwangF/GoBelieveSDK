@@ -69,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uid 清空会话的id
 - (void)clearConversationMsgCountWithUid:(int64_t)uid;
 
+- (void)updateConversationUnreadCountWithUid:(int64_t)uid unreadCount:(int64_t)unreadCount completion:(void (^_Nullable)(BOOL state))completion;
+
 /// 保存草稿消息
 /// @param uid 保存草稿会话的id
 /// @param draft 保存草稿会话的文字

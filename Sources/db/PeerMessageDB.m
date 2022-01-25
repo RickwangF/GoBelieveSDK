@@ -41,39 +41,50 @@
         return NO;
     }
     
+    NSMutableArray<NSString *> *items = [[NSMutableArray alloc] initWithCapacity:uuids.count];
+    [uuids enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [items addObject:[NSString stringWithFormat:@"'%@'", obj]];
+    }];
+    NSString *params = [items componentsJoinedByString:@","];
+    NSString *sql = [NSString stringWithFormat:@"UPDATE peer_message set haveread = 1 WHERE readuuid IN (%@) AND haveread != 1", params];
+#if DEBUG
+    NSLog(@">>> markMesagesHaveRead sql: %@", sql);
+#endif
     FMDatabase *db = self.db;
+    BOOL state = [db executeUpdate:sql];
+    return state;
     
-    BOOL success = true;
-    [db beginTransaction];
-    
-    for (NSString *uuid in uuids) {
-        FMResultSet *rs = [db executeQuery:@"SELECT haveread FROM peer_message WHERE readuuid=?", uuid];
-        if (!rs) {
-            continue;
-        }
-        
-        if ([rs next]) {
-            int flags = [rs intForColumn:@"haveread"];
-            flags |= 1;
-
-            BOOL r = [db executeUpdate:@"UPDATE peer_message SET haveread= ? WHERE readuuid= ?", @(flags), uuid];
-            success = r;
-            if (!r) {
-                [rs close];
-                NSLog(@"error = %@", [db lastErrorMessage]);
-                continue;
-            }
-        }
-        [rs close];
-    }
-    
-    if (!success) {
-        [db rollback];
-        return NO;
-    }
-    
-    [db commit];
-    return YES;
+//    BOOL success = true;
+//    [db beginTransaction];
+//
+//    for (NSString *uuid in uuids) {
+//        FMResultSet *rs = [db executeQuery:@"SELECT haveread FROM peer_message WHERE readuuid=?", uuid];
+//        if (!rs) {
+//            continue;
+//        }
+//
+//        if ([rs next]) {
+//            int flags = [rs intForColumn:@"haveread"];
+//            flags |= 1;
+//
+//            BOOL r = [db executeUpdate:@"UPDATE peer_message SET haveread= ? WHERE readuuid= ?", @(flags), uuid];
+//            success = r;
+//            if (!r) {
+//                [rs close];
+//                NSLog(@"error = %@", [db lastErrorMessage]);
+//                continue;
+//            }
+//        }
+//        [rs close];
+//    }
+//
+//    if (!success) {
+//        [db rollback];
+//        return NO;
+//    }
+//
+//    [db commit];
+//    return YES;
 }
 
 @end

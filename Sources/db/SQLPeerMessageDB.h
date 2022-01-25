@@ -82,6 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uuids 未读消息uuid数组
 - (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids;
 
+/// 批量更新消息已读状态，此方法不更新非自己发送的消息已读状态
+/// @param uuids 未读消息uuid数组
+/// @param sender 自己的uid
+- (BOOL)updateHaveNotReadUUIDS:(NSArray *)uuids sender:(int64_t)sender;
+
 /// 更新消息宽高以及行高
 /// @param width 消息宽度
 /// @param height 消息高度
