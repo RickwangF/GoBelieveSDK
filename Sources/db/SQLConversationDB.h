@@ -159,6 +159,9 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
 /// @param conversation 所需添加内部咨询会话的conversation
 - (BOOL)manualAddConversationWithConversation:(Conversation *)conversation;
 
+/// 所有会话调整为已读，并清空新消息数量
+- (void)markAllConversationRead:(void (^ _Nullable)(BOOL))completion;
+
 #if DEBUG
 /// 执行SQL语句，单元测试使用
 /// @param statements SQL语句

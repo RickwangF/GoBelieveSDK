@@ -658,6 +658,18 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     return success;
 }
 
+/// 所有会话调整为已读，并清空新消息数量
+- (void)markAllConversationRead:(void (^ _Nullable)(BOOL))completion {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL state = [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = 0 WHERE unreadcount != 0"];
+        if (completion) {
+            completion(state);
+        }
+    }];
+}
+
 ///// 修改会话数据
 ///// @param conversation 添加的会话
 //- (BOOL)amendConversation:(Conversation *)conversation {

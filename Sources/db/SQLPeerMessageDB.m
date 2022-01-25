@@ -953,6 +953,19 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return items;
 }
 
+/// 所有聊天消息（非自己发送的、不失败的）调整为已读
+- (BOOL)markAllMessagesRead:(int64_t)sender {
+    FMDatabase *db = self.db;
+
+    BOOL r = [db executeUpdate:@"UPDATE peer_message SET haveread= ? WHERE haveread= 0 AND flags != ? AND sender != ?", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
+        return NO;
+    }
+
+    return YES;
+}
+
 //- (BOOL)checkHaveFailedMessageUid:(int64_t)uid {
 //    FMDatabase *db = self.db;
 //    BOOL haveFailed = NO;

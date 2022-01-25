@@ -131,6 +131,9 @@
 /// @param targetUID 会话uid
 - (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nonnull)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID;
 
+/// 所有聊天消息（非自己发送的、不失败的）调整为已读
+- (BOOL)markAllMessagesRead:(int64_t)sender;
+
 #pragma mark - gobelieveHandler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;
