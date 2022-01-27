@@ -927,15 +927,17 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
     NSString *sql;
     if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND haveread = 0 AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
                @(targetUID),
+               @(senderUID),
                @(senderUID),
                @(targetUID),
                @(targetUID),
                uuid];
     }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND haveread = 0 AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND deletetag = 0 AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
                @(targetUID),
+               @(senderUID),
                @(targetUID),
                @(senderUID)];
     }
