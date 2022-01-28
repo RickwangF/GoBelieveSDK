@@ -126,10 +126,11 @@
 - (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
 
 /// 查询两条消息之间的所有消息，同一会话下
-/// @param bottomUUID 底部最后一条消息
+/// @param bottomUUID 底部最后一条消息，不存在时则查所有的
 /// @param topUUID 顶部第一条消息
 /// @param targetUID 会话uid
-- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nonnull)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID;
+/// @param limited 查询条数，当前没有底部信息限制时此参数控制返回的条数
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nullable)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID limited:(NSInteger)limited;
 
 /// 所有聊天消息（非自己发送的、不失败的）调整为已读
 - (BOOL)markAllMessagesRead:(int64_t)sender;

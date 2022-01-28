@@ -903,12 +903,22 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
     return items;
 }
 
-- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nonnull)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID {
-    if (!([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0 && [topUUID isKindOfClass:NSString.class] && topUUID.length > 0)) {
+/// 查询两条消息之间的所有消息，同一会话下
+/// @param bottomUUID 底部最后一条消息，不存在时则查所有的
+/// @param topUUID 顶部第一条消息
+/// @param targetUID 会话uid
+/// @param limited 查询条数，当前没有底部信息限制时此参数控制返回的条数
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nullable)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID limited:(NSInteger)limited {
+    if (!([topUUID isKindOfClass:NSString.class] && topUUID.length > 0)) {
         return @[];
     }
-    
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND timestamp <= (SELECT timestamp FROM peer_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM peer_message WHERE readuuid = '%@') ORDER BY timestamp ASC", @(targetUID), bottomUUID, topUUID];
+    NSString *sql;
+    if ([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0) {
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND timestamp <= (SELECT timestamp FROM peer_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM peer_message WHERE readuuid = '%@') ORDER BY timestamp ASC;", @(targetUID), bottomUUID, topUUID];
+    }   else    {
+        NSString *limitedString = limited > 0 ? [NSString stringWithFormat:@" LIMIT %ld", limited]:@"";
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND deletetag = 0 AND timestamp >= (SELECT timestamp FROM peer_message WHERE readuuid = '%@') ORDER BY timestamp ASC%@;", @(targetUID), topUUID, limitedString];
+    }
     
 #if DEBUG
     NSLog(@">>> sql queryMessagesToUUID:from:byTargetUID: %@", sql);
