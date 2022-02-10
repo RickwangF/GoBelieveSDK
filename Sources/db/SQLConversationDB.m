@@ -210,26 +210,43 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             haveRecord = YES;
         }
         [result close];
+        NSError *error = nil;
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
                                 ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
-            success =
-                [db executeUpdate:sqlStr, @(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
-                                  readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
-                                  @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
-                                  memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                  @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)];
+            success = [db executeUpdate:sqlStr
+                                 values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
+                                          readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                                          @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                                          memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                  error:&error];
         }else{
-            success =
-            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
-                              @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
-                              @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                              @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?",
-                              avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
-                              @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
-                              @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
-                              @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
-                              @(conversation.uid)];
+//            success =
+//            [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+//                              @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
+//                              @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+//                              @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?",
+//                              avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
+//                              @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+//                              @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
+//                              @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
+//                              @(conversation.uid)];
+            success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+                                        @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
+                                        @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                 values:@[avatar, nickname, @(conversation.timestamp),
+                                          content, readUUID, @(conversation.isCallback),
+                                          @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+                                          @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
+                                          memberImg, draft, @(conversation.unsendTag),
+                                          targetId, @(conversation.is_self), areaStr,
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                  error:&error];
+        }
+        if (error) {
+            NSLog(@">>> update/add conversation failed, %@", error);
         }
     }];
     return success;
