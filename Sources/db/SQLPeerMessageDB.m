@@ -699,11 +699,9 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 
     if ([rs next]) {
         IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
-        [db commit];
         [rs close];
         return msg;
     }
-    [db commit];
     [rs close];
     return nil;
 }

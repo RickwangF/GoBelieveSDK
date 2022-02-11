@@ -968,7 +968,13 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         return @[];
     }
     
-    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp <= (SELECT timestamp FROM group_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC", @(targetUID), bottomUUID, topUUID];
+    NSString *sql;
+    if ([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0) {
+        NSString *limitedString = limited > 0 ? [NSString stringWithFormat:@" LIMIT %ld", limited]:@"";
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC%@;", @(targetUID), topUUID, limitedString];
+    }   else    {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND deletetag = 0 AND timestamp <= (SELECT timestamp FROM group_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC", @(targetUID), bottomUUID, topUUID];
+    }
     
 #if DEBUG
     NSLog(@">>> sql queryMessagesToUUID:from:byTargetUID: %@", sql);
