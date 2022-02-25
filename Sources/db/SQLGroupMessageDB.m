@@ -964,16 +964,15 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 /// @param targetUID 会话uid
 /// @param limited 查询条数，当前没有底部信息限制时此参数控制返回的条数
 - (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nullable)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID limited:(NSInteger)limited {
-    if (!([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0 && [topUUID isKindOfClass:NSString.class] && topUUID.length > 0)) {
+    if (!([topUUID isKindOfClass:NSString.class] && topUUID.length > 0)) {
         return @[];
     }
-    
     NSString *sql;
     if ([bottomUUID isKindOfClass:NSString.class] && bottomUUID.length > 0) {
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp <= (SELECT timestamp FROM group_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC;", @(targetUID), bottomUUID, topUUID];
+    }   else    {
         NSString *limitedString = limited > 0 ? [NSString stringWithFormat:@" LIMIT %ld", limited]:@"";
         sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC%@;", @(targetUID), topUUID, limitedString];
-    }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp <= (SELECT timestamp FROM group_message WHERE readuuid = '%@') AND timestamp >= (SELECT timestamp FROM group_message WHERE readuuid = '%@') ORDER BY timestamp ASC", @(targetUID), bottomUUID, topUUID];
     }
     
 #if DEBUG
