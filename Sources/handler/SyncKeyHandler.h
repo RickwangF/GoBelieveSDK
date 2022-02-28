@@ -8,7 +8,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "IMService.h"
+#import <Gobelieve/IMService.h>
 
 @interface SyncKeyHandler : NSObject<IMSyncKeyHandler>
 @property(nonatomic, copy) NSString *fileName;

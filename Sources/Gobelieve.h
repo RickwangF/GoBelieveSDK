@@ -72,5 +72,4 @@ FOUNDATION_EXPORT const unsigned char gobelieveSDKVersionString[];
 #import <Gobelieve/TCPConnection.h>
 #import <Gobelieve/FileCache.h>
 #import <Gobelieve/GOReachability.h>
-#import <Gobelieve/MessageCoordinator.h>
 //#import <Gobelieve/util.h>

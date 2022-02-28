@@ -1033,6 +1033,27 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return YES;
 }
 
+/// 已读指定会话下所有他人消息，自己的消息不处理
+/// @param conversationID 会话id
+/// @param senderUID 当前登录用户uid
+- (BOOL)markAllMessagesReadByConversationID:(int64_t)conversationID senderUID:(int64_t)senderUID {
+    FMDatabase *db = self.db;
+    
+    NSString *sql = [NSString stringWithFormat:@"UPDATE group_message SET haveread = %@ WHERE (haveread = 0 OR haveread IS NULL) AND flags != %@ AND sender != %@ AND group_id = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(senderUID), @(conversationID)];
+    
+#if DEBUG
+    NSLog(@">>> sql markAllMessagesReadByConversationID: %@", sql);
+#endif
+
+    BOOL r = [db executeUpdate:sql];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
+        return NO;
+    }
+
+    return YES;
+}
+
 
 //-(id<IMessageIterator>)newMiddleMessageIterator:(int64_t)gid messageID:(int)messageID {
 //    return [[SQLGroupMessageIterator alloc] initWithDB:self.db gid:gid middle:messageID];

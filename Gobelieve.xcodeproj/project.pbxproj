@@ -13,7 +13,7 @@
 		5227AC20262E747B001A309C /* wavwriter.c in Sources */ = {isa = PBXBuildFile; fileRef = 5227AC1E262E747B001A309C /* wavwriter.c */; };
 		5243E6FC2678B9FA009E8F48 /* IMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E6FB2678B9FA009E8F48 /* IMessage.m */; };
 		5243E7032678BB24009E8F48 /* IMService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5243E7012678BB24009E8F48 /* IMService.m */; };
-		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; };
+		5243E7042678BB24009E8F48 /* IMService.h in Headers */ = {isa = PBXBuildFile; fileRef = 5243E7022678BB24009E8F48 /* IMService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 525FD2392666001600496C89 /* IMessage+CreatorMode.m */; };
 		5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */; };
 		52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B7AC8F263517BA00E71A8C /* GBConversationIterator.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -124,6 +124,8 @@
 		AC96ADF9B32F2B92570D1FC3 /* FileCache.m in Sources */ = {isa = PBXBuildFile; fileRef = AC96A30B3BF2D02FA6607133 /* FileCache.m */; };
 		AC96AE62C701AB7EB59C3EC6 /* SQLConversationDB+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = AC96A8640FCD6DC25CF69E51 /* SQLConversationDB+Private.h */; };
 		BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */; };
+		D02B764E27CCDD590019AAC7 /* GroupMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02B764C27CCC9B40019AAC7 /* GroupMessageTests.swift */; };
+		D02B765127CCE9000019AAC7 /* PeerMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02B765027CCE9000019AAC7 /* PeerMessageTests.swift */; };
 		F8C84AD95B98F3254E9B4E64 /* Pods_Gobelieve_GobelieveTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -266,6 +268,9 @@
 		AC96AE914D91036C62702FDA /* magic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = magic.h; sourceTree = "<group>"; };
 		BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SQLConversationDBTests.m; sourceTree = "<group>"; };
 		CCA0DA06FE3CC47CD43D8A78 /* Pods-Gobelieve.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve.release.xcconfig"; path = "Target Support Files/Pods-Gobelieve/Pods-Gobelieve.release.xcconfig"; sourceTree = "<group>"; };
+		D02B764C27CCC9B40019AAC7 /* GroupMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMessageTests.swift; sourceTree = "<group>"; };
+		D02B764F27CCDE020019AAC7 /* BridgeHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgeHeader.h; sourceTree = "<group>"; };
+		D02B765027CCE9000019AAC7 /* PeerMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeerMessageTests.swift; sourceTree = "<group>"; };
 		FA462F966D4BCC47CE081D2D /* Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; path = "Target Support Files/Pods-Gobelieve-gobelieveSDKTests/Pods-Gobelieve-gobelieveSDKTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -493,6 +498,9 @@
 				525FD2392666001600496C89 /* IMessage+CreatorMode.m */,
 				BC7B104A2643C8710078B9D6 /* SQLConversationDBTests.m */,
 				5289645826607BF6000B7E00 /* SQLGroupMessageDBTests.m */,
+				D02B764C27CCC9B40019AAC7 /* GroupMessageTests.swift */,
+				D02B765027CCE9000019AAC7 /* PeerMessageTests.swift */,
+				D02B764F27CCDE020019AAC7 /* BridgeHeader.h */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -599,7 +607,6 @@
 				52EA09D52629953C003652B7 /* MessageVOIP.h in Headers */,
 				5227ABD3262E6C7B001A309C /* wavreader.h in Headers */,
 				52EA09F22629953C003652B7 /* NSString+JSMessagesView.h in Headers */,
-				5243E7042678BB24009E8F48 /* IMService.h in Headers */,
 				52EA09B32629953C003652B7 /* AsyncRawTCP.h in Headers */,
 				52EA09C72629953C003652B7 /* ICustomerMessage.h in Headers */,
 				52EA09B42629953C003652B7 /* AsyncSSLTCP.h in Headers */,
@@ -617,6 +624,7 @@
 				52EA09F92629953C003652B7 /* SyncKeyHandler.h in Headers */,
 				52F45F58262D765100DCD1F2 /* SQLConversationDB.h in Headers */,
 				52EA091D26299508003652B7 /* Gobelieve.h in Headers */,
+				5243E7042678BB24009E8F48 /* IMService.h in Headers */,
 				52EA09FA2629953C003652B7 /* CustomerMessageHandler.h in Headers */,
 				52B7AC90263517EF00E71A8C /* GBConversationIterator.h in Headers */,
 				52EA09FC2629953C003652B7 /* GroupMessageHandler.h in Headers */,
@@ -684,6 +692,7 @@
 					};
 					52EA091426299508003652B7 = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1320;
 					};
 				};
 			};
@@ -854,6 +863,8 @@
 				BC7B104B2643C8710078B9D6 /* SQLConversationDBTests.m in Sources */,
 				AC96A3FD146F19D2C1C71855 /* Random.mm in Sources */,
 				525FD23A2666001600496C89 /* IMessage+CreatorMode.m in Sources */,
+				D02B764E27CCDD590019AAC7 /* GroupMessageTests.swift in Sources */,
+				D02B765127CCE9000019AAC7 /* PeerMessageTests.swift in Sources */,
 				5289645926607BF6000B7E00 /* SQLGroupMessageDBTests.m in Sources */,
 				AC96A3D6632CECFD06B7A2A5 /* MagicTests.m in Sources */,
 			);
@@ -1062,6 +1073,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6A29A93F0FCB0146D6B4BC90 /* Pods-Gobelieve-GobelieveTests.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SK7MNDQK8Q;
 				INFOPLIST_FILE = Tests/Info.plist;
@@ -1079,6 +1091,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gobelieve.gobelieveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/Tests/db/BridgeHeader.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1087,6 +1102,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 84226D44010FFC3175AF1AE9 /* Pods-Gobelieve-GobelieveTests.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = SK7MNDQK8Q;
 				INFOPLIST_FILE = Tests/Info.plist;
@@ -1104,6 +1120,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gobelieve.gobelieveSDKTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(PROJECT_DIR)/Tests/db/BridgeHeader.h";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

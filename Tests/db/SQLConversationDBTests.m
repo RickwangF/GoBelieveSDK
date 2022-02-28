@@ -53,6 +53,7 @@ static NSString* kCreateTable = @"create table gb_conversation"
     _db = [SQLConversationDB instance];
     [SQLConversationDB setDataBaseQueuePath:@":memory:"];
     [_db executeStatements:kCreateTable];
+    [_db manualCheckConversationDBColumn];
 }
 
 - (void)tearDown {

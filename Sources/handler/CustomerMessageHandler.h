@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "IMService.h"
+#import <Gobelieve/IMService.h>
 
 @interface CustomerMessageHandler : NSObject<IMCustomerMessageHandler>
 +(CustomerMessageHandler*)instance;

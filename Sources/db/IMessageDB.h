@@ -135,6 +135,11 @@
 /// 所有聊天消息（非自己发送的、不失败的）调整为已读
 - (BOOL)markAllMessagesRead:(int64_t)sender;
 
+/// 已读指定会话下所有他人消息，自己的消息不处理
+/// @param conversationID 会话id
+/// @param senderUID 当前登录用户uid
+- (BOOL)markAllMessagesReadByConversationID:(int64_t)conversationID senderUID:(int64_t)senderUID;
+
 #pragma mark - gobelieveHandler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;
