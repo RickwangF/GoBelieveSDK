@@ -408,12 +408,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@", @(1),
+                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND (haveread = 0 OR haveread IS NULL) AND flags != %@", @(1),
                 str, @(MESSAGE_FLAG_FAILURE)];
     }else{
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE haveread= 0 AND flags != %@", @(1), @(MESSAGE_FLAG_FAILURE)];
+                @"UPDATE peer_message SET haveread= %@ WHERE (haveread = 0 OR haveread IS NULL) AND flags != %@", @(1), @(MESSAGE_FLAG_FAILURE)];
     }
 
     BOOL r = [db executeUpdate:sqlStr];
@@ -441,12 +441,12 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@ AND sender = %@", @(1),
+                @"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND (haveread = 0 OR haveread IS NULL) AND flags != %@ AND sender = %@", @(1),
                 str, @(MESSAGE_FLAG_FAILURE), @(sender)];
     }else{
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE peer_message SET haveread= %@ WHERE haveread= 0 AND flags != %@ AND sender = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+                @"UPDATE peer_message SET haveread= %@ WHERE (haveread = 0 OR haveread IS NULL) AND flags != %@ AND sender = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
     }
 
     BOOL r = [db executeUpdate:sqlStr];
@@ -875,14 +875,14 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
     NSString *sql;
     if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(targetUID),
                @(targetUID),
                uuid];
     }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
                @(targetUID),
                @(targetUID),
                @(senderUID)];
@@ -935,7 +935,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
     NSString *sql;
     if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND (haveread = 0 OR haveread IS NULL) AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM peer_message WHERE peer = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(senderUID),
@@ -943,7 +943,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
                @(targetUID),
                uuid];
     }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM peer_message WHERE peer = %@ AND (deletetag = 0 OR deletetag IS NULL) AND (haveread = 0 OR haveread IS NULL) AND sender != %@ AND timestamp >= (SELECT timestamp FROM peer_message WHERE peer = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(targetUID),
@@ -967,7 +967,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 - (BOOL)markAllMessagesRead:(int64_t)sender {
     FMDatabase *db = self.db;
 
-    BOOL r = [db executeUpdate:@"UPDATE peer_message SET haveread= ? WHERE haveread= 0 AND flags != ? AND sender != ?", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+    BOOL r = [db executeUpdate:@"UPDATE peer_message SET haveread= ? WHERE (haveread = 0 OR haveread IS NULL) AND flags != ? AND sender != ?", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
     if (!r) {
         NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;
@@ -1222,7 +1222,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //- (NSArray *)getUnreadMsgs {
 ////    NSString *selfUid = [CHGBSignatureModel localSignatureModel].uid;
 ////    FMResultSet *rs = [self.db executeQuery:[NSString stringWithFormat:@"SELECT readuuid FROM peer_message WHERE
-/// haveread= 0 AND sender=%@", selfUid]];
+/// ((haveread = 0 OR haveread IS NULL) OR haveread IS NULL) AND sender=%@", selfUid]];
 //    NSMutableArray *unreadArr = [[NSMutableArray alloc] init];
 ////    while ([rs next]) {
 ////        if ([[rs stringForColumn:@"readuuid"] isNotEmpty]) {
@@ -1577,8 +1577,8 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 ////        [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
 ////        [str appendString:@")"];
 ////        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= %@ WHERE readuuid NOT IN %@ AND
-/// haveread= 0 AND sender= %@", @(haveRead), str, selfUid]; /    }else{ /        sqlStr = [NSString
-/// stringWithFormat:@"UPDATE peer_message SET haveread= 1 WHERE haveread= 0 AND sender= %@", selfUid]; /    }
+/// ((haveread = 0 OR haveread IS NULL) OR haveread IS) AND sender= %@", @(haveRead), str, selfUid]; /    }else{ /        sqlStr = [NSString
+/// stringWithFormat:@"UPDATE peer_message SET haveread= 1 WHERE ((haveread = 0 OR haveread IS NULL) OR haveread IS NULL) AND sender= %@", selfUid]; /    }
 ////
 ////    BOOL r = [db executeUpdate:sqlStr];
 ////    if (!r) {
@@ -1612,7 +1612,7 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 //        }
 //        [str replaceCharactersInRange:NSMakeRange(str.length - 2, 2) withString:@""];
 //        [str appendString:@")"];
-//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET haveread= 0 WHERE readuuid IN %@ AND sender=
+//        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET ((haveread = 0 OR haveread IS NULL) OR haveread IS NULL) WHERE readuuid IN %@ AND sender=
 //        %@", str, [NSString stringWithFormat:@"%lld", targetUid]];
 //    }else{
 //        sqlStr = [NSString stringWithFormat:@"UPDATE peer_message SET flags= %@, haveread= 1 WHERE sender= %@",

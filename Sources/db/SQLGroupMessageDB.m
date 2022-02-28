@@ -436,12 +436,12 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@", @(1),
+                @"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND (haveread = 0 OR haveread IS NULL) AND flags != %@", @(1),
                 str, @(MESSAGE_FLAG_FAILURE)];
     }else{
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE group_message SET haveread= %@ WHERE haveread= 0 AND flags != %@", @1, @(MESSAGE_FLAG_FAILURE)];
+                @"UPDATE group_message SET haveread= %@ WHERE (haveread = 0 OR haveread IS NULL) AND flags != %@", @1, @(MESSAGE_FLAG_FAILURE)];
     }
 
     BOOL r = [db executeUpdate:sqlStr];
@@ -469,12 +469,12 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         [str appendString:@")"];
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND haveread= 0 AND flags != %@ AND sender = %@", @(1),
+                @"UPDATE group_message SET haveread= %@ WHERE readuuid NOT IN %@ AND (haveread = 0 OR haveread IS NULL) AND flags != %@ AND sender = %@", @(1),
                 str, @(MESSAGE_FLAG_FAILURE), @(sender)];
     }else{
         sqlStr = [NSString
             stringWithFormat:
-                @"UPDATE group_message SET haveread= %@ WHERE haveread= 0 AND flags != %@ AND sender = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+                @"UPDATE group_message SET haveread= %@ WHERE (haveread = 0 OR haveread IS NULL) AND flags != %@ AND sender = %@", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
     }
 
     BOOL r = [db executeUpdate:sqlStr];
@@ -932,14 +932,14 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
     NSString *sql;
     if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
-        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(targetUID),
                @(targetUID),
                uuid];
     }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
                @(targetUID),
                @(targetUID),
                @(senderUID)];
@@ -992,7 +992,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
     NSString *sql;
     if ([uuid isKindOfClass:NSString.class] && uuid.length > 0) {
-        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND (haveread = 0 OR haveread IS NULL) AND sender != %@ AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) AND timestamp <= (SELECT timestamp FROM group_message WHERE group_id = %@ AND readuuid = '%@') ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(senderUID),
@@ -1000,7 +1000,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                @(targetUID),
                uuid];
     }   else    {
-        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND haveread = 0 AND sender != %@ AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND haveread = 0 AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
+        sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND (haveread = 0 OR haveread IS NULL) AND sender != %@ AND timestamp >= (SELECT timestamp FROM group_message WHERE group_id = %@  AND (haveread = 0 OR haveread IS NULL) AND (deletetag = 0 OR deletetag IS NULL) AND sender != %@ ORDER BY timestamp ASC LIMIT 1) ORDER BY timestamp ASC",
                @(targetUID),
                @(senderUID),
                @(targetUID),
@@ -1024,7 +1024,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (BOOL)markAllMessagesRead:(int64_t)sender {
     FMDatabase *db = self.db;
 
-    BOOL r = [db executeUpdate:@"UPDATE group_message SET haveread= ? WHERE haveread= 0 AND flags != ? AND sender != ?", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
+    BOOL r = [db executeUpdate:@"UPDATE group_message SET haveread= ? WHERE (haveread = 0 OR haveread IS NULL) AND flags != ? AND sender != ?", @(1), @(MESSAGE_FLAG_FAILURE), @(sender)];
     if (!r) {
         NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;
