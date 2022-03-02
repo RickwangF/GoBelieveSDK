@@ -252,6 +252,69 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     return success;
 }
 
+/// 更新/添加会话，如果会话存在则更新内容，但是新消息数量会累加（newMsgCount会加到原表字段，而不是覆盖），新会话则是覆盖
+/// @param conversation 是否插入成功
+- (BOOL)updateConversation:(Conversation *)conversation {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    NSString *avatar = stringOrEmpty(conversation.avatarURL);
+    NSString *nickname = stringOrEmpty(conversation.name);
+    NSString *content = stringOrEmpty(conversation.content);
+    NSString *readUUID = stringOrEmpty(conversation.msguuid);
+    NSString *memberLevel = stringOrEmpty(conversation.memberLevel);
+    NSString *memberImg = stringOrEmpty(conversation.memberImg);
+    NSString *draft = stringOrEmpty(conversation.draft);
+    NSString *targetId = stringOrEmpty(conversation.targetId);
+    NSString *areaStr = stringOrEmpty(conversation.area);
+    NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+
+    __block BOOL success = NO;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL haveRecord = NO;
+        FMResultSet *result = [db
+            executeQuery:@"SELECT conversationid FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
+        Conversation *old = nil;
+        if (result.next) {
+            haveRecord = YES;
+        }
+        old = [Conversation conversationFromResultSet:result];
+        NSInteger count = old ? old.newMsgCount:0;
+#if DEBUG
+        NSLog(@">>> [%lld] %@ conversation newMsgCount %ld update to %ld", conversation.uid, conversation.content, count, count + conversation.newMsgCount);
+#endif
+        [result close];
+        NSError *error = nil;
+        if (haveRecord == NO) {
+            NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+            success = [db executeUpdate:sqlStr
+                                 values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
+                                          readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                                          @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                                          memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                  error:&error];
+        }else{
+            success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+                                        @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = unreadcount + ?, "
+                                        @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                 values:@[avatar, nickname, @(conversation.timestamp),
+                                          content, readUUID, @(conversation.isCallback),
+                                          @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+                                          @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
+                                          memberImg, draft, @(conversation.unsendTag),
+                                          targetId, @(conversation.is_self), areaStr,
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                  error:&error];
+        }
+        if (error) {
+            NSLog(@">>> update/add conversation failed, %@", error);
+        }
+    }];
+    return success;
+}
+
 /// 检测是否存在表结构字段
 - (void)manualCheckConversationDBColumn {
     FMDatabaseQueue *queue = self.dbQueue;

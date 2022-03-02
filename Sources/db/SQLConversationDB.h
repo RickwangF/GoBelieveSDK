@@ -162,6 +162,10 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
 /// 所有会话调整为已读，并清空新消息数量
 - (void)markAllConversationRead:(void (^ _Nullable)(BOOL))completion;
 
+/// 更新/添加会话，如果会话存在则更新内容，但是新消息数量会累加（newMsgCount会加到原表字段，而不是覆盖），新会话则是覆盖
+/// @param conversation 是否插入成功
+- (BOOL)updateConversation:(Conversation *)conversation;
+
 #if DEBUG
 /// 执行SQL语句，单元测试使用
 /// @param statements SQL语句
