@@ -20,7 +20,7 @@
 - (void)testStringConcatenation {
     NSString *allColumns =
         @"conversationid, avatar, nickname, timestamp, content, msguuid, is_callback, is_group, is_delete, is_top, "
-        @"unreadcount, member_type, member_level, member_img, draft, unsend_tag, target_id, is_self, area, remark_name";
+        @"unreadcount, member_type, member_level, member_img, draft, unsend_tag, target_id, is_self, area, remark_name, conversation_type";
     XCTAssertEqualObjects(@ALL_COL, allColumns);
 
     NSString *sql1 = [NSString

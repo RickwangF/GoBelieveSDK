@@ -660,20 +660,17 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 /// @param targetUid 目标会话uid
 - (Conversation * _Nullable)getConversationWithTargetUid:(int64_t)targetUid {
     __block Conversation *reConver = nil;
-    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     FMDatabaseQueue *queue = self.dbQueue;
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         FMResultSet *rs = [db executeQuery:@"SELECT * FROM gb_conversation WHERE conversationid = ?", @(targetUid)];
         if ([rs next]) {
             reConver = [Conversation conversationFromResultSet:rs];
-            dispatch_semaphore_signal(signal);
-        }else{
-            dispatch_semaphore_signal(signal);
+        }   else    {
+            // 无处理
         }
         [rs close];
     }];
-    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
     return reConver;
 }
 
