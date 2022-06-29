@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
 
-- (BOOL)    :(NSArray<NSString *> * _Nonnull)uuids;
+- (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids;
 
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
