@@ -10,17 +10,19 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 #define PAGE_COUNT 20
 @protocol IMessageDB <NSObject>
 /// 根据最新时间进行消息降序查询
 /// @param conversationID targetUid
 /// @param timeStamp unix时间
-- (id<IMessageIterator>)forwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
+- (nullable id<IMessageIterator>)forwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
 
 /// 根据最新时间进行消息升序查询
 /// @param conversationID targetUid
 /// @param timeStamp unix时间
-- (id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
+- (nullable id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp;
 
 /// 获取指定消息的前两条开始往后面的17条数据和前面2条数据，总的20 条数据
 /// @param conversationID 聊天会话id
@@ -29,7 +31,7 @@
 
 /// 获取单条消息
 /// @param uuid 消息唯一标识
-- (IMessage *)getMessage:(NSString *)uuid;
+- (nullable IMessage *)getMessage:(NSString *)uuid;
 
 /// 存储消息
 /// @param msg 消息体
@@ -107,7 +109,7 @@
 
 /// 通过uid获取当前会话最新的没有做删除的消息
 /// @param targetUid 目标uid
-- (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
+- (nullable IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
 /// 查询多条消息，根据uuid查
 /// @param uuids 消息uuid集合
@@ -142,7 +144,7 @@
 
 #pragma mark - gobelieveHandler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
-- (IMessage *)gobelieveGetMessage:(int)msgID;
+- (nullable IMessage *)gobelieveGetMessage:(int)msgID;
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags;
 - (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(NSString *)content;
 - (BOOL)gobelieveRemoveMessageIndex:(int)msgLocalID;
@@ -188,3 +190,5 @@
 //
 //- (NSArray<IMessage *> *)getTargetMessageWith:(IMessage *)message uid:(int64_t)targetUid;
 @end
+
+NS_ASSUME_NONNULL_END

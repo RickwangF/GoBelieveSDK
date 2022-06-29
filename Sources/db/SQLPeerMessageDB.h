@@ -119,6 +119,26 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param targetUid 目标uid
 - (IMessage * _Nullable)getLatestMessageWithTargetUid:(int64_t)targetUid;
 
+- (nonnull NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid;
+
+- (BOOL)markAllMessagesRead:(int64_t)sender;
+
+
+- (BOOL)markAllMessagesReadByConversationID:(int64_t)conversationID senderUID:(int64_t)senderUID;
+
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nullable)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID limited:(NSInteger)limited;
+
+
+- (NSArray<IMessage *> * _Nonnull)queryMessagesWithUUIDs:(NSArray<NSString *> * _Nonnull)uuids;
+
+
+- (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
+
+
+- (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
+
+- (BOOL)    :(NSArray<NSString *> * _Nonnull)uuids;
+
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (IMessage *)gobelieveGetMessage:(int)msgID;

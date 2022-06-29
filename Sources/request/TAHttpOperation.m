@@ -156,10 +156,11 @@
 			[urlRequest setHTTPBody:self.postBody];
 		}
 
-		urlConnection = [[NSURLConnection alloc]initWithRequest:urlRequest
-													   delegate:self
-											   startImmediately:NO];
-        
+        NSAssert(NO, @"please update code avoid warnning");
+//		urlConnection = [[NSURLConnection alloc]initWithRequest:urlRequest
+//													   delegate:self
+//											   startImmediately:NO];
+//        
 		if(NULL == urlConnection){
 			//delay callback to next run loop
 			[self performSelectorOnMainThread:@selector(execCreateConnectDidFail)

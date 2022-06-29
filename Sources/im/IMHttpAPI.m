@@ -132,21 +132,21 @@ static NSString * AFCreateMultipartFormBoundary() {
     NSString *postLength = [NSString stringWithFormat:@"%zd", [body length]];
     [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
     
-    
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue currentQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               NSInteger statusCode = [(NSHTTPURLResponse*)response statusCode];
-                               if(statusCode == 200 && data.length > 0) {
-                                   NSDictionary *resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-                                   NSString *src_url = [resp objectForKey:@"src_url"];
-                                   success(src_url);
-                               } else {
-                                   NSDictionary *resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-                                   NSLog(@"error:%@", resp);
-                                   fail();
-                               }
-                           }];
+    NSAssert(NO, @"please update code avoid warnning");
+//    [NSURLConnection sendAsynchronousRequest:request
+//                                       queue:[NSOperationQueue currentQueue]
+//                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//                               NSInteger statusCode = [(NSHTTPURLResponse*)response statusCode];
+//                               if(statusCode == 200 && data.length > 0) {
+//                                   NSDictionary *resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+//                                   NSString *src_url = [resp objectForKey:@"src_url"];
+//                                   success(src_url);
+//                               } else {
+//                                   NSDictionary *resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
+//                                   NSLog(@"error:%@", resp);
+//                                   fail();
+//                               }
+//                           }];
 }
 
 

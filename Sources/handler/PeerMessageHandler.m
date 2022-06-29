@@ -79,7 +79,7 @@
 -(BOOL)handleMessageACK:(IMMessage*)msg error:(int)error {
     if (error == MSG_ACK_SUCCESS) {
         if (msg.msgLocalID > 0) {
-            return [[PeerMessageDB instance] gobelieveAcknowledgeMessage:msg.msgLocalID];
+            return [[PeerMessageDB instance] gobelieveAcknowledgeMessage:(int)msg.msgLocalID];
         } else {
             MessageContent *content = [IMessage fromRaw:msg.plainContent];
             if (content.type == MESSAGE_REVOKE) {

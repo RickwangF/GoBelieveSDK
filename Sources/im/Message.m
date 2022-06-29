@@ -98,7 +98,7 @@
         p += 8;
         writeInt64(m.sellerID, p);
         p += 8;
-        writeInt32(m.timestamp, p);
+        writeInt32((int32_t)m.timestamp, p);
         p += 4;
         const char *s = [m.content UTF8String];
         size_t l = strlen(s);

@@ -339,7 +339,7 @@
 
 - (void)saveMessageAttachment:(IMessage *)msg address:(NSString *)address {
     //以附件的形式存储，以免第二次查询
-    MessageAttachmentContent *att = [[MessageAttachmentContent alloc] initWithAttachment:msg.msgLocalID
+    MessageAttachmentContent *att = [[MessageAttachmentContent alloc] initWithAttachment:(int)msg.msgLocalID
                                                                                  address:address];
     ICustomerMessage *attachment = [[ICustomerMessage alloc] init];
     attachment.rawContent = att.raw;
@@ -349,6 +349,192 @@
 - (BOOL)saveMessage:(IMessage *)msg {
     return [self insertMessage:msg];
 }
+
+- (void)checkHaveManualColumn {
+    NSAssert(NO, @"please update code avoid warnning");
+}
+
+
+- (BOOL)clearMessagesWithTargetUid:(int64_t)targetUid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)eraseMessageFailure:(nonnull NSString *)uuid timestamp:(int64_t)timestamp {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (nonnull NSArray<IMessage *> *)fetchHistoryWithConversationID:(int64_t)conversationID baseOnUUID:(NSString * _Nonnull)uuid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (nullable id<IMessageIterator>)forwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp {
+    NSAssert(NO, @"please update code avoid warnning");
+    return nil;
+}
+
+
+- (nonnull NSArray<IMessage *> *)getFailedMessages:(int64_t)uid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (nullable  IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return nil;
+}
+
+
+- (BOOL)gobelieveAcknowledgeMessage:(int)msgLocalID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (nullable  IMessage *)gobelieveGetMessage:(int)msgID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return nil;
+}
+
+
+- (int)gobelieveGetMessageId:(nonnull NSString *)uuid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return 0;
+}
+
+
+- (BOOL)gobelieveMarkMessageFailure:(NSInteger)msg {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)gobelieveRemoveMessageIndex:(int)msgLocalID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(nonnull NSString *)content {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+    
+}
+
+
+- (BOOL)insertMessage:(nonnull IMessage *)msg uid:(int64_t)uid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)markAllMessagesRead:(int64_t)sender {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)markAllMessagesReadByConversationID:(int64_t)conversationID senderUID:(int64_t)senderUID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)markMesageHaveRead:(nonnull NSString *)uuid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (nullable id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID timeStamp:(NSInteger)timeStamp {
+    NSAssert(NO, @"please update code avoid warnning");
+    return nil;
+}
+
+
+- (NSArray<IMessage *> * _Nonnull)queryMessagesToUUID:(NSString * _Nullable)bottomUUID from:(NSString * _Nonnull)topUUID byTargetUID:(int64_t)targetUID limited:(NSInteger)limited {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (NSArray<IMessage *> * _Nonnull)queryMessagesWithUUIDs:(NSArray<NSString *> * _Nonnull)uuids {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (NSArray<IMessage *> * _Nonnull)queryUnreadMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (NSArray<IMessage *> * _Nonnull)queryUnreadOnlyMessagesToUUID:(NSString * _Nullable)uuid byTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (nonnull NSArray<IMessage *> *)searchMessagesContainKeyword:(nonnull NSString *)keyword {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (nonnull NSArray<IMessage *> *)searchMessagesContainKeyword:(nonnull NSString *)keyword targetUid:(int64_t)targetUid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return @[];
+}
+
+
+- (BOOL)updateCallbackUUIDS:(nonnull NSArray *)uuids {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)updateDeleteUUIDS:(nonnull NSArray *)uuids {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)updateHaveNotReadUUIDS:(nonnull NSArray *)uuids {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)updateHaveNotReadUUIDS:(nonnull NSArray *)uuids sender:(int64_t)sender {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
+
+- (BOOL)updateMessageWidth:(float)width height:(float)height lineHeight:(float)lineHeight msgUUID:(nonnull NSString *)uuid {
+    NSAssert(NO, @"please update code avoid warnning");
+    return NO;
+}
+
 
 - (id<IMessageIterator>)newBackwardMessageIterator:(int64_t)conversationID messageID:(int)messageID {
     return nil;

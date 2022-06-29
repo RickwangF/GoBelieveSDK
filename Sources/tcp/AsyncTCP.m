@@ -14,6 +14,45 @@
 
 @implementation AsyncTCP
 
+- (void)close {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+}
+
+- (void)flush {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+}
+
+- (BOOL)connect:(struct sockaddr *)addr cb:(ConnectCB)cb {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+    return NO;
+}
+
+- (void)write:(NSData *)data {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+}
+
+- (BOOL)connect:(NSString *)host port:(int)port cb:(ConnectCB)cb {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+    return NO;
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        
+    }
+    return self;
+}
+
+- (id)initWithQueue:(dispatch_queue_t)queue {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+    return nil;
+}
+
+- (void)startRead:(ReadCB)cb {
+    NSAssert(NO, @"please override %s", __FUNCTION__);
+}
+
 - (BOOL)synthesizeIPv6:(NSString*)host port:(int)port addr:(struct sockaddr*)addr addrinfo:(struct addrinfo*)info {
     int error;
     struct addrinfo hints, *res0, *res;

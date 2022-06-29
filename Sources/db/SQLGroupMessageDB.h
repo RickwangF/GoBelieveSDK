@@ -14,6 +14,8 @@
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SQLGroupMessageIterator : NSObject
 /// 将FMDB结果集转化成IMessage对象
 /// @param set 数据库结果集
@@ -28,7 +30,7 @@
 /// 根据最新时间进行消息降序查询
 /// @param gid 群聊gid
 /// @param timeStamp unix时间
-- (id<IMessageIterator>)forwardMessageIterator:(int64_t)gid timeStamp:(NSInteger)timeStamp;
+- (nullable id<IMessageIterator>)forwardMessageIterator:(int64_t)gid timeStamp:(NSInteger)timeStamp;
 
 /// 根据最新时间进行消息升序查询
 /// @param gid 群聊gid
@@ -37,7 +39,7 @@
 
 /// 获取单条消息
 /// @param uuid 消息唯一标识
-- (IMessage *)getMessage:(NSString *)uuid;
+- (nullable IMessage *)getMessage:(NSString *)uuid;
 
 /// 存储消息
 /// @param msg 消息体
@@ -122,7 +124,7 @@
 
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
-- (IMessage *)gobelieveGetMessage:(int)msgID;
+- (nullable IMessage *)gobelieveGetMessage:(int)msgID;
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags;
 - (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(NSString *)content;
 - (BOOL)gobelieveRemoveMessageIndex:(int)msgLocalID;
@@ -151,3 +153,5 @@
 //-(BOOL)markMesageListened:(int)msgLocalID;
 //-(BOOL)updateFlags:(int)msgLocalID flags:(int)flags;
 @end
+
+NS_ASSUME_NONNULL_END
