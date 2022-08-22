@@ -122,6 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 更新readuuid为NULL的记录，从content的msg_uuid重新设置
 - (BOOL)fixUUIDMissing;
 
+/// 查询未读消息数量，不包含自己的消息
+- (NSArray<IMessage *> *)queryUnreadMessagesByTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID;
+
 #pragma mark - gobelieve handler method
 - (int)gobelieveGetMessageId:(NSString *)uuid;
 - (nullable IMessage *)gobelieveGetMessage:(int)msgID;

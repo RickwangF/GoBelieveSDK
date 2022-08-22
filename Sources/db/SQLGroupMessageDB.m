@@ -1054,6 +1054,25 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return YES;
 }
 
+/// 查询未读消息数量，不包含自己的消息
+- (NSArray<IMessage *> *)queryUnreadMessagesByTargetUID:(int64_t)targetUID senderUID:(int64_t)senderUID {
+    NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (deletetag = 0 OR deletetag IS NULL) AND (haveread = 0 OR haveread IS NULL) AND sender != %@ ORDER BY timestamp ASC",
+           @(targetUID),
+           @(senderUID)];
+    
+#if DEBUG
+    NSLog(@">>> sql queryUnreadMessagesByTargetUID: %@", sql);
+#endif
+    FMResultSet *rs = [self.db executeQuery:sql];
+    NSMutableArray<IMessage *> *items = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [items addObject:msg];
+    }
+    [rs close];
+    return items;
+}
+
 
 //-(id<IMessageIterator>)newMiddleMessageIterator:(int64_t)gid messageID:(int)messageID {
 //    return [[SQLGroupMessageIterator alloc] initWithDB:self.db gid:gid middle:messageID];
