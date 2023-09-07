@@ -187,6 +187,67 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+- (BOOL)addConversationWithTimestampCheck:(Conversation *)conversation {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    NSString *avatar = stringOrEmpty(conversation.avatarURL);
+    NSString *nickname = stringOrEmpty(conversation.name);
+    NSString *content = stringOrEmpty(conversation.content);
+    NSString *readUUID = stringOrEmpty(conversation.msguuid);
+    NSString *memberLevel = stringOrEmpty(conversation.memberLevel);
+    NSString *memberImg = stringOrEmpty(conversation.memberImg);
+    NSString *draft = stringOrEmpty(conversation.draft);
+    NSString *targetId = stringOrEmpty(conversation.targetId);
+    NSString *areaStr = stringOrEmpty(conversation.area);
+    NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+
+    __block BOOL success = NO;
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL haveRecord = NO;
+        BOOL timestampValid = NO;
+        FMResultSet *result = [db
+            executeQuery:@"SELECT conversationid, timestamp FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
+        if (result.next) {
+            haveRecord = [result longLongIntForColumn:@"conversationid"] > 0;
+            timestampValid = conversation.timestamp > [result longLongIntForColumn:@"timestamp"];
+        }
+        [result close];
+        NSError *error = nil;
+        if (haveRecord == NO) {
+            NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+            success = [db executeUpdate:sqlStr
+                                 values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
+                                          readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
+                                          @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
+                                          memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                  error:&error];
+        }else{
+            if (!timestampValid) {// 需要更新的时间小于本地数据时间
+                return;
+            }
+            
+            success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
+                                        @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
+                                        @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                 values:@[avatar, nickname, @(conversation.timestamp),
+                                          content, readUUID, @(conversation.isCallback),
+                                          @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
+                                          @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
+                                          memberImg, draft, @(conversation.unsendTag),
+                                          targetId, @(conversation.is_self), areaStr,
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                  error:&error];
+        }
+        if (error) {
+            NSLog(@">>> update/add conversation failed, %@", error);
+        }
+    }];
+    return success;
+}
+
 - (BOOL)addConversation:(Conversation *)conversation {
     FMDatabaseQueue *queue = self.dbQueue;
 
@@ -354,6 +415,16 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 /// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
 - (void)addConversation:(Conversation *)conversation completion:(void (^_Nullable)(BOOL state))completion {
     BOOL success = [self addConversation:conversation];
+    if (completion) {
+        completion(success);
+    }
+}
+
+/// 智能添加更新会话
+///
+///
+- (void)smartAddConversation:(Conversation *)conversation completion:(void (^_Nullable)(BOOL state))completion {
+    BOOL success = [self addConversationWithTimestampCheck:conversation];
     if (completion) {
         completion(success);
     }
@@ -747,6 +818,22 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+/// 获取最近一条会话记录
+- (Conversation * _Nullable)getLastConversation {
+    __block Conversation *reConver = nil;
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        FMResultSet *rs = [db executeQuery:@"SELECT * FROM gb_conversation WHERE is_delete = 0 order by timestamp desc LIMIT 1"];
+        if ([rs next]) {
+            reConver = [Conversation conversationFromResultSet:rs];
+        }   else    {
+            // 无处理
+        }
+        [rs close];
+    }];
+    return reConver;
+}
 ///// 修改会话数据
 ///// @param conversation 添加的会话
 //- (BOOL)amendConversation:(Conversation *)conversation {

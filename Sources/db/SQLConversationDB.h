@@ -43,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param completion 数据库操作执行完成回调，state为执行结果是否成功，此block会在主线程中回调
 - (void)addConversation:(Conversation *)conversation completion:(void (^ _Nullable)(BOOL state))completion;
 
+- (void)smartAddConversation:(Conversation *)conversation completion:(void (^_Nullable)(BOOL state))completion;
+
 /// 检测是否存在表结构字段
 - (void)manualCheckConversationDBColumn;
 
@@ -165,6 +167,9 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
 /// 更新/添加会话，如果会话存在则更新内容，但是新消息数量会累加（newMsgCount会加到原表字段，而不是覆盖），新会话则是覆盖
 /// @param conversation 是否插入成功
 - (BOOL)updateConversation:(Conversation *)conversation;
+
+/// 获取最近一条会话记录
+- (Conversation * _Nullable)getLastConversation;
 
 #if DEBUG
 /// 执行SQL语句，单元测试使用
