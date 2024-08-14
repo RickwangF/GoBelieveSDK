@@ -204,12 +204,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         BOOL haveRecord = NO;
-        BOOL timestampValid = NO;
+        //BOOL timestampValid = NO;
         FMResultSet *result = [db
             executeQuery:@"SELECT conversationid, timestamp FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
         if (result.next) {
             haveRecord = [result longLongIntForColumn:@"conversationid"] > 0;
-            timestampValid = conversation.timestamp > [result longLongIntForColumn:@"timestamp"];
+            //timestampValid = conversation.timestamp > [result longLongIntForColumn:@"timestamp"];
         }
         [result close];
         NSError *error = nil;
@@ -224,9 +224,9 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
                                   error:&error];
         }else{
-            if (!timestampValid) {// 需要更新的时间小于本地数据时间
-                return;
-            }
+//            if (!timestampValid) {// 需要更新的时间小于本地数据时间
+//                return;
+//            }
             
             success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                                         @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
@@ -530,6 +530,19 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = 0 WHERE conversationid = ?", @(uid)];
+    }];
+}
+
+- (void)minusConversationMsgCountWithUid:(int64_t)uid {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        BOOL success = [db executeUpdate:@"UPDATE gb_conversation SET unreadcount = CASE WHEN unreadcount > 0 THEN unreadcount - 1 ELSE 0 END WHERE conversationid = ?", @(uid)];
+        if (success) {
+            NSLog(@"minusConversationMsgCountWithUid success");
+        } else {
+            NSLog(@"minusConversationMsgCountWithUid fail");
+        }
     }];
 }
 
