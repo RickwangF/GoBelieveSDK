@@ -283,6 +283,10 @@
 }
 @end
 
+@implementation UnreadIMMessageModel
+
+@end
+
 
 
 

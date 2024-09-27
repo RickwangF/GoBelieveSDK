@@ -8,6 +8,7 @@ target 'Gobelieve' do
   
   pod 'FMDB', '2.7.3'
   pod 'opencore-amr/amrnb'
+  pod 'MJExtension', '~> 3'
 
   target 'GobelieveTests' do
     # Pods for testing

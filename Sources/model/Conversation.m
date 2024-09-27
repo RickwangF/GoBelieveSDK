@@ -10,6 +10,7 @@
 #import "Conversation+Private.h"
 
 @import FMDB;
+@import MJExtension;
 
 @implementation Conversation
 
@@ -36,7 +37,16 @@
     conversation.area = [rs stringForColumn:@"area"];
     conversation.remarkName = [rs stringForColumn:@"remark_name"];
     conversation.conversationType = [rs intForColumn:@"conversation_type"];
+    conversation.isMute = [rs boolForColumn:@"is_mute"];
+    conversation.atMsg = [rs stringForColumn:@"atmsg"];
     return conversation;
+}
+
++ (NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{
+        @"isMute": @"is_mute",
+        @"atMsg": @"atMessagePrefix"
+    };
 }
 
 @end

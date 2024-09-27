@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 检测是否存在表结构字段
 - (void)manualCheckConversationDBColumn;
 
+/// 检测会话表是否存在额外字段
+- (void)checkConversationExtraColumns;
+
 /// 删除所有会话
 - (void)clearAllConversationCompletion:(void (^_Nullable)(BOOL state))completion;
 
@@ -99,6 +102,8 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
 /// @param uid 操作会话的uid
 - (void)updateConversationRemarkName:(NSString *)remarkName uid:(int64_t)uid;
 
+- (void)updateConversationName:(NSString *)name RemarkName:(NSString *)remarkName uid:(int64_t)uid;
+
 /// 根据uid修改会话targetId、昵称、头像
 /// @param targetId 需要记录的targetId
 /// @param nickname 需要记录的昵称
@@ -140,6 +145,8 @@ __deprecated_msg("方法废弃，使用saveDraftMessageWithUid替换");
                                        count:(NSInteger)count
                                   clearCount:(BOOL)clearCount
                                     receiver:(int64_t)receiver;
+
+- (void)updateConversationMessageWithAtMsg:(NSString *)atMsg withConversationId:(int64_t)receiver;
 
 /// 获取会话未读数量
 /// @param receiver 消息接收方

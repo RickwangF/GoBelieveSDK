@@ -196,7 +196,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *readUUID = stringOrEmpty(conversation.msguuid);
     NSString *memberLevel = stringOrEmpty(conversation.memberLevel);
     NSString *memberImg = stringOrEmpty(conversation.memberImg);
-    NSString *draft = stringOrEmpty(conversation.draft);
+    __block NSString *draft = stringOrEmpty(conversation.draft);
     NSString *targetId = stringOrEmpty(conversation.targetId);
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
@@ -206,22 +206,23 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         BOOL haveRecord = NO;
         //BOOL timestampValid = NO;
         FMResultSet *result = [db
-            executeQuery:@"SELECT conversationid, timestamp FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
+            executeQuery:@"SELECT conversationid, timestamp, draft FROM gb_conversation WHERE conversationid  = ?", @(conversation.uid)];
         if (result.next) {
             haveRecord = [result longLongIntForColumn:@"conversationid"] > 0;
             //timestampValid = conversation.timestamp > [result longLongIntForColumn:@"timestamp"];
+            draft = stringOrEmpty([result stringForColumn:@"draft"]);
         }
         [result close];
         NSError *error = nil;
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?, ?)";
             success = [db executeUpdate:sqlStr
                                  values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
                                   error:&error];
         }else{
 //            if (!timestampValid) {// 需要更新的时间小于本地数据时间
@@ -231,14 +232,14 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                                         @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
                                         @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ?, is_mute = ?, atmsg = ? WHERE conversationid  = ?"
                                  values:@[avatar, nickname, @(conversation.timestamp),
                                           content, readUUID, @(conversation.isCallback),
                                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType),@(conversation.isMute), conversation.atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -274,13 +275,13 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         NSError *error = nil;
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?, ?)";
             success = [db executeUpdate:sqlStr
                                  values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
                                   error:&error];
         }else{
 //            success =
@@ -296,14 +297,14 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                                         @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
                                         @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ?, is_mute = ?, atmsg = ? WHERE conversationid  = ?"
                                  values:@[avatar, nickname, @(conversation.timestamp),
                                           content, readUUID, @(conversation.isCallback),
                                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -347,26 +348,26 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         NSError *error = nil;
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+                                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?, ?)";
             success = [db executeUpdate:sqlStr
                                  values:@[@(conversation.uid), avatar, nickname, @(conversation.timestamp), content,
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType)]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
                                   error:&error];
         }else{
             success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                                         @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = unreadcount + ?, "
                                         @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?"
+                                        @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ?, is_mute = ?, atmsg = ? WHERE conversationid  = ?"
                                  values:@[avatar, nickname, @(conversation.timestamp),
                                           content, readUUID, @(conversation.isCallback),
                                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType), @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -406,6 +407,41 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                 NSLog(@"群插入%@列%@", name, state ? @"成功" : @"失败");
             }
         }
+        [result close];
+    }];
+}
+
+- (void)checkConversationExtraColumns {
+    FMDatabaseQueue *queue = self.dbQueue;
+    
+    [queue inTransaction:^(FMDatabase * _Nonnull db, BOOL * _Nonnull rollback) {
+        FMResultSet *result = [db executeQuery:@"SELECT * FROM gb_conversation LIMIT 1;"];
+        
+        NSString *isMuteColumnName = @"is_mute";
+        NSString *hasAtColumnName = @"atmsg";
+        
+        __block BOOL containsIsMuteColumnName = NO;
+        __block BOOL containsHasAtColumnName = NO;
+        NSDictionary<NSString *, NSNumber *> *allColumns = [result columnNameToIndexMap];
+        
+        [allColumns.allKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([obj isEqualToString:isMuteColumnName]) {
+                containsIsMuteColumnName = YES;
+            } else if ([obj isEqualToString:hasAtColumnName]) {
+                containsHasAtColumnName = YES;
+            }
+        }];
+        
+        if (!containsIsMuteColumnName) {
+            BOOL state = [db executeUpdate:@"ALTER TABLE gb_conversation ADD is_mute INTEGER NOT NULL DEFAULT 0;"];
+            NSLog(@"alter gb_conversation add is_mute %@", state ? @"success" : @"failure");
+        }
+        
+        if (!containsHasAtColumnName) {
+            BOOL state = [db executeUpdate:@"ALTER TABLE gb_conversation ADD atmsg TEXT;"];
+            NSLog(@"alter gb_conversation add atmsg %@", state ? @"success" : @"failure");
+        }
+        
         [result close];
     }];
 }
@@ -472,11 +508,12 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
                           @"?, is_callback = ?, is_group = ?, is_delete = ?, is_top = ?, unreadcount = ?, "
                           @"member_type = ?, member_level= ?, member_img = ?, draft = ?, unsend_tag = ?, target_id= "
-                          @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ? WHERE conversationid  = ?",
+                          @"?, is_self = ?, area = ?, remark_name = ?, conversation_type = ?, is_mute = ?, atmsg = ? WHERE conversationid  = ?",
                           avatar, nickname, @(conversation.timestamp), content, readUUID, @(conversation.isCallback),
                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
                           @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
+                          @(conversation.isMute), conversation.atMsg,
                           @(conversation.uid)];
     }];
 }
@@ -523,6 +560,14 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     }];
 }
 
+- (void)updateConversationName:(NSString *)name RemarkName:(NSString *)remarkName uid:(int64_t)uid {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [db executeUpdate:@"UPDATE gb_conversation SET remark_name = ?, nickname = ? WHERE conversationid = ?", remarkName, name, @(uid)];
+    }];
+}
+ 
 /// 清空会话未读数量
 /// @param uid 清空会话的id
 - (void)clearConversationMsgCountWithUid:(int64_t)uid {
@@ -604,13 +649,13 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
             if (draftStr.length > 0) {
                 /// If there is a conversation but no draft, create a new conversation and update the draft
                 NSString *sqlStr = @"INSERT INTO gb_conversation (" ALL_COL
-                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?)";
+                ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?, ?)";
                 success =
                 [db executeUpdate:sqlStr, @(newConversation.uid), avatar, nickname, @(newConversation.timestamp), content,
                  readUUID, @(newConversation.isCallback), @(newConversation.isGroup), @(newConversation.isDelete),
                  @(newConversation.isTop), @(newConversation.newMsgCount), @(newConversation.memberType),
                  memberLevel, memberImg, draftStr, @(newConversation.unsendTag), targetId,
-                 @(newConversation.is_self), areaStr, remarkNameStr, @(newConversation.conversationType)];
+                 @(newConversation.is_self), areaStr, remarkNameStr, @(newConversation.conversationType), @(newConversation.isMute), newConversation.atMsg];
                 [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
             }else{
                 /// If there are neither conversation nor draft, do nothing!
@@ -707,6 +752,17 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         [db executeUpdate:@"UPDATE gb_conversation SET content = ?, msguuid = ?, timestamp=  ?, unreadcount = ?, "
                           @"is_callback= ?, is_Self= ? WHERE conversationid = ?",
          contentStr, uuidStr, @(timestamp), clearCount == YES ? @(0) : @(unreadCount + count), isCallBack == YES ? @(1) : @(0), isSelf == YES ? @(1) : @(0), @(receiver)];
+    }];
+}
+
+- (void)updateConversationMessageWithAtMsg:(NSString *)atMsg withConversationId:(int64_t)receiver {
+    FMDatabaseQueue *queue = self.dbQueue;
+
+    NSString *atMsgString = stringOrEmpty(atMsg);
+
+    [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        [db executeUpdate:@"UPDATE gb_conversation SET atmsg = ? WHERE conversationid = ?",
+         atMsgString, @(receiver)];
     }];
 }
 
@@ -809,11 +865,11 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
         
         if (haveRecord == NO) {
             NSString *sqlStr = @"INSERT INTO gb_conversation(" ALL_COL
-            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?)";
+            ") VALUES ( ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?,  ?, ?,  ?,  ?,  ?,  ?,  ?,  ?, ?, ?, ?, ?)";
             
             success = [db executeUpdate:sqlStr, @(conversation.uid), conversation.avatarURL, conversation.name, @(conversation.timestamp), conversation.content, conversation.msguuid, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                        conversation.memberLevel, conversation.memberImg, conversation.draft, @(conversation.unsendTag), conversation.targetId,
-                       @(conversation.is_self), conversation.area, conversation.remarkName];
+                       @(conversation.is_self), conversation.area, conversation.remarkName, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg];
         }
     }];
     return success;

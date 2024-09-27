@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'Gobelieve'
-  s.version          = '1.0.8'
+  s.version          = '1.0.9'
   s.summary          = 'gobelieve'
 
 # This description is used to generate tags and improve search results.
@@ -39,4 +39,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'FMDB'
   s.dependency 'opencore-amr/amrnb'
+  s.dependency 'MJExtension', '~> 3'
 end

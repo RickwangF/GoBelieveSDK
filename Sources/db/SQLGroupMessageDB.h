@@ -10,7 +10,6 @@
 #import "IMessage.h"
 #import "IMessageDB.h"
 #import "IMessageIterator.h"
-
 #import <Foundation/Foundation.h>
 #import <fmdb/FMDB.h>
 
@@ -71,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param uuids 消息唯一标识符
 - (BOOL)markMesagesHaveRead:(NSArray<NSString *> * _Nonnull)uuids;
 
+- (BOOL)updateMessageWithUUID:(NSString *)uuid readCount:(NSInteger)readCount;
+
 /// 获取当前目标发送失败消息
 /// @param gid 群聊gid
 - (NSArray<IMessage *> *)getFailedMessages:(int64_t)gid;
@@ -103,6 +104,22 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param targetUid targetUid
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword targetUid:(int64_t)targetUid;
 
+- (NSArray<IMessage *> *)searchMessagesWithKeyword:(NSString *)keyword withGroupId:(int64_t)groupId;
+
+- (NSArray<IMessage *> *)searchMessagesWithGroupId:(int64_t)groupId sender:(int64_t)sender;
+
+- (NSArray<IMessage *> *)searchVideoImageMessageWithGroupId:(int64_t)groupId;
+
+- (NSArray<IMessage *> *)searchLinkMessageWithGroupId:(int64_t)groupId;
+
+- (NSArray<IMessage *> *)searchFileMessageWithGroupId:(int64_t)groupId;
+
+- (int64_t)searchEarliestMessageTimestampWithGroupId:(int64_t)groupId;
+
+- (NSArray<MessageDate *> *)searchMessageExistDateWithGroupId:(int64_t)groupId;
+
+- (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender;
+
 /// 给数据库动态添加正则匹配方法
 /// 使用方法示例，下面这个SQL语句会查询content字段中包含你好字样的记录：
 /// SELECT * FROM group_message WHERE REGEXP(content, '你好')
@@ -111,9 +128,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// 手动检查是否有自定义添加字段
 - (void)checkHaveManualColumn;
 
+/// 检查群聊的列是否存在，不存在新增列
+- (void)checkHaveExtraColumn;
+
+- (void)updateExtraColumns;
+
 /// 清除消息数据
 /// @param targetUid 目标uid
 - (BOOL)clearMessagesWithTargetUid:(int64_t)targetUid;
+
+/// 逻辑删除群消息数据
+- (BOOL)clearAllMessageWithGroupId:(int64_t)groupId;
 
 /// 通过uid获取当前会话最新的没有做删除的消息
 /// @param targetUid 目标uid

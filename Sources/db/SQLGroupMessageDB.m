@@ -14,7 +14,7 @@
 @import SQLite3;
 
 static const NSString *allColumns = @"sender, group_id, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
-                                    @"lineheight, callback, deletetag, content";
+                                    @"lineheight, callback, deletetag, content, purecontent, messagetype, source, readcount";
 
 @interface SQLGroupMessageIterator () <IMessageIterator>
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid;
@@ -53,7 +53,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     self = [super init];
     if (self) {
         NSString *sql = [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND timestamp > %@ AND "
-                                                   @"(deletetag = 0 OR deletetag IS NULL) ORDER BY timestamp ASC LIMIT 0,20",
+                                                   @"(deletetag = 0 OR deletetag IS NULL) ORDER BY timestamp ASC LIMIT 0,21",
                                                    @(gid), @(timeStamp)];
 #if DEBUG
         NSLog(@">>> query sql %@", sql);
@@ -143,6 +143,10 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     [message setLineHeight:(float)[set intForColumn:@"lineheight"]];
     [message setCallBack:[set intForColumn:@"callback"] == 1];
     [message setDeleteTag:[set intForColumn:@"deletetag"] == 1];
+    [message setPureContent:[set stringForColumn:@"purecontent"]];
+    [message setMessageType:[set stringForColumn:@"messagetype"]];
+    [message setSource:[set stringForColumn:@"source"]];
+    [message setReadCount:[set intForColumn:@"readcount"]];
     return message;
 }
 
@@ -197,6 +201,32 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] isNotEmpty]) {
         [msg setReadUUID:[NSString stringWithFormat:@"%@", dic[@"msg_uuid"]]];
     }
+    
+    NSDictionary *bodyDictionary = dic[@"msg_body"];
+    NSDictionary *extraDictionary;
+    NSString *pureContent = @"";
+    NSString *source = @"";
+    NSString *messageType = @"";
+    
+    if (bodyDictionary) {
+        extraDictionary = bodyDictionary[@"extras"];
+        if (extraDictionary) {
+            if (extraDictionary[@"content"]) {
+                pureContent = [NSString stringWithFormat:@"%@", extraDictionary[@"content"]];
+            } else if (bodyDictionary[@"text"]) {
+                pureContent = [NSString stringWithFormat:@"%@", bodyDictionary[@"text"]];
+            }
+            
+            if (extraDictionary[@"type"]) {
+                messageType = [NSString stringWithFormat:@"%@", extraDictionary[@"type"]];
+            }
+            
+            if (extraDictionary[@"src"]) {
+                source = [NSString stringWithFormat:@"%@", extraDictionary[@"src"]];
+            }
+        }
+    }
+    
     BOOL haveMessage = NO;
     FMResultSet *selectResult = [db
         executeQuery:@"SELECT readuuid FROM group_message WHERE group_id = ? AND readuuid = ?", @(uid), msg.readUUID];
@@ -212,10 +242,10 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
         NSString *content = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
         BOOL result = [db executeUpdate:@"INSERT INTO group_message (group_id, sender, timestamp, flags, "
                                         @"haveread, readuuid, cacheheight, cachewidth, lineheight, callback, "
-                                        @"deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                                        @"deletetag, content, purecontent, messagetype, source, readcount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                                         @(uid), @(msg.sender), @(msg.timestamp), @(msg.flags),
                                         @(msg.haveRead), readuuid, @(msg.manualHeight), @(msg.manualWidth),
-                                        @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
+                                        @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content, pureContent, messageType, source, @(0)];
 
         if (!result) {
             NSLog(@"error = %@", [db lastErrorMessage]);
@@ -320,6 +350,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     BOOL success = true;
     [db beginTransaction];
     
+    // @"SELECT haveread FROM group_message WHERE readuuid=? AND json_extract(content, '$.target_type') != 'i_multi_group'"
     for (NSString *uuid in uuids) {
         FMResultSet *rs = [db executeQuery:@"SELECT haveread FROM group_message WHERE readuuid=?", uuid];
         if (!rs) {
@@ -348,6 +379,15 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     
     [db commit];
     return YES;
+}
+
+- (BOOL)updateMessageWithUUID:(NSString *)uuid readCount:(NSInteger)readCount {
+    BOOL result = NO;
+    
+    FMDatabase *db = self.db;
+    result = [db executeUpdate:@"UPDATE group_message SET readcount = ? WHERE readuuid = ?", @(readCount), uuid];
+    
+    return result;
 }
 
 /// 获取当前目标发送失败消息
@@ -520,6 +560,113 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     return messageArr;
 }
 
+- (NSArray<IMessage *> *)searchMessagesWithKeyword:(NSString *)keyword withGroupId:(int64_t)groupId{
+    FMDatabase *db = self.db;
+    NSString *escapedKeyword = [keyword stringByReplacingOccurrencesOfString:@"'" withString:@"''"]; // 防止SQL注入，处理单引号
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE pureContent like '%%%@%%' AND group_id = %@ AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC;", escapedKeyword, @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+- (NSArray<IMessage *> *)searchMessagesWithGroupId:(int64_t)groupId sender:(int64_t)sender {
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND sender = %@ AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC;",@(groupId), @(sender)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+- (NSArray<IMessage *> *)searchVideoImageMessageWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND messageType IN ('video', 'image') AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC", @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+- (NSArray<IMessage *> *)searchFileMessageWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND messageType = 'file' AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC", @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+- (NSArray<IMessage *> *)searchLinkMessageWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE group_id = %@ AND (purecontent LIKE '%%http://%%' OR purecontent LIKE '%%https://%%') AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC", @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        [messageArr addObject:msg];
+    }
+    [rs close];
+    return messageArr;
+}
+
+- (int64_t)searchEarliestMessageTimestampWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT timestamp FROM group_message WHERE group_id = %@ AND callback = 0 AND deletetag = 0 ORDER BY timestamp ASC LIMIT 1", @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    
+    int64_t timestamp = 0;
+    if ([rs next]) {
+        timestamp = [rs longLongIntForColumn:@"timestamp"];
+    }
+    [rs close];
+    return timestamp;
+}
+
+- (NSArray<MessageDate *> *)searchMessageExistDateWithGroupId:(int64_t)groupId {
+    NSMutableArray<MessageDate *> *result = [NSMutableArray array];
+    FMDatabase *db = self.db;
+    NSString *selectStr =
+        [NSString stringWithFormat:@"SELECT CAST(strftime('%%Y', timestamp / 1000, 'unixepoch') AS INTEGER) AS year, CAST(strftime('%%m', timestamp / 1000, 'unixepoch') AS INTEGER) AS month, CAST(strftime('%%d', timestamp / 1000, 'unixepoch') AS INTEGER) as day, COUNT(*) AS message_count, gm1.readuuid FROM group_message gm1 WHERE gm1.group_id = %@ GROUP BY year, month, day HAVING COUNT(*) > 0 ORDER BY year, month, day;", @(groupId)];
+    FMResultSet *rs = [db executeQuery:selectStr];
+    
+    while ([rs next]) {
+        MessageDate *messageDate = [[MessageDate alloc] init];
+        messageDate.year = [rs intForColumn:@"year"];
+        messageDate.month = [rs intForColumn:@"month"];
+        messageDate.day = [rs intForColumn:@"day"];
+        messageDate.count = [rs intForColumn:@"message_count"];
+        messageDate.firstuuid = [rs stringForColumn:@"readuuid"];
+        
+        [result addObject:messageDate];
+    }
+
+    [rs close];
+    return result;
+}
+
 /// 获取目标下包含关键字的消息
 /// @param keyword 关键字
 /// @param targetUid targetUid
@@ -658,6 +805,87 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     [result close];
 }
 
+- (void)checkHaveExtraColumn {
+    FMDatabase *db = self.db;
+    FMResultSet *result = [db executeQuery:@"SELECT * from group_message ORDER BY timestamp DESC LIMIT 1"];
+    
+    NSDictionary<NSString *, NSNumber *> *allColumns = [result columnNameToIndexMap];
+    NSString *pureContentColumnName = @"purecontent";
+    NSString *messageTypeColumnName = @"messagetype";
+    NSString *sourceColumnName = @"source";
+    NSString *readCountColumnName = @"readcount";
+    __block BOOL containsPureContent = NO;
+    __block BOOL containsMessageType = NO;
+    __block BOOL containsSource = NO;
+    __block BOOL containsReadCount = NO;
+    
+    [allColumns.allKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isEqualToString:pureContentColumnName]) {
+            containsPureContent = YES;
+        } else if ([obj isEqualToString:messageTypeColumnName]) {
+            containsMessageType = YES;
+        } else if ([obj isEqualToString:sourceColumnName]) {
+            containsSource = YES;
+        } else if ([obj isEqualToString:readCountColumnName]) {
+            containsReadCount = YES;
+        }
+    }];
+    
+    if (!containsPureContent) {
+        BOOL state = [db executeUpdate:@"ALTER TABLE group_message ADD purecontent TEXT;"];
+        NSLog(@"alter group_message add pureContent %@", state ? @"success" : @"failure");
+    }
+    
+    if (!containsMessageType) {
+        BOOL state = [db executeUpdate:@"ALTER TABLE group_message ADD messagetype TEXT;"];
+        NSLog(@"alter group_message add messageType %@", state ? @"success" : @"failure");
+    }
+    
+    if (!containsSource) {
+        BOOL state = [db executeUpdate:@"ALTER TABLE group_message ADD source TEXT;"];
+        NSLog(@"alter group_message add source %@", state ? @"success" : @"failure");
+    }
+    
+    if (!containsReadCount) {
+        BOOL state = [db executeUpdate:@"ALTER TABLE group_message ADD readcount INTEGER NOT NULL DEFAULT 0;"];
+        NSLog(@"alter group_message add readcount %@", state ? @"success" : @"failure");
+    }
+    
+    if (!containsPureContent || !containsMessageType || !containsSource) {
+        
+        NSString *updatePureContent = @"UPDATE group_message SET purecontent = CASE WHEN json_extract(content, '$.msg_body.extras.content') IS NOT NULL THEN json_extract(content, '$.msg_body.extras.content') ELSE json_extract(content, '$.msg_body.text') END;";
+        
+        BOOL updatePureContentResult = [db executeUpdate:updatePureContent];
+        NSLog(@"executeUpdate updatePureContent %@", updatePureContentResult ? @"success" : @"failure");
+        
+        NSString *updateMessageType = @"UPDATE group_message set messagetype = json_extract(content, '$.msg_body.extras.type');";
+        BOOL updateMessageTypeResult = [db executeUpdate:updateMessageType];
+        NSLog(@"executeUpdate messageType %@", updateMessageTypeResult ? @"success" : @"failure");
+        
+        NSString *updateSource = @"UPDATE group_message set source = json_extract(content, '$.msg_body.extras.src');";
+        BOOL updateSourceResult = [db executeUpdate:updateSource];
+        NSLog(@"executeUpdate source %@", updateSourceResult ? @"success" : @"failure");
+    }
+    
+    [result close];
+}
+
+- (void)updateExtraColumns {
+    FMDatabase *db = self.db;
+    NSString *updatePureContent = @"UPDATE group_message SET purecontent = CASE WHEN json_extract(content, '$.msg_body.extras.content') IS NOT NULL THEN json_extract(content, '$.msg_body.extras.content') ELSE json_extract(content, '$.msg_body.text') END;";
+    
+    BOOL updatePureContentResult = [db executeUpdate:updatePureContent];
+    NSLog(@"executeUpdate updatePureContent %@", updatePureContentResult ? @"success" : @"failure");
+    
+    NSString *updateMessageType = @"UPDATE group_message set messagetype = json_extract(content, '$.msg_body.extras.type');";
+    BOOL updateMessageTypeResult = [db executeUpdate:updateMessageType];
+    NSLog(@"executeUpdate messageType %@", updateMessageTypeResult ? @"success" : @"failure");
+    
+    NSString *updateSource = @"UPDATE group_message set source = json_extract(content, '$.msg_body.extras.src');";
+    BOOL updateSourceResult = [db executeUpdate:updateSource];
+    NSLog(@"executeUpdate source %@", updateSourceResult ? @"success" : @"failure");
+}
+
 - (BOOL)fixUUIDMissing {
     FMDatabase *db = self.db;
     [db beginTransaction];
@@ -710,6 +938,16 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (BOOL)clearMessagesWithTargetUid:(int64_t)targetUid {
     FMDatabase *db = self.db;
     BOOL r = [db executeUpdate:@"DELETE FROM group_message WHERE group_id=?", @(targetUid)];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)clearAllMessageWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    BOOL r = [db executeUpdate:@"UPDATE group_message SET deletetag = 1 WHERE group_id=?", @(groupId)];
     if (!r) {
         NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;
@@ -830,15 +1068,41 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     for (IMessage *msg in msgs) {
         NSError *error = nil;
         NSDictionary *contentJSON = [NSJSONSerialization JSONObjectWithData:[msg.rawContent dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&error];
+        
+        NSDictionary *bodyDictionary = contentJSON[@"msg_body"];
+        NSDictionary *extraDictionary;
+        NSString *pureContent = @"";
+        NSString *source = @"";
+        NSString *messageType = @"";
+        
+        if (bodyDictionary) {
+            extraDictionary = bodyDictionary[@"extras"];
+            if (extraDictionary) {
+                if (extraDictionary[@"content"]) {
+                    pureContent = [NSString stringWithFormat:@"%@", extraDictionary[@"content"]];
+                } else if (bodyDictionary[@"text"]) {
+                    pureContent = [NSString stringWithFormat:@"%@", bodyDictionary[@"text"]];
+                }
+                
+                if (extraDictionary[@"type"]) {
+                    messageType = [NSString stringWithFormat:@"%@", extraDictionary[@"type"]];
+                }
+                
+                if (extraDictionary[@"src"]) {
+                    source = [NSString stringWithFormat:@"%@", extraDictionary[@"src"]];
+                }
+            }
+        }
+        
         if (error) {
             NSLog(@">>> json convert error %@", error);
             continue;
         }
         NSString *uuid = contentJSON[@"msg_uuid"] ?: @"";
         BOOL r =
-            [db executeUpdate:@"INSERT INTO group_message (sender, group_id, timestamp, flags, uuid, readuuid, content) VALUES "
-                              @"(?, ?, ?, ?, ?, ?, ?)",
-                              @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), uuid, uuid, msg.rawContent];
+            [db executeUpdate:@"INSERT INTO group_message (sender, group_id, timestamp, flags, uuid, readuuid, content, purecontent, messagetype, source, readcount) VALUES "
+                              @"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                              @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), uuid, uuid, msg.rawContent, pureContent, messageType, source, @(0)];
         if (!r) {
             NSLog(@"error = %@", [db lastErrorMessage]);
             [db rollback];
@@ -881,7 +1145,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
                            @"ORDER BY "
                            @"timestamp "
                            @"ASC "
-                           @"LIMIT 0,18) "
+                           @"LIMIT 0,20) "
                            @"ORDER BY timestamp "
                            @"ASC ",
                            @(conversationID),
@@ -898,6 +1162,43 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     }
     [rs close];
     return messageArr;
+}
+
+- (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender {
+    FMDatabase *db = self.db;
+    NSString *querySQL = [NSString stringWithFormat: @"SELECT * FROM group_message WHERE group_id = %@ AND haveread = 0 AND sender != %@ AND (deletetag = 0 OR deletetag IS NULL) ORDER BY timestamp DESC", @(groupId), @(sender)];
+    FMResultSet *rs = [db executeQuery:querySQL];
+    UnreadIMMessageModel *unreadModel = [[UnreadIMMessageModel alloc] init];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        if ([msg.pureContent containsString:@"@所有人"]) {
+            unreadModel.isAtAll = YES;
+            unreadModel.hasAt = YES;
+            [messageArr addObject:msg];
+            break;
+        }
+        NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
+        NSDictionary *bodyDic = dic[@"msg_body"] ?: @{};
+        NSDictionary *extrasDic = bodyDic[@"extras"] ?: @{};
+        NSArray *atUserIds = [NSMutableArray array];
+        if (extrasDic[@"atUserId"] && [extrasDic[@"atUserId"] isKindOfClass:NSArray.class]) {
+            atUserIds = extrasDic[@"atUserId"];
+        }
+        if (atUserIds.count > 0 && [atUserIds containsObject:atUserId]) {
+            unreadModel.isAtAll = NO;
+            unreadModel.hasAt = YES;
+            [messageArr addObject:msg];
+            break;
+        }
+        
+        [messageArr addObject:msg];
+    }
+    unreadModel.unreadMessages = messageArr;
+    [rs close];
+    
+    return unreadModel;
 }
 
 /// 查询多条消息，根据uuid查

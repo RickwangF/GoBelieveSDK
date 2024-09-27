@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F5422492C78747B00FDC4EC /* MessageDate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F5422472C78747B00FDC4EC /* MessageDate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0F54224A2C78747B00FDC4EC /* MessageDate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F5422482C78747B00FDC4EC /* MessageDate.m */; };
 		5227ABD2262E6C7B001A309C /* wavreader.c in Sources */ = {isa = PBXBuildFile; fileRef = 5227ABD0262E6C7B001A309C /* wavreader.c */; };
 		5227ABD3262E6C7B001A309C /* wavreader.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227ABD1262E6C7B001A309C /* wavreader.h */; };
 		5227AC1F262E747B001A309C /* wavwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5227AC1D262E747B001A309C /* wavwriter.h */; };
@@ -140,6 +142,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F5422472C78747B00FDC4EC /* MessageDate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageDate.h; sourceTree = "<group>"; };
+		0F5422482C78747B00FDC4EC /* MessageDate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MessageDate.m; sourceTree = "<group>"; };
 		2D080F5C0752960380A62872 /* Pods_Gobelieve_GobelieveTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Gobelieve_GobelieveTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5227ABD0262E6C7B001A309C /* wavreader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wavreader.c; sourceTree = "<group>"; };
 		5227ABD1262E6C7B001A309C /* wavreader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavreader.h; sourceTree = "<group>"; };
@@ -428,6 +432,8 @@
 				52EA095D2629953C003652B7 /* MessageACK.h */,
 				52EA09712629953C003652B7 /* MessageACK.m */,
 				AC96A395B5A64A5D949BD815 /* Conversation+Private.h */,
+				0F5422472C78747B00FDC4EC /* MessageDate.h */,
+				0F5422482C78747B00FDC4EC /* MessageDate.m */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -576,6 +582,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F5422492C78747B00FDC4EC /* MessageDate.h in Headers */,
 				52EA09AD2629953C003652B7 /* IMessageDB.h in Headers */,
 				52EA09B52629953C003652B7 /* GOReachability.h in Headers */,
 				52EA09A72629953C003652B7 /* IMessageIterator.h in Headers */,
@@ -815,6 +822,7 @@
 				52EA09E52629953C003652B7 /* MessageFile.m in Sources */,
 				52EA09BF2629953C003652B7 /* MessageImage.m in Sources */,
 				5227AC20262E747B001A309C /* wavwriter.c in Sources */,
+				0F54224A2C78747B00FDC4EC /* MessageDate.m in Sources */,
 				52EA099B2629953C003652B7 /* TAHttpOperation.m in Sources */,
 				52EA09E02629953C003652B7 /* MessageNotification.m in Sources */,
 				52EA09C42629953C003652B7 /* MessageContent.m in Sources */,

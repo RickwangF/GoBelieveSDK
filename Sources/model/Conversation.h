@@ -61,8 +61,15 @@
 @property(nonatomic, copy) NSString *area;
 /// 备注名
 @property(nonatomic, copy) NSString *remarkName;
-/// 会话类型：0会员在线客服，1内部员工私聊，2专属客服聊天，3内部员工在线客服
+/// 会话类型：0会员在线客服，1内部员工私聊，2专属客服聊天，3内部员工在线客服, 4普通群聊
 @property(nonatomic, assign) NSInteger conversationType;
+
+@property(nonatomic, assign) BOOL isMute;
+
+@property(nonatomic, copy) NSString *atMsg;
+
+@property(nonatomic, copy) NSString *jobTitleString;
+@property(nonatomic, copy) NSString *levelString;
 @end
 
 @interface IGroup : NSObject

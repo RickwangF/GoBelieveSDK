@@ -29,6 +29,7 @@
 #import "MessageFile.h"
 #import "MessageRevoke.h"
 #import "MessageACK.h"
+#import "MessageDate.h"
 
 //消息标志
 #define MESSAGE_FLAG_DELETE 1
@@ -113,6 +114,21 @@ typedef NS_ENUM(NSUInteger, GBChatSendStatus) {
 @property (nonatomic, assign) float lineHeight;
 @property(nonatomic, assign) BOOL callBack;
 @property(nonatomic, assign) BOOL deleteTag;
+
+@property(nonatomic, copy) NSString *pureContent;
+@property(nonatomic, copy) NSString *messageType;
+@property(nonatomic, copy) NSString *source;
+@property(nonatomic, assign) NSInteger readCount;
+@end
+
+@interface UnreadIMMessageModel : NSObject
+
+@property (nonatomic, strong) NSArray<IMessage *> *unreadMessages;
+
+@property (nonatomic, assign) BOOL hasAt;
+
+@property (nonatomic, assign) BOOL isAtAll;
+
 @end
 
 
