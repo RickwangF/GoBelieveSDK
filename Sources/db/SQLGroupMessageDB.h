@@ -120,6 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender;
 
+- (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender latestTimestamp:(int64_t)latestTimestamp;
+
 /// 给数据库动态添加正则匹配方法
 /// 使用方法示例，下面这个SQL语句会查询content字段中包含你好字样的记录：
 /// SELECT * FROM group_message WHERE REGEXP(content, '你好')

@@ -70,6 +70,8 @@
 
 @property(nonatomic, copy) NSString *jobTitleString;
 @property(nonatomic, copy) NSString *levelString;
+
+@property(nonatomic, assign) NSInteger groupRole;
 @end
 
 @interface IGroup : NSObject

@@ -549,7 +549,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (NSArray<IMessage *> *)searchMessagesContainKeyword:(NSString *)keyword {
     FMDatabase *db = self.db;
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE REGEXP(content, '%@')", keyword];
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE REGEXP(content, '%@') AND messagetype != 'notice'", keyword];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -564,7 +564,7 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     FMDatabase *db = self.db;
     NSString *escapedKeyword = [keyword stringByReplacingOccurrencesOfString:@"'" withString:@"''"]; // 防止SQL注入，处理单引号
     NSString *selectStr =
-        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE pureContent like '%%%@%%' AND group_id = %@ AND callback = 0 AND deletetag = 0 ORDER BY timestamp DESC;", escapedKeyword, @(groupId)];
+        [NSString stringWithFormat:@"SELECT * FROM group_message WHERE pureContent like '%%%@%%' AND group_id = %@ AND callback = 0 AND deletetag = 0 AND messagetype != 'notice' ORDER BY timestamp DESC;", escapedKeyword, @(groupId)];
     FMResultSet *rs = [db executeQuery:selectStr];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
     while ([rs next]) {
@@ -1167,6 +1167,43 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender {
     FMDatabase *db = self.db;
     NSString *querySQL = [NSString stringWithFormat: @"SELECT * FROM group_message WHERE group_id = %@ AND haveread = 0 AND sender != %@ AND (deletetag = 0 OR deletetag IS NULL) ORDER BY timestamp DESC", @(groupId), @(sender)];
+    FMResultSet *rs = [db executeQuery:querySQL];
+    UnreadIMMessageModel *unreadModel = [[UnreadIMMessageModel alloc] init];
+    NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];
+    while ([rs next]) {
+        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        if ([msg.pureContent containsString:@"@所有人"]) {
+            unreadModel.isAtAll = YES;
+            unreadModel.hasAt = YES;
+            [messageArr addObject:msg];
+            break;
+        }
+        NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
+        NSDictionary *bodyDic = dic[@"msg_body"] ?: @{};
+        NSDictionary *extrasDic = bodyDic[@"extras"] ?: @{};
+        NSArray *atUserIds = [NSMutableArray array];
+        if (extrasDic[@"atUserId"] && [extrasDic[@"atUserId"] isKindOfClass:NSArray.class]) {
+            atUserIds = extrasDic[@"atUserId"];
+        }
+        if (atUserIds.count > 0 && [atUserIds containsObject:atUserId]) {
+            unreadModel.isAtAll = NO;
+            unreadModel.hasAt = YES;
+            [messageArr addObject:msg];
+            break;
+        }
+        
+        [messageArr addObject:msg];
+    }
+    unreadModel.unreadMessages = messageArr;
+    [rs close];
+    
+    return unreadModel;
+}
+
+- (UnreadIMMessageModel *)queryGroupUnreadMessagesWithGroupId:(int64_t)groupId atUserId:(NSString *)atUserId sender:(int64_t)sender latestTimestamp:(int64_t)latestTimestamp {
+    FMDatabase *db = self.db;
+    NSString *querySQL = [NSString stringWithFormat: @"SELECT * FROM group_message WHERE group_id = %@ AND sender != %@ AND (deletetag = 0 OR deletetag IS NULL) AND timestamp > %@ ORDER BY timestamp DESC", @(groupId), @(sender), @(latestTimestamp)];
     FMResultSet *rs = [db executeQuery:querySQL];
     UnreadIMMessageModel *unreadModel = [[UnreadIMMessageModel alloc] init];
     NSMutableArray<IMessage *> *messageArr = [[NSMutableArray alloc] init];

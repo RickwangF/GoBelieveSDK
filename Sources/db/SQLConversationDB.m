@@ -200,6 +200,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *targetId = stringOrEmpty(conversation.targetId);
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+    NSString *atMsg = stringOrEmpty(conversation.atMsg);
 
     __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -222,7 +223,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), atMsg]
                                   error:&error];
         }else{
 //            if (!timestampValid) {// 需要更新的时间小于本地数据时间
@@ -239,7 +240,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType),@(conversation.isMute), conversation.atMsg, @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType),@(conversation.isMute), atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -262,6 +263,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *targetId = stringOrEmpty(conversation.targetId);
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+    NSString *atMsg = stringOrEmpty(conversation.atMsg);
 
     __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -281,7 +283,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), atMsg]
                                   error:&error];
         }else{
 //            success =
@@ -304,7 +306,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg, @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -329,6 +331,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *targetId = stringOrEmpty(conversation.targetId);
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+    NSString *atMsg = stringOrEmpty(conversation.atMsg);
 
     __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -354,7 +357,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           readUUID, @(conversation.isCallback), @(conversation.isGroup), @(conversation.isDelete),
                                           @(conversation.isTop), @(conversation.newMsgCount), @(conversation.memberType),
                                           memberLevel, memberImg, draft, @(conversation.unsendTag), targetId,
-                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg]
+                                          @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType), @(conversation.isMute), atMsg]
                                   error:&error];
         }else{
             success = [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
@@ -367,7 +370,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel,
                                           memberImg, draft, @(conversation.unsendTag),
                                           targetId, @(conversation.is_self), areaStr,
-                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), conversation.atMsg, @(conversation.uid)]
+                                          remarkNameStr, @(conversation.conversationType), @(conversation.isMute), atMsg, @(conversation.uid)]
                                   error:&error];
         }
         if (error) {
@@ -503,6 +506,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *targetId = stringOrEmpty(conversation.targetId);
     NSString *areaStr = stringOrEmpty(conversation.area);
     NSString *remarkNameStr = stringOrEmpty(conversation.remarkName);
+    NSString *atMsg = stringOrEmpty(conversation.atMsg);
 
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
         [db executeUpdate:@"UPDATE gb_conversation SET avatar = ?, nickname = ?, timestamp = ?, content = ?, msguuid = "
@@ -513,7 +517,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                           @(conversation.isGroup), @(conversation.isDelete), @(conversation.isTop),
                           @(conversation.newMsgCount), @(conversation.memberType), memberLevel, memberImg, draft,
                           @(conversation.unsendTag), targetId, @(conversation.is_self), areaStr, remarkNameStr, @(conversation.conversationType),
-                          @(conversation.isMute), conversation.atMsg,
+                          @(conversation.isMute), atMsg,
                           @(conversation.uid)];
     }];
 }
@@ -635,6 +639,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
     NSString *targetId = stringOrEmpty(newConversation.targetId);
     NSString *areaStr = stringOrEmpty(newConversation.area);
     NSString *remarkNameStr = stringOrEmpty(newConversation.remarkName);
+    NSString *atMsg = stringOrEmpty(newConversation.atMsg);
             
     __block BOOL success = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -655,7 +660,7 @@ NSString *stringOrEmpty(NSString *value) { return (value && value.length > 0) ? 
                  readUUID, @(newConversation.isCallback), @(newConversation.isGroup), @(newConversation.isDelete),
                  @(newConversation.isTop), @(newConversation.newMsgCount), @(newConversation.memberType),
                  memberLevel, memberImg, draftStr, @(newConversation.unsendTag), targetId,
-                 @(newConversation.is_self), areaStr, remarkNameStr, @(newConversation.conversationType), @(newConversation.isMute), newConversation.atMsg];
+                 @(newConversation.is_self), areaStr, remarkNameStr, @(newConversation.conversationType), @(newConversation.isMute), atMsg];
                 [db executeUpdate:@"UPDATE gb_conversation SET draft = ? WHERE conversationid = ?", draftStr, @(uid)];
             }else{
                 /// If there are neither conversation nor draft, do nothing!
