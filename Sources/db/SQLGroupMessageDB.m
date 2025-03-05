@@ -263,8 +263,28 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 
         result = [db commit];
         return result;
+    } else {
+        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback,
+        //    deletetag, content"
+        NSString *readuuid = [msg.readUUID isNotEmpty] ? msg.readUUID : @"";
+        NSString *content = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
+        BOOL result = [db executeUpdate:@"UPDATE group_message SET group_id = ?, sender = ?, timestamp = ?, flags = ?, "
+                                        @"haveread = ?, cacheheight = ?, cachewidth = ?, lineheight = ?, callback = ?, "
+                                        @"deletetag = ?, content = ?, purecontent = ?, messagetype = ?, source = ?, readcount = ? WHERE readuuid = ?",
+                                        @(uid), @(msg.sender), @(msg.timestamp), @(msg.flags),
+                                        @(msg.haveRead), @(msg.manualHeight), @(msg.manualWidth),
+                                        @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content, pureContent, messageType, source, @(0), readuuid];
+
+        if (!result) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+            [db rollback];
+            return NO;
+        }
+        
+        result = [db commit];
+        return result;
     }
-    [db commit];
+    //[db commit];
     return NO;
 }
 
@@ -948,6 +968,16 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 - (BOOL)clearAllMessageWithGroupId:(int64_t)groupId {
     FMDatabase *db = self.db;
     BOOL r = [db executeUpdate:@"UPDATE group_message SET deletetag = 1 WHERE group_id=?", @(groupId)];
+    if (!r) {
+        NSLog(@"error = %@", [db lastErrorMessage]);
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)eraseAllMessageWithGroupId:(int64_t)groupId {
+    FMDatabase *db = self.db;
+    BOOL r = [db executeUpdate:@"DELETE FROM group_message WHERE group_id=?", @(groupId)];
     if (!r) {
         NSLog(@"error = %@", [db lastErrorMessage]);
         return NO;

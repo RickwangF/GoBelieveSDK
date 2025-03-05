@@ -142,6 +142,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 逻辑删除群消息数据
 - (BOOL)clearAllMessageWithGroupId:(int64_t)groupId;
 
+/// 物理删除消息
+- (BOOL)eraseAllMessageWithGroupId:(int64_t)groupId;
+
 /// 通过uid获取当前会话最新的没有做删除的消息
 /// @param targetUid 目标uid
 - (IMessage *)getLatestMessageWithTargetUid:(int64_t)targetUid;
