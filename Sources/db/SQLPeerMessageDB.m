@@ -7,6 +7,8 @@
 static const NSString *allColumns = @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
                                     @"lineheight, callback, deletetag, content";
 
+static const void *kSQLMessageDBQueueKey = &kSQLMessageDBQueueKey;
+
 @interface SQLPeerMessageIterator () <IMessageIterator>
 
 //-(SQLPeerMessageIterator*)initWithDB:(FMDatabase*)db peer:(int64_t)peer secret:(BOOL)secret;
@@ -178,6 +180,17 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 @end
 
 @implementation SQLPeerMessageDB
+
+- (void)setDbQueue:(dispatch_queue_t)dbQueue {
+    _dbQueue = dbQueue;
+    if (dbQueue) {
+        dispatch_queue_set_specific(dbQueue,
+                                    kSQLMessageDBQueueKey,
+                                    (void *)kSQLMessageDBQueueKey,
+                                    NULL);
+    }
+}
+
 /// 获取单条消息
 /// @param uuid 消息唯一标识
 - (IMessage *)getMessage:(NSString *)uuid {
@@ -202,52 +215,97 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 /// @param msg 消息体
 /// @param uid 消息保存uid
 - (BOOL)insertMessage:(IMessage *)msg uid:(int64_t)uid {
-    FMDatabase *db = self.db;
-    [db beginTransaction];
-    NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
-    if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] isNotEmpty]) {
-        [msg setReadUUID:[NSString stringWithFormat:@"%@", dic[@"msg_uuid"]]];
-    }
-    BOOL haveMessage = NO;
-    FMResultSet *selectResult =
-        [db executeQuery:@"SELECT readuuid FROM peer_message WHERE peer = ? AND readuuid = ?", @(uid), msg.readUUID];
-    if (selectResult.next) {
-        haveMessage = YES;
-    }
-    [selectResult close];
-
-    if (haveMessage == NO) {
-        //    @"sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, lineheight, callback,
-        //    deletetag, content"
-        NSString *readuuid = [msg.readUUID isNotEmpty] ? msg.readUUID : @"";
-        NSString *content = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
-        BOOL result = [db
-            executeUpdate:
-                @"INSERT INTO peer_message (peer, sender, receiver, timestamp, flags, haveread, readuuid, cacheheight, "
-                @"cachewidth, lineheight, callback, deletetag, content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                @(uid), @(msg.sender), @(msg.receiver), @(msg.timestamp), @(msg.flags), @(msg.haveRead), readuuid,
-                @(msg.manualHeight), @(msg.manualWidth), @(msg.lineHeight), @(msg.callBack), @(msg.deleteTag), content];
-
-        if (!result) {
-            NSLog(@"error = %@", [db lastErrorMessage]);
-            [db rollback];
-            return NO;
+    // 如果没有配置 dbQueue，属于使用方错误，直接 assert
+    NSAssert(self.dbQueue != NULL, @"SQLPeerMessageDB dbQueue must not be nil");
+    
+    __block BOOL result = NO;
+    
+    void (^dbBlock)(void) = ^{
+        FMDatabase *db = self.db;
+        
+        [db beginTransaction];
+        
+        NSData *jsonData = [msg.rawContent dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dic =
+        [NSJSONSerialization JSONObjectWithData:jsonData
+                                        options:NSJSONReadingMutableLeaves
+                                          error:nil];
+        
+        if (dic[@"msg_uuid"] && [dic[@"msg_uuid"] isNotEmpty]) {
+            msg.readUUID = [NSString stringWithFormat:@"%@", dic[@"msg_uuid"]];
         }
-
-        int64_t rowID = [self.db lastInsertRowId];
-        msg.msgId = rowID;
-
-        if (msg.textContent) {
-            NSString *text = [msg.textContent.text isKindOfClass:NSString.class] ? [msg.textContent.text tokenizer]:@"";
-            [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)", @(rowID), text];
+        
+        BOOL haveMessage = NO;
+        FMResultSet *selectResult =
+        [db executeQuery:@"SELECT readuuid FROM peer_message WHERE peer = ? AND readuuid = ?",
+         @(uid), msg.readUUID];
+        if ([selectResult next]) {
+            haveMessage = YES;
         }
-
-        result = [db commit];
-        return result;
+        [selectResult close];
+        
+        if (!haveMessage) {
+            NSString *readuuid = [msg.readUUID isNotEmpty] ? msg.readUUID : @"";
+            NSString *content  = [msg.rawContent isNotEmpty] ? msg.rawContent : @"";
+            
+            BOOL r =
+            [db executeUpdate:
+             @"INSERT INTO peer_message "
+             @"(peer, sender, receiver, timestamp, flags, haveread, readuuid, "
+             @"cacheheight, cachewidth, lineheight, callback, deletetag, content) "
+             @"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+             @(uid),
+             @(msg.sender),
+             @(msg.receiver),
+             @(msg.timestamp),
+             @(msg.flags),
+             @(msg.haveRead),
+             readuuid,
+             @(msg.manualHeight),
+             @(msg.manualWidth),
+             @(msg.lineHeight),
+             @(msg.callBack),
+             @(msg.deleteTag),
+             content];
+            
+            if (!r) {
+                NSLog(@"insert peer_message error = %@", [db lastErrorMessage]);
+                [db rollback];
+                result = NO;
+                return;
+            }
+            
+            int64_t rowID = [db lastInsertRowId];
+            msg.msgId = rowID;
+            
+            if (msg.textContent) {
+                NSString *text =
+                [msg.textContent.text isKindOfClass:NSString.class]
+                ? [msg.textContent.text tokenizer]
+                : @"";
+                [db executeUpdate:@"INSERT INTO peer_message_fts (docid, content) VALUES (?, ?)",
+                 @(rowID), text];
+            }
+            
+            result = [db commit];
+            return;
+        }
+        
+        // 已存在消息
+        [db commit];
+        result = NO;
+    };
+    
+    // ===== 关键点：是否已在 dbQueue =====
+    if (dispatch_get_specific(kSQLMessageDBQueueKey)) {
+        // 已经在 dbQueue，直接执行，避免死锁
+        dbBlock();
+    } else {
+        // 不在 dbQueue，同步派发，保证串行 & 线程安全
+        dispatch_sync(self.dbQueue, dbBlock);
     }
-    [db commit];
-    return NO;
+    
+    return result;
 }
 
 /// 标记消息失败
@@ -707,63 +765,157 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 }
 
 #pragma mark - gobelieve handler method
-- (int)gobelieveGetMessageId:(NSString *)uuid {
-    FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM peer_message WHERE uuid=?", uuid];
-    if ([rs next]) {
-        int msgId = (int)[rs longLongIntForColumn:@"id"];
-        [rs close];
-        return msgId;
+
+- (id)executeOnDBQueue:(id (^)(void))block {
+    if (!self.dbQueue) {
+        return block();
     }
-    [rs close];
-    return 0;
+
+    if (dispatch_get_specific(kSQLMessageDBQueueKey)) {
+        // 已在 dbQueue 中，直接执行，避免死锁
+        return block();
+    } else {
+        __block id result = nil;
+        dispatch_sync(self.dbQueue, ^{
+            result = block();
+        });
+        return result;
+    }
+}
+
+- (int)gobelieveGetMessageId:(NSString *)uuid {
+//    FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM peer_message WHERE uuid=?", uuid];
+//    if ([rs next]) {
+//        int msgId = (int)[rs longLongIntForColumn:@"id"];
+//        [rs close];
+//        return msgId;
+//    }
+//    [rs close];
+//    return 0;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMResultSet *rs =
+        [self.db executeQuery:@"SELECT id FROM peer_message WHERE uuid=?",
+         uuid];
+        int msgId = 0;
+        
+        if ([rs next]) {
+            msgId = (int)[rs longLongIntForColumn:@"id"];
+        }
+        
+        [rs close];
+        return @(msgId);
+    }];
+    
+    return result.intValue;
 }
 
 - (IMessage *)gobelieveGetMessage:(int)msgID {
-    FMResultSet *rs = [self.db
-        executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, "
-                     @"cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?",
-                     @(msgID)];
-    if ([rs next]) {
-        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
+//    FMResultSet *rs = [self.db
+//        executeQuery:@"SELECT id, sender, receiver, timestamp, secret, flags, haveread, readuuid, cacheheight, "
+//                     @"cachewidth, lineheight, callback, deletetag, content FROM peer_message WHERE id= ?",
+//                     @(msgID)];
+//    if ([rs next]) {
+//        IMessage *msg = [SQLPeerMessageIterator messageFromResultSet:rs];
+//        [rs close];
+//        return msg;
+//    }
+//    [rs close];
+//    return nil;
+    return [self executeOnDBQueue:^id{
+        FMResultSet *rs =
+        [self.db executeQuery:
+         @"SELECT id, sender, receiver, timestamp, secret, flags, "
+         "haveread, readuuid, cacheheight, cachewidth, lineheight, "
+         "callback, deletetag, content "
+         "FROM peer_message WHERE id = ?",
+         @(msgID)];
+        
+        IMessage *msg = nil;
+        if ([rs next]) {
+            msg = [SQLPeerMessageIterator messageFromResultSet:rs];
+        }
+        
         [rs close];
         return msg;
-    }
-    [rs close];
-    return nil;
+    }];
 }
 
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags {
-    FMDatabase *db = self.db;
-
-    BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-
-    return YES;
+//    FMDatabase *db = self.db;
+//
+//    BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMDatabase *db = self.db;
+        
+        BOOL r =
+        [db executeUpdate:
+         @"UPDATE peer_message SET flags = ? WHERE id = ?",
+         @(flags), @(msgLocalID)];
+        if (!r) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+        }
+        return @(r);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(NSString *)content {
-    FMDatabase *db = self.db;
-
-    BOOL r = [db executeUpdate:@"UPDATE peer_message SET content=? WHERE id=?", content, @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-
-    return [db changes] == 1;
+//    FMDatabase *db = self.db;
+//
+//    BOOL r = [db executeUpdate:@"UPDATE peer_message SET content=? WHERE id=?", content, @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//
+//    return [db changes] == 1;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMDatabase *db = self.db;
+        
+        BOOL r =
+        [db executeUpdate:
+         @"UPDATE peer_message SET content = ? WHERE id = ?",
+         content, @(msgLocalID)];
+        if (!r) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+            return @(NO);
+        }
+        
+        return @([db changes] == 1);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveRemoveMessageIndex:(int)msgLocalID {
-    FMDatabase *db = self.db;
-    BOOL r = [db executeUpdate:@"DELETE FROM peer_message_fts WHERE rowid=?", @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-    return YES;
+//    FMDatabase *db = self.db;
+//    BOOL r = [db executeUpdate:@"DELETE FROM peer_message_fts WHERE rowid=?", @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMDatabase *db = self.db;
+        
+        BOOL r =
+        [db executeUpdate:
+         @"DELETE FROM peer_message_fts WHERE rowid = ?",
+         @(msgLocalID)];
+        if (!r) {
+            NSLog(@"error = %@", [db lastErrorMessage]);
+        }
+        return @(r);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveAcknowledgeMessage:(int)msgLocalID {
@@ -775,26 +927,58 @@ static const NSString *allColumns = @"sender, receiver, timestamp, flags, havere
 }
 
 - (BOOL)gobelieveAddFlag:(NSInteger)msgLocalID flag:(int)f {
-    FMDatabase *db = self.db;
-    FMResultSet *rs = [db executeQuery:@"SELECT flags FROM peer_message WHERE id=?", @(msgLocalID)];
-    if (!rs) {
-        [rs close];
-        return NO;
-    }
-    if ([rs next]) {
-        int flags = [rs intForColumn:@"flags"];
-        flags |= f;
-
-        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
-        if (!r) {
-            NSLog(@"error = %@", [db lastErrorMessage]);
-            [rs close];
-            return NO;
+//    FMDatabase *db = self.db;
+//    FMResultSet *rs = [db executeQuery:@"SELECT flags FROM peer_message WHERE id=?", @(msgLocalID)];
+//    if (!rs) {
+//        [rs close];
+//        return NO;
+//    }
+//    if ([rs next]) {
+//        int flags = [rs intForColumn:@"flags"];
+//        flags |= f;
+//
+//        BOOL r = [db executeUpdate:@"UPDATE peer_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
+//        if (!r) {
+//            NSLog(@"error = %@", [db lastErrorMessage]);
+//            [rs close];
+//            return NO;
+//        }
+//    }
+//
+//    [rs close];
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMDatabase *db = self.db;
+        
+        FMResultSet *rs =
+        [db executeQuery:
+         @"SELECT flags FROM peer_message WHERE id = ?",
+         @(msgLocalID)];
+        if (!rs) {
+            return @(NO);
         }
-    }
-
-    [rs close];
-    return YES;
+        
+        BOOL success = YES;
+        
+        if ([rs next]) {
+            int flags = [rs intForColumn:@"flags"];
+            flags |= f;
+            
+            BOOL r =
+            [db executeUpdate:
+             @"UPDATE peer_message SET flags = ? WHERE id = ?",
+             @(flags), @(msgLocalID)];
+            if (!r) {
+                NSLog(@"error = %@", [db lastErrorMessage]);
+                success = NO;
+            }
+        }
+        
+        [rs close];
+        return @(success);
+    }];
+    
+    return result.boolValue;
 }
 
 /// 获取指定消息的前两条开始往后面的20条数据

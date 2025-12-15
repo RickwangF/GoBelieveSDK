@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong) FMDatabase *db;
 @property(nonatomic, assign) BOOL secret;
+@property(nonatomic, strong) dispatch_queue_t dbQueue;
 
 /// 根据最新时间进行消息降序查询
 /// @param conversationID targetUid

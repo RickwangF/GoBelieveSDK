@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong) FMDatabase *db;
 
+@property(nonatomic, strong) dispatch_queue_t dbQueue;
+
 /// 根据最新时间进行消息降序查询
 /// @param gid 群聊gid
 /// @param timeStamp unix时间

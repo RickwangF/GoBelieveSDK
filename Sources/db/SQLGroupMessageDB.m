@@ -16,6 +16,8 @@
 static const NSString *allColumns = @"sender, group_id, timestamp, flags, haveread, readuuid, cacheheight, cachewidth, "
                                     @"lineheight, callback, deletetag, content, purecontent, messagetype, source, readcount";
 
+static const void *kSQLGroupMessageDBQueueKey = &kSQLGroupMessageDBQueueKey;
+
 @interface SQLGroupMessageIterator () <IMessageIterator>
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid;
 //-(SQLGroupMessageIterator*)initWithDB:(FMDatabase*)db gid:(int64_t)gid position:(int)msgID;
@@ -170,6 +172,16 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
     if (self) {
     }
     return self;
+}
+
+- (void)setDbQueue:(dispatch_queue_t)dbQueue {
+    _dbQueue = dbQueue;
+    if (dbQueue) {
+        dispatch_queue_set_specific(dbQueue,
+                                    kSQLGroupMessageDBQueueKey,
+                                    (void *)kSQLGroupMessageDBQueueKey,
+                                    NULL);
+    }
 }
 
 /// 获取单条消息
@@ -1007,59 +1019,142 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 }
 
 #pragma mark - gobelieve handler method
-- (int)gobelieveGetMessageId:(NSString *)uuid {
-    FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM group_message WHERE uuid= ?", uuid];
-    if ([rs next]) {
-        int msgId = (int)[rs longLongIntForColumn:@"id"];
-        [rs close];
-        return msgId;
+
+- (id)executeOnDBQueue:(id (^)(void))block {
+    if (!block) return nil;
+
+    if (dispatch_get_specific(kSQLGroupMessageDBQueueKey)) {
+        // 已经在 dbQueue 上，直接执行
+        return block();
+    } else {
+        __block id result = nil;
+        dispatch_sync(_dbQueue, ^{
+            result = block();
+        });
+        return result;
     }
-    return 0;
+}
+
+- (int)gobelieveGetMessageId:(NSString *)uuid {
+//    FMResultSet *rs = [self.db executeQuery:@"SELECT id FROM group_message WHERE uuid= ?", uuid];
+//    if ([rs next]) {
+//        int msgId = (int)[rs longLongIntForColumn:@"id"];
+//        [rs close];
+//        return msgId;
+//    }
+//    return 0;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMResultSet *rs =
+        [self.db executeQuery:@"SELECT id FROM group_message WHERE uuid = ?", uuid];
+        
+        if ([rs next]) {
+            int msgId = (int)[rs longLongIntForColumn:@"id"];
+            [rs close];
+            return @(msgId);
+        }
+        [rs close];
+        return @(0);
+    }];
+    
+    return result.intValue;
 }
 
 - (IMessage *)gobelieveGetMessage:(int)msgID {
-    FMResultSet *rs =
-        [self.db executeQuery:@"SELECT id, sender, group_id, timestamp, flags, content FROM group_message WHERE id= ?",
-                              @(msgID)];
-    if ([rs next]) {
-        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+//    FMResultSet *rs =
+//        [self.db executeQuery:@"SELECT id, sender, group_id, timestamp, flags, content FROM group_message WHERE id= ?",
+//                              @(msgID)];
+//    if ([rs next]) {
+//        IMessage *msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+//        return msg;
+//    }
+//    return nil;
+    return [self executeOnDBQueue:^id{
+        FMResultSet *rs =
+        [self.db executeQuery:
+         @"SELECT id, sender, group_id, timestamp, flags, content "
+         "FROM group_message WHERE id = ?", @(msgID)];
+        
+        IMessage *msg = nil;
+        if ([rs next]) {
+            msg = [SQLGroupMessageIterator messageFromResultSet:rs];
+        }
+        [rs close];
         return msg;
-    }
-    return nil;
+    }];
 }
 
 - (BOOL)gobelieveUpdateFlags:(NSInteger)msgLocalID flags:(int)flags {
-    FMDatabase *db = self.db;
-
-    BOOL r = [db executeUpdate:@"UPDATE group_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-
-    return YES;
+//    FMDatabase *db = self.db;
+//
+//    BOOL r = [db executeUpdate:@"UPDATE group_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        BOOL r =
+        [self.db executeUpdate:
+         @"UPDATE group_message SET flags = ? WHERE id = ?",
+         @(flags), @(msgLocalID)];
+        
+        if (!r) {
+            NSLog(@"error = %@", [self.db lastErrorMessage]);
+        }
+        return @(r);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveUpdateMessageContent:(NSInteger)msgLocalID content:(NSString *)content {
-    FMDatabase *db = self.db;
-
-    BOOL r = [db executeUpdate:@"UPDATE group_message SET content=? WHERE id=?", content, @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-
-    return [db changes] == 1;
+//    FMDatabase *db = self.db;
+//
+//    BOOL r = [db executeUpdate:@"UPDATE group_message SET content=? WHERE id=?", content, @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//
+//    return [db changes] == 1;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        BOOL r =
+        [self.db executeUpdate:
+         @"UPDATE group_message SET content = ? WHERE id = ?",
+         content, @(msgLocalID)];
+        
+        if (!r) {
+            NSLog(@"error = %@", [self.db lastErrorMessage]);
+            return @(NO);
+        }
+        return @([self.db changes] == 1);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveRemoveMessageIndex:(int)msgLocalID {
-    FMDatabase *db = self.db;
-    BOOL r = [db executeUpdate:@"DELETE FROM group_message_fts WHERE rowid=?", @(msgLocalID)];
-    if (!r) {
-        NSLog(@"error = %@", [db lastErrorMessage]);
-        return NO;
-    }
-    return YES;
+//    FMDatabase *db = self.db;
+//    BOOL r = [db executeUpdate:@"DELETE FROM group_message_fts WHERE rowid=?", @(msgLocalID)];
+//    if (!r) {
+//        NSLog(@"error = %@", [db lastErrorMessage]);
+//        return NO;
+//    }
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        BOOL r =
+        [self.db executeUpdate:
+         @"DELETE FROM group_message_fts WHERE rowid = ?",
+         @(msgLocalID)];
+        
+        if (!r) {
+            NSLog(@"error = %@", [self.db lastErrorMessage]);
+        }
+        return @(r);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveAcknowledgeMessage:(int)msgLocalID {
@@ -1071,27 +1166,75 @@ static const NSString *allColumns = @"sender, group_id, timestamp, flags, havere
 }
 
 - (BOOL)gobelieveAddFlag:(NSInteger)msgLocalID flag:(int)f {
-    FMDatabase *db = self.db;
-    FMResultSet *rs = [db executeQuery:@"SELECT flags FROM group_message WHERE id=?", @(msgLocalID)];
-    if (!rs) {
-        return NO;
-    }
-    if ([rs next]) {
-        int flags = [rs intForColumn:@"flags"];
-        flags |= f;
-
-        BOOL r = [db executeUpdate:@"UPDATE group_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
-        if (!r) {
-            NSLog(@"error = %@", [db lastErrorMessage]);
-            return NO;
+//    FMDatabase *db = self.db;
+//    FMResultSet *rs = [db executeQuery:@"SELECT flags FROM group_message WHERE id=?", @(msgLocalID)];
+//    if (!rs) {
+//        return NO;
+//    }
+//    if ([rs next]) {
+//        int flags = [rs intForColumn:@"flags"];
+//        flags |= f;
+//
+//        BOOL r = [db executeUpdate:@"UPDATE group_message SET flags= ? WHERE id= ?", @(flags), @(msgLocalID)];
+//        if (!r) {
+//            NSLog(@"error = %@", [db lastErrorMessage]);
+//            return NO;
+//        }
+//    }
+//
+//    [rs close];
+//    return YES;
+    NSNumber *result = [self executeOnDBQueue:^id{
+        FMDatabase *db = self.db;
+        
+        FMResultSet *rs =
+        [db executeQuery:@"SELECT flags FROM group_message WHERE id = ?",
+         @(msgLocalID)];
+        if (!rs) {
+            return @(NO);
         }
-    }
-
-    [rs close];
-    return YES;
+        
+        BOOL success = YES;
+        
+        if ([rs next]) {
+            int flags = [rs intForColumn:@"flags"];
+            flags |= f;
+            
+            BOOL r =
+            [db executeUpdate:
+             @"UPDATE group_message SET flags = ? WHERE id = ?",
+             @(flags), @(msgLocalID)];
+            if (!r) {
+                NSLog(@"error = %@", [db lastErrorMessage]);
+                success = NO;
+            }
+        }
+        
+        [rs close];
+        return @(success);
+    }];
+    
+    return result.boolValue;
 }
 
 - (BOOL)gobelieveInsertMessages:(NSArray *)msgs {
+    dispatch_queue_t queue = self.dbQueue;
+    NSAssert(queue != nil, @"SQLGroupMessageDB dbQueue must not be nil");
+    
+    // 判断是否已经在 dbQueue 中
+    if (dispatch_get_specific(kSQLGroupMessageDBQueueKey)) {
+        // 已在 dbQueue，直接执行，避免死锁
+        return [self p_gobelieveInsertMessages:msgs];
+    } else {
+        __block BOOL result = NO;
+        dispatch_sync(queue, ^{
+            result = [self p_gobelieveInsertMessages:msgs];
+        });
+        return result;
+    }
+}
+
+- (BOOL)p_gobelieveInsertMessages:(NSArray *)msgs {
     FMDatabase *db = self.db;
     [db beginTransaction];
 
